@@ -1,0 +1,146 @@
+731346519-11702-u	\"a\".concat(null, \"b\") would result in \"anullb\" and undefined as well \"aundefinedb\".\r\n\r\nSo I would suggest to change this code to:\r\n```js\r\nurl = location.origin.concat(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '', url);\r\n```
+726498817-11684-u	I believe this should be removed.
+723645914-11681-u	This is not the ideal solution.    Meteor.startup(() => {}) is better here imo
+723663344-11681-u	If this is happening is probably because in another place Accounts.emailTemplates is being assigned directly.\r\n\r\nThe bug is not here.\r\n\r\nYou need to do this in other places:\r\n```js\r\n    ...(Accounts.emailTemplates || {}),\r\n```
+724198155-11681-u	I believe @renanccastro's idea was to make this optional. \r\n\r\nMaybe we could have a settings to disable it. But we need to think in which case people will want to disable it.\r\n\r\n@renanccastro ?
+724221637-11681-u	Yes... my idea was to make this optional. Thinking again, we should prefer convention over configuration, and in this case I think the most common case is to use it automatically.  It also doesn't introduce major performance issues, so I think it's fine.
+721410211-11672-u	We should avoid the word discussion here, too confusing.
+724163653-11671-u	Do you need to repeat "firefox"? I don't think so looking the others.
+718010556-11650-u	You could get the property first and then return or proceed\r\n\r\n```suggestion\r\n    const settings = Meteor.settings?.packages?.['service-configuration'];\r\n    if (!settings) {\r\n      return;\r\n    }\r\n    // proceed\r\n```
+718012175-11649-u	The key should be called `accounts-base` and not `accounts`.
+718012392-11649-u	You could get the value first and then later test it instead of testing and later getting it.
+719546529-11645-u	If we are already updating the version here, we should also bump the Typescript version in the tool and meteor-babel and go to 4.4.3 to keep the versioning schema that was started.
+713348869-11638-u	Nice comment about the change, but that should have been just a comment here, no need to have it in the code itself.
+713349169-11638-u	I'll need a bit of context on this removal.
+700429619-11615-u	You can use here `forEach`, it has been added in `callback-hook@1.4.0` which is available on the release branch.
+700685890-11602-u	I believe there is an extra .Accounts here.
+700686940-11602-u	Should we use something from `accounts-password`?
+700687578-11602-u	It's missing the selector
+700688465-11602-u	where is `loginToken` defined?
+714685182-11602-u	Should be v1.0.0 or will be releasing it as an experimental package for now?
+691632826-11590-u	we should centralize this in a var like isWindows
+691634063-11590-u	this is a constant (should be UPPER_CASE) and could be declared in the file scope.
+696957114-11590-u	I never updated these instructions after adding the `meteor-installer` command. An easier way to do this might be to run `meteor-installer uninstall` and `meteor-installer install`.
+733394841-11588-u	See my inline comment and also I believe it's missing a test for error handling. \r\n\r\nIt would be nice to be sure the error is handled correctly when thrown from within an asynchronous function.
+688567330-11585-u	if you want to deprecate this it would be nice a jsdoc here saying that.
+686977173-11582-u	Please avoid else's using return statements.\r\n\r\nFor example:\r\n```js\r\nif (x) {\r\n  // doSomething();\r\n  return;\r\n}\r\n\r\nif (y) {\r\n  // doSomethingElse();\r\n  return;\r\n}\r\n\r\n// doLastCase();\r\n```
+678281253-11556-u	This code should check if createIndex is available and if so it should use createIndex as well.
+678281987-11556-u	As this is a public API we shouldn't have `_` before the name, I would go with `createIndex` 
+678327489-11556-u	I believe it's important to mention that createIndex was added in 3. Otherwise people can think it's only going to work with Mongo 5.
+669068030-11532-u	we need to remove posix from here, otherwise it's going to fail on Windows.
+665598884-11506-u	We are avoiding `underscore`. This would be better\r\n```suggestion\r\nruntimeConfig.hooks.forEach(function (hook) {\r\n```
+665600153-11506-u	I would suggest a single object param here so next changes would be easier without breaking changes due to the order.\r\n\r\n```suggestion\r\n    const meteorRuntimeConfig = hook({ arch, request, encodedCurrentConfig: boilerplate.baseData.meteorRuntimeConfig, updated: runtimeConfig.update[arch] });\r\n```
+665600264-11506-u	I don't think this comment is necessary
+665600721-11506-u	We don't need single quotes here. And also not below.
+665601238-11506-u	A comment would be nice, explaining what hooks will contain and also what update will contain.\r\n\r\nI would rename update to `isUpdatedByArch` or something similar
+650998793-11478-u	`was informed` shouldn't this be `was provided`?
+650160411-11469-u	As we are adding new code here we should use new patterns, like const here instead of var.    Also everywhere below this point.
+650161385-11469-u	a function would be better here to isolate this part.    like: `getDetails(sequence)` so the try/catch would be within the function.
+643968600-11451-u	I believe we don't need any let on this code. const + one new variable should be enough.
+637912606-11445-u	import `readFileSync` and `chmodSync` in the same line?
+636989008-11443-u	This should point to `meteor`, not your personal repo.
+636971581-11440-u	Beware when using this. If, for instance, you do not include `email` when excluding the fields, you can have problems with functions like `forgotPassword` that will break because they won't have the required data available. It's recommend that you always keep the fields `_id`, `username`, and `email`.
+636910242-11395-u	these 3 should be under `meteor-tool@2.3`
+608077287-11374-u	Im not sure if meteor code style enforces the use of ";", but everywhere else is used. It might be better to keep using it in the new code.
+618725503-11374-u	Would be nice to have a bit more info here. This will show up in documentation, so it should include that by default it is false and that people should keep it that way for security purposes.
+576821053-11321-u	Maybe string.includes()?
+539339993-11244-u	I would change this to \r\n```suggestion\r\n          if (!realpath) {\r\n              throw new Error(`Broken symbolic link encountered at ${path}`);\r\n          }\r\n          return isWithinProdPackage(realpath);\r\n```\r\n\r\nso we avoid if/else and also handle the problematic case first.
+513796728-11225-u	also we need to update meteor-babel's TS to 4.0.5 https://github.com/meteor/babel/blob/master/package.json#L50
+502252584-11204-u	Shouldn't the locus here be `everywhere`?
+500527930-11202-u	The indentation is causing random spaces in the message\r\n\r\n(Also, tinyest of nitpicks, but the other log messages start with a capital letter, I think it improves readability)\r\n\r\n![Screen Shot 2020-10-06 at 15 39 28](https://user-images.githubusercontent.com/3224761/95245934-2a65fa00-07ea-11eb-9e15-41f5bb10facf.png)\r\n\r\n
+497497714-11189-u	The `R` in React should be capitalized as it is a name of a package/technology.
+487084813-11165-u	you could write this as:    ...(showDetails ? packageToPrint : {})
+456474834-11119-u	I believe you need to change this as well\r\n\r\n```suggestion\r\nimport { useQuery } from '@apollo/client';\r\n```
+450709550-11118-u	Nice addition, thanks. I'm requesting a change in the format 😉
+456481180-11118-u	I would prefer to use the MongoDB standard here, using a map with fieldName: 1 to select fields.
+456481593-11118-u	we don't need this, the API should expect the field projection in the format MongoDB expects so we don't need to convert and we also can support other cases, like restricting fields.
+450201723-11105-u	You could add `|| {}` in the end so you know you always have the settings object.
+452457989-11105-u	I think it would make sense to keep the keys in `packages` consistent with the package names. In this case: `packages["dynamic-import"]` instead of `packages.dynamicImport`. This would make it even more clear that the settings belong to the `dynamic-import` package and might encourage third-party package authors to follow the same pattern, e.g., `packages["some-organization:package-name"]`.
+450202371-11105-u	If you apply the feedback above you don't need these conditions.
+443418584-11100-u	We are using a custom build of MongoDB on Linux, so this won't work until we release a build for 4.2.7 here: https://github.com/meteor/mongodb-builder/releases.
+450695260-11100-u	I believe you just need to adjust the npm version
+427059406-11066-u	`(without MINE)` is not needed.    While at it why not add this to reset password, etc. ?
+402320739-10976-u	I think all Meteor specific settings should be under a specific Meteor key, something like Galaxy has  `"galaxy.meteor.com"` for its env variables. So I'm thinking `Meteor.settings.meteor.mongoOptions`. We can then leverage `Meteor.settings.meteor` object later for anything else.  UPDATE: Read your last general comment, agree with that!
+402318792-10976-u	`var` here, `const` down bellow. What version of ES are we using in this file?
+389339989-10960-u	Is Underscore really needed here? Wouldn't\r\n```js\r\noptions.hasOwnProperty('arrayFilters')\r\n```\r\nbe enough?
+383192614-10932-u	Unfortunately, you can't use ES6 imports for weak-linked packages. If you wouldn't have the mongo-decimal package installed, this will throw since it can't find the imported package.    The way to work with weak-linked packages is by using the Meteor's package system:  `const Decimal = Package['mongo-decimal']?.Decimal`    But then the instanceOf will throw since you would be checking against undefined.    So either you will have to check first that Decimal isn't undefined, or, since it's only for instanceof checks, you could do something like:  `const Decimal = Package['mongo-decimal']?.Decimal || class DecimalStub {}`
+383255453-10932-u	This minimal implementation is pretty useless here, since the instanceof checks will never be true for this class.
+383258423-10932-u	For clarity: The reason I proposed a DecimalStub{} class was just to have some kind of object that doesn't throw an error when we do instanceof, but which would never be true. If someone wants to have decimal support, they should add the mongo-decimal package.
+383260449-10929-u	This would need a major version bump, since the API is not compatible
+383261053-10929-u	Since this is basically the only user of the xmlbuilder package in Meteor I wonder why we don't load the npm package directly. @benjamn @filipenevola : Can you shine some light on this?
+383755408-10929-u	The node_modules of the dependency kit are defined in: `./scripts/dev-bundle-tool-package.js`    If you change these, you should also change the dev bundle version in `./meteor` .    The consequence is that the tests here will fail, since the bundle first needs to be published.    However, there might still be a reason I'm not aware of this xmlbuilder was loaded from an isopackage instead of NPM. So maybe it's better to wait for feedback from @benjamn if this is the right approach.
+383998741-10929-u	I am 100% in favor of adding `xmlbuilder2` to the dev bundle, rather than loading it into the command-line tools codebase from a Meteor package. The implementation of that package is just one line, after all:  ```  XmlBuilder = Npm.require('xmlbuilder');  ```  Maybe we can also move `meteor/packages/xmlbuilder` into `meteor/packages/non-core` while we're at it, since that package is definitely not used by any core packages (including `meteor-tool`) now?
+384074853-10929-u	I should have mentioned that the dev bundle version doesn't follow semver. Basically we keep the first numbers for the node version (so that should stay 12.16.1) and then just increase the last number for other changes that need a new dev bundle, so `12.16.1.4` is ok.
+773209643-11681-nu	I just reviewed the accounts-passwordless part. See my feedback, I don't think your fixes are necessary.
+773933188-11681-nu	I'll review accounts-ui onde the passwordless part is finished.\r\n\r\nIt should be in a different PR btw.
+780864874-11681-nu	The changes look good, it would be important to ask feedback on Slack in Forums for people who uses this package in production, as maybe this could break something and this is a critical flow for apps.
+773883486-11671-nu	What are the other changes in this PR? I was able to find one but as we have many format changes I'm not sure if there aren't others.
+783777737-11660-nu	LGTM we just need to double check everything after merging to devel as there are different flows for different branches.\r\n\r\nAlso, all the checks should be passing before we merge.
+727147388-11657-nu	This is a breaking change, no?
+767204411-11650-nu	I don't think you know that but we have prettier configured in the root project.\r\n\r\nWe should format with prettier every new code section.\r\n\r\nWe don't format everything because it was going to cause a huge diff but new code sections should follow the new prettier format 😉 
+930558489-11650-nu	I don't think I fully understand the question and the comment as well. Could you clarify what needs to be defined here?
+924190487-11638-nu	Looks like `tools/tests/cordova-builds.js` will need some review as well.
+910984107-11615-nu	@brucejo75 last changes like this are dangerous, make sure you test these changes properly 😉
+700268630-11614-nu	are you sure this works for cordova? I saw this code and it might seem we are defaulting to legacy always on cordova.
+700433911-11614-nu	Yes that is correct this is not Cordova, for various reasons we end up hosting a webview inside of our app that points to our Meteor app. It is for sure a weird edge case that is not too common, but this change definitely matches reality more since the WKWebview is completely a modern browser.
+751509951-11614-nu	If it's not targeting Cordova, that's fine!
+919599284-11614-nu	I did end up noticing that some ipads use the user agent that resolves to appleMail. So I ended up defining its minimum version too, but it is not an alias to these other ones since its version is like 600+    Not sure what the right thing to do in the meteor repro is, but i just added added a minimumBrowserVersion call in my code to make sure it is marked as modern.
+761860993-11602-nu	Mostly issues with comments. Also missing history entry. `accounts-base` and `accounts-password` will require patch release. If I understood the code correctly we could split changes to those two packages up into a separate PR and release that pretty much immediately.
+714686870-11602-nu	Just use `3600000` no need to perform calculations for something so basic that doesn't change.
+717078213-11602-nu	Big numbers usually are represented like this so it's easier to understand, you can see many places like this in our codebase and in general as well.
+717543595-11602-nu	Yes, I know. But I think that could be solved by a comment and no need to process math when it isn't needed. Just a suggestion.
+718754414-11602-nu	I think the name of the const provides all the info for readability that is needed. :man_shrugging:
+906730992-11590-nu	It's working fine on MacOS as well.
+696958917-11590-nu	It seems this message is sometimes printed on top of a progress bar:\r\n![image](https://user-images.githubusercontent.com/8175744/131032132-427df9be-af88-4564-9e03-789b164727cb.png)
+696970610-11590-nu	I'm curious why we are using the native tar instead of 7zip here.
+908344430-11590-nu	When using npm installer on Linux an error appears:\r\n```\r\nLOCALAPPDATA env var is not set\r\n```\r\nI thought this env was only for Windows users...
+897073817-11580-nu	The issue with babel-parser is fixed in this PR, I just tested it. Thank you!
+687767605-11580-nu	Was this just breaking tests and not actual code?
+881716564-11545-nu	Hi, these changes are affecting the app load on iOS and Android, at least in the simulator/emulator the app is not loading.\r\n\r\nAfter the splash screen I just get a blank screen. Running with Meteor 2.3.2 it works fine.
+671641802-11545-nu	I think we should start using Logging package for log output.
+871475519-11506-nu	@brucejo75 thanks for the extensive description! It is not something I have personally a use case for, but I'll take a look at it after 2.3.1 release. Right now considering this for inclusion in 2.4.
+875907485-11506-nu	@brucejo75 to be clear, my long feedback here was just to provide more background on how I'm solving this problem in a different way.\r\n\r\nYour changes are going in a good direction, you can proceed with this PR, please provide the changes that I asked in the code review.
+703415104-11506-nu	Thanks for the updates. I just rerun it on CircleCI now.
+675948084-11480-nu	@filipenevola belated thanks for sorting that out. For some reason, when I tested with our MySQL-based publications, they  worked in async mode without the bind().
+651005537-11478-nu	I think it would be better to use `Console.success` here to make it clear that the process has finished.
+651008850-11478-nu	We are using error, but let's shelve this for a bigger overview then.
+850329106-11445-nu	@vlasky Better to keep it separate so that it is easier to review and hence quicker to merge unless you want it to supersede this PR.
+846981277-11445-nu	Looks good to me. Can you also create a PR for the documentation?
+637726926-11444-nu	Such a change will make **all** publications async, which I think is not desired. The solution would be to either use `Promise.await` (but that relies on fibers), or use an optionally-asynchronous `then` (like the one I made [here](https://github.com/vazco/uniforms/blob/master/packages/uniforms/src/ValidatedForm.tsx#L185-L194), but without the `callIfAsync` option).\r\n\r\nThe type signature of such a `then` function is:\r\n```ts\r\nfunction then<T, U>(value: Promise<T>, fn: (value: T) => U): Promise<U>;\r\nfunction then<T, U>(value: T, fn: (value: T) => U): U;\r\n```
+53663565-11395-nu	This removal causes conflicts with `mrt:soundcloud`
+53666676-11395-nu	Absolutely agree -- was just leaving a note here as more of an FYI. I've created a patched version in my packages folder that uses `OAuth.launchLogin` instead.
+825172291-11374-nu	@mikekibz59 Making a good progress on this! I think we will be able to merge this soon!
+841130974-11374-nu	@mikekibz59 I think it is fine in this branch if it makes things better. I would say go ahead and we will then review once you are done.
+643820837-11374-nu	Shouldn't the code to determine the message follow here, or am I missing something here?
+742036753-11244-nu	Thanks @tchiers, as your changes are in the meteor tool they will be available in the next version of Meteor.
+772892489-11208-nu	Great work!\r\nHow can I help in getting this production ready?
+570408830-11208-nu	Is it a downgrade @costinelmarin? if we don't have a strong reason to downgrade, we probably should not.
+570412326-11208-nu	why wasn't it working? maybe we have another solution.
+503269731-11202-nu	Excellent solution, thanks Filipe! In my tests this solves my issue without breaking the original issue.\r\n\r\nI'm approving because the only comments are about the logs
+486859954-11165-nu	This is great, just a small suggestion to avoid repetition.
+513820420-11165-nu	You can use `Console.noWrap` to not wrap the text: https://github.com/meteor/meteor/blob/5b5114979d05d0ce7cc5010bb68fd16725de35a3/tools/console/console.js#L23-L30
+723462551-11162-nu	Hi @StorytellerCZ I support this idea.\r\n\r\nAre you using this in a package already? It would be useful to already have a working example here in this PR
+621251641-11162-nu	I'm waiting the docs PR to review everything together.
+806941598-11162-nu	Hi @StorytellerCZ I would like to see the docs PR so I can test your changes, ok?\r\n\r\nI also want to be sure that this deprecated flag is available on Troposphere db so we can expose it on Atmosphere 😉
+811180892-11162-nu	I'm adding these fields to troposphere database as well.
+450700751-11119-nu	I'm ok moving forward with this version but we have many different ways to integrate with Apollo, in my projects I don't use like this. But I'm ok with this approach.\r\n\r\nI'm still torn between examples or more skeletons, this case seems to be more a example than a skeleton as you are selecting React already as the view layer. For Cordova, as I'm making a lot of choices as well, I'm going with example https://github.com/meteor/meteor/pull/11072\r\n\r\nWhat do you think?
+869574178-11118-nu	We had a lot of handling added in our app to manage that race condition that the other fields are not yet available for the UI to check. Thanks for this, @menelike.
+443049952-11105-nu	LGTM, I just suggested a small adjustment and also we need a PR against the docs documenting these options, ok? Link the Docs PR here as well.
+446632265-11105-nu	You can use optional chaining, it’s built in feature for meteor
+452070088-11105-nu	Do note that this also means you should not use const & let etc.
+445423494-11105-nu	Since Meteor supports browsers that don't support const & let and this package's code doesn't get transpiled. You should stick to var.
+713475241-11105-nu	This works like a charm. After 2 years, I can finally remove my `dynamic-import` monkeypatch. Thanks @leonardoventurini !
+443423252-11100-nu	MongoDB 4.4 is in the release candidate stage at the moment, so maybe we should wait until 4.4 is released
+444472252-11100-nu	Ok, that makes sense. However, I currently don't have access to a computer that is fast enough to build MongoDB in a reasonable amount of time. 😄 @filipenevola Does Meteor have a build farm or Linux VM that we can use to build MongoDB?
+459989574-11100-nu	hi @klaussner we could add a job to our Jenkins 😉 \r\n\r\nI'm trying first locally but it is failing here \r\n\r\n```\r\nerror pulling image configuration: Get https://production.cloudflare.docker.com/registry-v2/docker/registry/v2/blobs/sha256/b5/b5b4d78bc90ccd15806443fb881e35b5ddba924e2f475c1071a38a3094c3081d/data?verify=1595591462-MRk%2BlaDsks9fpcIy4%2F6%2By8o2f0A%3D: Service Unavailable\r\n```\r\n\r\ndo you know if that is a temporary problem with docker registry or if we need to update something here?
+460441755-11100-nu	Looks like a temporary problem. If I run the container locally, it starts compiling.
+660133263-11100-nu	The MongoDB update I was already going to include on 1.10.3 so let's include these updates as well.
+663481190-11100-nu	I'm going to run the tests on 1.10.3 branch
+671614552-11100-nu	@wreiske thank you, we are using your version already 😉
+427737486-11066-nu	What about using the `logging` facility instead of standard console log?
+380462182-10969-nu	This looks good to me.\r\n\r\nThe synchronous write/rename is part of the initial work done when there's a cache miss, which gets amortized over time by all the future cache hits—as long as the cache is doing its job. Unless compilation times for cold-cache builds get noticeably worse because of this change, I'm fine with using the sync versions here.
+390581168-10960-nu	might be because `options` might be `null` and underscore is able to handle that?
+390962921-10960-nu	🤔 you're right... awesome PR btw, can't wait to use `arrayFilters` without  relying on `rawCollection()`, it's a bit awkward to bypass Meteor collection when using `redis-oplog`
+591058448-10929-nu	@BrianMulhall Just run\r\n```\r\ngit submodule update --init --recursive\r\n```\r\nand you should get the right `packages/non-core/blaze` code. Shouldn't be related to these changes in any way.
+591060657-10929-nu	@BrianMulhall On second thought, I'm happy to jump in and wrap up these last few things, if you like. You've done all the interesting work already, and what's left is mostly just process stuff.
+364453138-10929-nu	Ok, assuming the tests pass, this looks good to me!

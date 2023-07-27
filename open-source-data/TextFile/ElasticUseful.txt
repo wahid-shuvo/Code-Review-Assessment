@@ -1,0 +1,62 @@
+80665	We are blowing away the task here with jobTask.markAsFailed(e);So, does it make sense to also stopAssociatedDatafeedForFailedJob(jobTask.getJobId()); when we failed to set the job to failed?Otherwise, we have a datafeed task around but the job task is gone.
+80665	What do you think of auditing a failure to stop?TransportStopDatafeedAction already audits on stop success. I am just wondering if we should alert the user of a weird state.
+80624	I think the resolveRouting(...) method can now also be removed from IndexRequest class? (looks this was the only usage).
+80624	Why not add DocWriteRequest.process() too to avoid the if here?
+80617	We should actually just replace this with versions.getProperty('jna') to avoid having this duplicated in two places.
+80617	If we leverage versions in the reference build script instead we can ditch this comment since updating it here will update the build script as well.
+80540	I think the % here is unnecessary, we can just check for >=, since we reset when submitting the batch
+80540	Can we also assert that no extra request is sent/received when pendingDeletes.get() == 0?
+80532	Does this mean it will be set to the largest size that could be assigned in the cluster capped at 1024mb?
+80524	I wondering if this should even be in user facing documentation at all.
+80493	Can we also assert that a key is interned? Could just check that the key on index1 is the same as on index2.
+80493	I mainly found it illogical that we do not fully build the parameters for the constructor in the build method like we normally do. I would still prefer it the other way around, but can accept it residing here for now.I am not sure I found a place where getByPrefix needs this, they all look like "get and throw away" style lookups, perhaps you have a specific case. Even if there are such cases, it seems unnecessary to go through the lists once more when all we need is interned keys in that case.
+80475	I think we can take this further, let's have two static final values here, FIELD_DATA_ENABLED and FIELD_DATA_DISABLED, with a static selector method that returns either one of them, and keep the constructor private so that we only ever use these two instances.
+80475	Ah, you're quite right, it's an updateable setting. Can we still rename DISABLED no NO_FIELD_DATA or something similar to make it clear that we're not disabling the whole mapper?
+80450	Can we please log the timezone and the interval in the exception message if this happens? This way if we have missed a case that we are not aware of we'll at least be able to debug it. Perhaps a logger warning too?
+80450	I wonder if we can make this constant a field that can be modified with the builder which defaults to 5000? That way we can write a unit test that ensures we correctly throw the exception in case the loop limit is reached.
+80450	This is changing behaviour and it's unclear to me how we end up in this state. I'd be concerned that a customer is successfully getting a date now, where their application will effectively break after this change? Is there a way to reproduce this with a unit test? If not maybe we can take the approach to log an error/warning and retain the existing behaviour of returning a value?
+80439	The model definition part number or document ID from the search would be useful in this message for debugging
+80439	nit: Set.of(requiredSourceFields) can be lifted out of the for loop so it is created everytime
+80439	What if there are > 100 definition docs? The summed sizes will never equal expected total.
+80439	The reason for making this change is not clear to me. We expect the definition to be base64 encoded, Java UTF-16 characters require 2 bytes to store each base64 character whereas the raw bytes (given UFT-8 encoding) will use half that space.
+80406	I think we can remove the JsonNode usage here as well? And use XContentMapValues ?
+80406	Maybe instead of wrapping multiple if statements, maybe do this:if (flushEnabled.get()) {   return;}if (event.metadataChanged() == false) {   return;}// rest of the codeI think this is more readable
+80406	Why is databind being used here? I believe in mast of the rest integration test we use XContentMapValues, could that be used here as well?
+80378	I think this short paragraph is sufficient. We do something similar in the EQL async search API docs. I wouldn't go through the hassle of tagging and including each response body field.We may want to include a short bulleted list detailing any differences. For example, hits means something different for kNN.
+80378	I think asciidoc requires an empty line to render this correctly.
+80378	May be a better way to phrase it would be something like: "returns top K documents as found by k-nearest search".
+80378	I'd include the acronym whenever we spell out k-nearest neighbor. I also don't think we need returns matching documents, but it's fine if you want to keep it.
+80378	Not a huge deal, but I'd consider moving the last sentence into the knn.field param definition. It's sort of a requirement for that param.I overlooked this in dense vector docs PR, but it may be good to note there that the index parameter isn't dynamic/updateable.
+80378	May be we can add that query_vector must have the same dims as an indexed field it searches against. Although it is also kind of obvious, so not sure if it is worth to add.
+80378	We don't really describe the high-level process for gathering candidates from each shard and then collating the results. IIUC that and HSNW are the two main factors that can affect accuracy.Should we mention that in the API description or save it for the high-level guide?
+80378	I agree with @jrodewig it would be nice to add more details here how this num_candidates works, for example: "{es} collects from each shard the top num_candidates results, and then merges collected from the shards results to get the top k results. Increasing num_candidates tends to improve the accuracy of the final k results..."
+80378	I'd specifically mention search API here as we have a number of search-related APIs now.
+80378	May be a better way to phrase it would be something like: "returns top K documents as found by k-nearest search".
+80378	// TEST[setup:my_index], adding to @jrodewig, also looks like the index name is different.
+80378	May be we can add that query_vector must have the same dims as an indexed field it searches against. Although it is also kind of obvious, so not sure if it is worth to add.
+80378	I agree with @jrodewig it would be nice to add more details here how this num_candidates works, for example: "{es} collects from each shard the top num_candidates results, and then merges collected from the shards results to get the top k results. Increasing num_candidates tends to improve the accuracy of the final k results..."
+80378	Is it something that we forbid explicitly ? I didn't test but it should work transparently since we use the search action internally.
+80378	IMO we're protected by the experimental status. CCS works out of the box and there's nothing that prevents us from removing the support later on. I don't see why we would though so I am not sure we need the NOTE at the moment.
+80375	Certificates and keys are not printed to the terminal , only the password for elastic user and the enrolment token of Kibana
+80375	Let’s remove this section entirely. The reconfigure tool is meant to be used only for packaged installations. The use case doesn’t apply to archiv
+80375	A word is missing here ? “is as a” reads strange
+80346	Did you intend to uncomment randomBoolean()?
+80336	Since these are exactly the same strings, it's difficult to tell whether the merging actually happened in the right order from this test. Could you change one of the formats?
+80306	should dot_product -> cosine_similarity?
+80306	This puts the valid values in a collapsible section that defaults to open. Also adds a matching asterisk for "Required."
+80306	I think we should update the other field types to remove the [horizontal] attribute and use formatting similar to the parameter definitions in our API docs.I left a few comments to:Add collapsible sections for nested value/properties.Add required and data type for each parameter.
+80306	I think we should mention this in the index_options definition and remove the snippet here.
+80306	Adds required and data type. We mark parameters required in some situations with an asterisk.
+80306	Adds a collapsible section + required and data type.
+80306	I think this got lost or I forgot to suggest it, but this closes the collapsible section. This should fix the broken docs CI test.
+80286	You can use Map.of() here Or maybe this should be a method on NumericType: fielddataBuilder(String name)?
+80286	Or maybe this should be a method on NumericType: fielddataBuilder(String name)?
+80286	Can you add some javadocs to give an idea of what this is used for?
+80286	Tiny comment, maybe better to supply a non-null ScriptField that throws UnsupportedOperationException?
+80286	Is this always BooleanDocValuesField::new? In which case we can probably get away without having a field here?
+80286	Maybe getFieldDataBuilder to distinguish it from the various other Builder classes we have floating around
+80282	Sorry, I think I misspoke in my earlier comment. What I meant to say is that multiplying the avg_inference_time with the inference_count per node and then dividing that with the number of nodes won't give us a correct measurement. We'd need to divide with the sum of inference_count. So, if we want this stat we need to calculate it manually.
+80268	We don't need to introduce this new type check here.
+80267	Its possible that bert: {} is provided, so truncate would be null and then throw an NPE when you call .toString()
+80253	This part right here seems off. Perhaps accidentally committed? WIP that was meant to be removed?
+80253	Little wording/formatting nit -- maybe "on headers [HeaderA, HeaderB, HeaderC]"? What do you think?

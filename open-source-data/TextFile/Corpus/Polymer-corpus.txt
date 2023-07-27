@@ -1,0 +1,213 @@
+387411524-5640-u	Setting of `__limit` here makes this hard to grok. Consider instead moving this to `__updateLimit`. If a test needs to manually modify `__limit` perhaps it can also modify the behavior of `__updateLimit` as needed.
+382848107-5632-u	Consider only storing if items changed and checking `reuseChunkedInstances` when rendering.
+382845416-5632-u	Consider refactoring `render` so that the tasks are:\r\n* sort and filter\r\n* update limit (chunking)\r\n* perform render/update\r\n* completion
+382763466-5630-u	Why is it ok to drop the passed in `changedProps` here? (The next section is only for `hasPaths`.
+382765873-5630-u	The non-fast case stores `__invalidProps` on the dom-if. Why is that ok if this must be changed?
+333096633-5595-u	Given that the spec is now somewhat in question re: frozen array vs. mutation APIs, would it make sense to try and make this test as defensive as possible in case they end up changing it and need to deprecate the ability to assign an array?  I don't know exactly what it'd be but maybe something like \r\n```js\r\nconst testSheet = new ConstructableStylesheet();\r\ntry { document.adoptedStylesheets = [testSheet]; } catch (e) { }\r\nsupportsAdoptingStyleSheets = supportsAdoptingStyleSheets && \r\n  document.adoptedStylesheets[0] === testSheet;\r\n```\r\n(maybe made safe to allow having set some before)?\r\n\r\nIf so, might also consider making this change to LitElement's detection.
+327344850-5591-u	Add comment about why this needs wrap (flushing)
+320523162-5587-u	Let's name these to reflect the nesting.
+320524133-5587-u	Let's rename these to reflect the nesting.
+318345361-5586-u	I think you need all these to avoid a diff:\r\n```js\r\n/** @type {TemplateInfo | undefined} */\r\nTemplateInfo.prototype.nextSibling;\r\n/** @type {TemplateInfo | undefined} */\r\nTemplateInfo.prototype.previousSibling;\r\n/** @type {TemplateInfo | undefined} */\r\nTemplateInfo.prototype.firstChild;\r\n/** @type {TemplateInfo | undefined} */\r\nTemplateInfo.prototype.parent;\r\n```
+308984065-5577-u	`placeholder` attribute is removed when the binding is processed
+308985397-5577-u	When the template is stamped and the `textarea.textContent` binding is processed, no corresponding node is found because it was removed during parsing. An exception is generated when this binding is updated.
+308986351-5577-u	When `legacyOptimizations` is not used, the template is cloned before processing and this changes the above behavior. The cloned template also has a `value` property set to the `placeholder` and `textContent`. This prevents the removal of the `textContent` when the `placeholder` attribute is removed. Therefore the exception does not occur. There's an extra unnecessary binding.
+308986831-5577-u	Suggest refactoring to `fixPlaceholder` and apply the fix.
+304168116-5570-u	Normally we would never get here, since this is normally called from `connectedCallback` and that also has a gate. However `Templatizer` boots up trees of elements by forcing `_enableUpgrade` on them, even if they're not connected (since booting elements out of the tree has shown to be performance positive). Worth a comment.
+304168276-5570-u	Using `this. __isUpgradeDisabled` might read more clearly.
+304168983-5570-u	Need a `wrap` and test for removing `disable-upgrade` out of the tree.
+304172760-5570-u	This is a lot of duplicated code; would be ideal to see if just using the mixin in `GenerateClassFromInfo` affects perf, and if not factor it so it can be used.
+316913847-5570-u	Why is this change needed? It may be better in general, but it's unclear why it's required.
+295392356-5560-u	This is pretty complex. I think it needs factoring or at least some comments to make it clear what's happening.
+295414110-5560-u	Needs comments explaining how/why the method of sync'ing is different.
+295420444-5560-u	Consider if we want to avoid making this function for every property change.
+295422183-5560-u	If this template `wasPreBound`, can we just return early?     It seems like you can set `__templateInfo` not based on `instanceBinding`?
+295429348-5560-u	Add comments about what is happening here. Specifically, if the `templateInfo` has a parent, it's moved to the `lastChild`. Why?
+299217749-5560-u	Let's add a comment about how it's important that the parent is not unlinked.
+299220544-5560-u	So, is this making the `<dom-if>` have a `templateInfo` pointing to this template's info? I think this is probably complex enough that seeding comments step-by-step here, might be good.
+299221553-5560-u	Add a note about why this is only done for `dom-if`?
+299224150-5560-u	Where is the `parent` originally set?
+299224747-5560-u	When can `nodeInfo.noted` be set?
+299225209-5560-u	I thought `_parseTemplate` memo-ized so why do we have to pass this in?
+299225615-5560-u	Fix typo `useCemoveNestedTemplates` => `useRemoveNestedTemplates`
+299245754-5560-u	Fix the caching by setting `templateInfo.templatizeTemplateClass = klass`
+301246437-5560-u	How is `__squelchedRunEffects` guaranteed to exist here?
+283068027-5540-u	Let's add a comment here explaining that cloning the attribute node like this allows attributes with invalid characters to be moved.
+283068735-5540-u	Doesn't the content have a `name$` attribute also in this case? It seems like we should remove that. It also seems like we should remove the `name` attribute in the case above.
+283068965-5540-u	It'd be nice not to duplicate the fixup here with the same above.
+282275284-5537-u	Let's add a note about when this is needed: only when ShadyDOM is used and unpatched DOM APIs are used in third party code. This can happen in noPatch mode or when specialized APIs like ranges or tables are used to mutate DOM.
+282275491-5537-u	Let's remove this. Then we can handle cases like Ranges where the DOM is unpatched in ShadyDOM.
+282275862-5537-u	To match Polymer 1 behavior, we should use native querySelector: `ShadyDOM.nativeMethods.querySelectorAll.call(node, ...)`
+278763890-5530-u	Can you add a test please? Thanks.
+274188322-5520-u	Let's add a comment here or perhaps just in the doc for the function explaining what this does so it's clear why it's only related to `hostProps`.
+263565628-5508-u	Add a comment that part of the test is that this doesn't throw. Also assert that this runs.
+262750883-5504-u	Why not use an `in` check instead of treating `undefined` specially.
+262214929-5501-u	Comment on why why `__dataPending` is needed.
+262218065-5501-u	Can we use `hasPaths` to avoid calling `pathMatchesTrigger`?
+262216955-5501-u	Comment about why the `info.dynamicFn` branch is here.
+262218354-5501-u	Add comment about how this prevents computed properties from executing more than once per turn.
+262219345-5501-u	Why did this need to be added?
+262220330-5501-u	Did you consider instead capturing the argument values before computing dependencies and comparing those explicitly?
+261026718-5499-u	Add comment about what this does to flush ordering.
+261001665-5499-u	Let's add a test that checks flush order when debouncers are re-enqueued.
+261026718-5499-u	Add comment about what this does to flush ordering.
+258753883-5497-u	Add a comment about why this is necessary.
+258755310-5497-u	Add `return false` here since no extra work is needed after this.
+258755737-5497-u	add  " and also triggers `_flushProperties` and `_propagatePropertyChanges` down the tree."
+258756399-5497-u	Add a note about how  all property getters will return undefined by virtue of resetting `__data`
+258759065-5497-u	In 1.x notifications where handled after the "config." We could do this here by capturing `__data` before propagating and playing through those props first and then the notifying props.
+258759444-5497-u	Add a comment about why we're not using `runComputedEffects` here.
+261021114-5495-u	Was this change intentional? It causes an error `@export is not supported on this expression.`
+262767959-5495-u	But why do we need this at all? What's wrong wrong with `getStyle()` and the `@export` we already have?
+258271083-5494-u	Let's add some comments about these special cases.
+258398703-5489-u	Can you add some backstory in a comment about why this appears as such a special case?    It's not a made-up `Polymer.dom` thing, but it also never needed a Shady DOM patch?  Why was it on 1.x's `Polymer.dom` then?
+254139901-5480-u	`@license` must be the last jsdoc tag in a comment, as it consumes all subsequent text
+253135566-5476-u	So we want to pull the live value here, but we fall back to the stored value in `props` for `splices`. Adding a specific check for `splices` would be best but might be a performance hit. What if we take the value in `props` only if it is not `=== undefined`? This allows the live value to be undefined which it sometimes can be.
+199178232-5474-u	Let's consider also warning if a user tries to change `readOnly` or `reflectToAttribute` or `notify`.\r\n\r\nWe should remove the [doc line](https://github.com/Polymer/polymer/blob/master/lib/mixins/element-mixin.js#L198) about \"consider adding warnings\" since we are doing that here.
+253680992-5474-u	Using `dynamicFns` here seems a bit abusive since there's no guarantee this is connected to `observedAttributes`. One alternative would be to override this in `element-mixin` and use `this._properties`.
+252344290-5472-u	Nit: `idx` can be in the other string.
+230701033-5424-u	I think this would break our TS compilation. See recent PRs to tackle this.
+229858294-5418-u	Rather than putting this on `window`, shouldn't we put this in the `Polymer.Settings` object?
+229858784-5418-u	Can we not remove these assertions or are they regressions? Are they a breaking change for our users?
+229859078-5418-u	This also seems like a regression to me. Are we sure users will not run into any breaking changes?
+230986331-5418-u	Since these are all lifecycle-related, maybe `__behaviorCallbacks` would be better than something with "props" in it, since that's sort of overloaded with all the data stuff.
+230986434-5418-u	Consider adding info.<lifecycle> from the base info to the list?
+230987016-5418-u	It seemed like a possible optimization to skip the `mergeProperties` step from the base info object into an empty object; it seems superfulous for the initial class -- but then I realized this was required for the `computed` to `readOnly` coersion and the shorthand type expansion.  So that was not intuitive, maybe due to the naming?  Suggest different name or at least a comment.
+230989569-5418-u	There's a bug here where the full flattened list of lifecycle callbacks is called once per call to `GenerateClassFromInfo`, which happens each time `mixinBehaviors` is called.    Instead, store the list of callbacks in the closure for one set of behaviors associated with each call to `GenerateClassFromInfo`.
+230989807-5418-u	This is just what's in the closure, i.e.  `if (behaviors) {`
+230991954-5418-u	Naming of these is confusing.  Consider "memoized" --> "filtered"
+217887696-5359-u	Prefer `unknown` over `{}` as `{}` is non-nullable. `T extends Array<unknown>`
+217898484-5359-u	{}|null|undefined is good.    You're right about `any`, I'd just like to avoid using it as much as possible.
+155728056-5359-u	LGTM. Just prefer using the unknown-like `{}|null|undefined` type
+217683022-5357-u	This lacks a return type. Please see the CI output for the full error. You can run `npm run generate-types` to locally run the same check.
+212050063-5340-u	I'd prefer to revert this internally instead, as it's already assigning to a const. This was due to a temporary hack we had.
+212397512-5339-u	Add comment briefly explaining the rules so it's clear that single argument observers are always called.
+212398663-5339-u	Suggest making the error use sentence casing and periods.
+212398899-5339-u	Seems like it would be more clear to loop over `vals`?
+212402619-5339-u	Shouldn't we also test inline template expressions that have multiple arguments?
+209379852-5320-u	This should be a check for `Element` to ensure the style property.
+209694107-5317-u	Although this change makes introspecting the version from a running page possible, it is fairly cumbersome:```jsimport('polymer-element.js').then(module => console.log(module.version));```And that only works if a build tool hasn't compiled modules into bundles or out altogether.I think it would be pretty useful to have e.g. a static getter on the `ElementMixin` return the version (in addition to a plain module export), so that it's more straightforward to introspect the version being used on a running from an element in the inspector```js\r\nconsole.log($0.constructor.polymerElementVersion);```nor e.g. from the registry: ```jsconsole.log(customElements.get('my-app').polymerElementVersion);```So perhaps the version can be exported from `element-mixin.js` instead of here, and returned from a new `static get polymerElementVersion() { return version; }` getter on the `ElementMixin`?  It could also be re-exported from `polymer-element.js` for convenience.
+206142059-5309-u	Oh, do you mind removing these?
+204605268-5301-u	Add `// eslint-disable-line no-unused-vars` at the end
+203560832-5295-u	Add comment that this can happen when managed children and the dom-if are removed via innerHTML'ing a common parent.
+203561743-5295-u	Add comment briefly to explain why this is important.
+203563110-5295-u	Note, should be able to take out the `|| this.prototype._template` as this is only relevant if a legacy element is subclassing another element which is not supported.
+203563708-5295-u	Only call `Polymer.DomModule.import` if `this.is` has a value and remove `this.is` check in conditional below.
+203565882-5295-u	Add a comment that this means templatized elements are not allowed without a host element (aka in the main document scope).
+203567308-5295-u	Use `window.uncaughtError` if possible.
+203568122-5295-u	Remove `&& el.shadowRoot.querySelector('#injected')` as it's enough to assert that the element does not have a shadowRoot when the template gets nulled due to 2x register.
+203568241-5295-u	Separate the creation of the `trusted-element` so an innerHTML error does not disrupt element creation.
+203568601-5295-u	Again, make element creation separate.
+203568706-5295-u	Again, only test that `el.shadowRoot` does not exist.
+204607378-5295-u	The "super" call should be last here
+204607484-5295-u	Add a test that tries to register the same module 3x.
+204607527-5295-u	Add a test that sets a template on a behavior.
+229907798-5295-u	The note inside this template says "should not be used" so it's confusing it's used here.    Since the behavior should set `_template` on the prototype, why isn't that preferred over the `dom-module`?
+197065466-5266-u	If I understand correctly, we are throwing an error here to break out of the control flow, as code later executed would erroneously run? If that is correct, maybe add a comment to make this explicit?
+197065919-5266-u	This would break if a mixin was passed in to this function. Therefore, I think the mixin should be optional and the mixin should be conditionally applied to this mixin.
+197066773-5266-u	To make this more uniform, make this the same as line 239. E.g. `el.two.callCount, 1`
+197188866-5266-u	If we want this error to have a meanifulful name this pattern should be followed https://azimi.me/2015/09/23/high-custom-error-class-es6.html  
+197190441-5266-u	can you drop this since it is empty?
+197193293-5266-u	This suite of tests has a lot of duplication I think we could do with some test helpers to significantly clean up the test implementation to make the code easier to maintain and easier to reason about.    
+187475459-5230-u	Maybe add a link to MDN/standard to the list where this is specified?
+186148146-5217-u	Why are we dropping 14 and 16, but not 15?
+186301259-5217-u	Regarding Edge 14, 15, 16 and 17, remember that the Edge version is (still) tied to the Windows 10 version installed and that in a corporate/enterprise environment, it's not uncommon that windows will be stuck in time because of company policies (e.g. we saw in our dev team, 3 machines with 3 different Edge versions and we were unable to bypass corporate IT policies to update the version).  Eventually, all versions will need to be supported or handled in some other way including in the documentation so developers will know what to expect. 
+182818341-5200-u	Why are all these tests removed?  The `fromStyle` ones seem to just be style module-related...
+179625669-5180-u	Please add reasoning.\r\n\r\n\\`this\\` is always in the instance in closure for some reason.
+178653815-5172-u	Can be just `module.assetpath`, as the condition already asserted for `module`
+178400941-5170-u	since dom-module isn't a mixin, why do we need to add the parameter? All the parameters should be optional from the implementation side, no?
+174862955-5153-u	Let's make this `assert.equal(el.shadowRoot, null)`
+171047016-5134-u	I'd add a note about why _this_ version (2.x) is on npm and what it's support is:\r\n\r\n\"Versions before 3.0 are also published to npm \"as-is\" and are generally unsupported. These packages are for advanced users who configure their own tooling to work around the differences between Bower and npm packages, like package folder layout.
+171035640-5125-u	Let's go ahead and just put this into `PropertyEffects`. It seems like it's only going to help and does no harm.
+172624483-5125-u	Let's add a comment in the code here explaining why we're doing this. The only way we see a capital letter here is if the attr has a capital letter in it per spec. In this case, to make sure this binding works, we go ahead and make the binding to the attribute.    We should also add something simplified about this to the doc.
+167358708-5110-u	So, `this.mutableData` is never used in `MutableData`, only `OptionalMutableData` (`MutableData` doesn't have a switch and always calls `mutablePropertyChange` with its `mutableData` arg set to `true`).    So it looks like this line is altogether unnecessary.  The blame shows it being added to help closure understand property types, but it must have been made in error; I don't see the closure warning count change my removing it, so I'd suggest just updating the PR to remove it altogether.
+166785851-5097-u	Just a thought re: memory: should we be zeroing out `__dataOld` here, to so that the previous turn's worth of changed data can be gc'ed?  It currently gets reset on first change in new turn [here](https://github.com/Polymer/polymer/pull/5097/files#diff-980fcce29657756129c5008e85181523R271)
+164603621-5068-u	I imagine we probably need `JSCompiler_renameProperty` for `properties`, don't we?
+91500531-5059-u	Hm I actually think this was intentional as we do not reassign to parameters of a function. However, this is more readable. So let's add a first line: `let actualFn = fn;`. Then reassign `actualFn` inside the condition.
+163337583-5051-u	For simplicity, let's just check if `arguments.length ==2`
+162455643-5050-u	Let's remove or explain why we're not testing this.
+162456066-5050-u	Let's try adding Edge 16
+161784206-5048-u	This should be `function() { return [...]; }`
+163347472-5035-u	Let's add a comment saying that passing in a prop in `props` that has the same name as a bound host prop may shadow it. This is considered a user error (warn?). We should add this to the docs too.
+160816101-5034-u	Should be `!NodeList<!Element>` no?
+164542813-5023-u	@sorvell Was this class intended to be committed in this PR? If so, we need some docs on what it actually does and how we can use it (assuming you used it to measure the performance of the changes in this PR).
+87315273-5003-u	LGTM, but can you also add the closure externs?
+157933428-5000-u	`Object` is nullable by default, so don't need the `?`.
+157933624-5000-u	`Node` and `Event` are nullable by default, so don't need the `?`.
+158119647-5000-u	Should this be `function(!Event):void`?
+157319824-4997-u	Add  `@param {?string} old`  `@param {?string} value`
+157320039-4994-u	Where is `this.__dataEnabled` coming from? I do not see it referenced anywhere.
+159287191-4993-u	If the sibling was removed (e.g. due to `dom-if` going false) then the slot would never come back.\r\n\r\nMay be better to replaceChild with a non-slot?
+92332754-4993-u	Looking at this again, it makes more sense to me. Echoing @kevinpschaaf comment regarding the sibling. Not sure how we can handle that. We somehow have to keep track of where we were in the tree and insert it there. Replacing with non-slot and hide that seems like a 👌 solution
+154810600-4971-u	I think this should be `String(value)` - that'll handle `null`, `undefined`, and matches the template literal spec, afaik
+154810960-4971-u	`instanceof Element`? `Element` has `innerHTML` I think.
+154811111-4971-u	Should this really be `innerHTML`? Seems like we want `innerHTML` for template for sure, but for other elements I'd think we'd want `outerHTML`. That might be a case for _only_ supporting templates.
+154812301-4971-u	I think we should only support `HTMLTemplateElement`'s `innerHTML` and String interpolation.
+154814091-4971-u	Justin convinced me we shouldn't do this; let's go with just HTMLTemplateElement's innerHTML or cast to string.
+155102892-4971-u	Actually, the String cast is unnecessary since you'll get the same behavior during concatenation.  So it's really just `value instanceof HTMLTemplateElement ? value.innerHTML : value;`
+155102071-4971-u	I think we decided to bundle the `html` tag function with the entry points, so that in modules a user can do e.g. `import {Element, html} from 'polymer-element.js';` as a convenience.    So, let's remove the import here, and add it to the two main end-user entry points (`polymer.html` and `polymer-element.html`).  In those, add `Polymer.html = Polymer.html;` so that modulizer adds exports for the `html` function from those.
+153965363-4964-u	Add test for `#target:dir(rtl)`, since this is actually the correct selector for what people will typically want.    Need to make sure users are writing `:dir()` as a compound selector, not a descendant selector.  cc @arthurevans @sorvell @bicknellr @valdrinkoshi 
+387403233-5640-nu	Why was this moved?
+382826782-5632-nu	Did you consider chunking the update work and making this behavior non-optional?
+382760124-5630-nu	Think it's more readable to put the positive case first.
+382848764-5630-nu	sorry, this is the only case, ignore.
+333098174-5595-nu	Is this just `styling-scoped.html`, with the flag turned on and `@apply` removed?
+319323880-5587-nu	It looks like the templateInfo can be its own parent, which is weird. Can we avoid this by just changing `applyTemplateInfo` to set `parent` directly instead of `_parentTemplateInfo`?
+304170260-5570-nu	The unconditional `@implements {Polymer_DirMixin}` annotation _should_ be fine here?
+295416014-5560-nu	Does this need to be on the instance and could we remove it if not?
+299244790-5560-nu	Bookmark: it seems like we could potentially not create accessors for these and instead mark them as having accessors so `setPendingProperty` is used and then we wouldn't have to remove the value here.
+301239943-5560-nu	We're calling `_showHideChildren` here when it previously was not called (`if == false` and `restamp == true`), is that intentional? Seems like it means implementations have to check if there is an instance?
+301245366-5560-nu	What happens to the previous version of this if this happens more than 1x?
+301247186-5560-nu	This appears to be identical in both subclasses. Can it just be implemented here?
+301248498-5560-nu	Does this implementation really need to be in the subclasses? It's almost identical.
+301803091-5560-nu	Is it safer to set this first?
+233732342-5533-nu	I am okay for this. Let's see what the others say before merging.
+274570549-5501-nu	What does `hasPaths` have to do with this?
+263093597-5495-nu	All of our internal users have `--generate_exports` enabled. We're also advocating for it to become enabled by default. So I think that's our preferred solution. Any reason you don't want to turn on the flag?
+263093597-5495-nu	All of our internal users have `--generate_exports` enabled. We're also advocating for it to become enabled by default. So I think that's our preferred solution. Any reason you don't want to turn on the flag?
+200796291-5480-nu	LGTM once the `@suppress` lines are moved above the` @licenense`s
+254424569-5452-nu	Not sure why this changed... revert? (And don't forget to remove the trailing semicolon for lint)
+254476799-5452-nu	Decided not to change since this was fine in closure.
+254475412-5452-nu	Order of operations is confusing, is this always guaranteed to coerce to a `[]`?    Maybe change last expression to a ternary?
+217898492-5359-nu	I see. That's really hard to typecheck!
+217887678-5359-nu	Why B|V and not just V?
+155716753-5359-nu	What do you think about putting these types in an importable file? Or, are these types importable? I guess they're using `export` so they shouldn't be global by default. How would  you  get these types, as a Polymer user?
+155456085-5357-nu	This SFTM, but I would like to have @aomarks take a look. Especially given the widespread usage of TypeScript internally in Google, it might encover some unforseen issues.
+421487038-5357-nu	Looks good, running some tests will ping when done.
+212400631-5339-nu	Can we just check the arguments here and avoid the need to try catch the error? Then you don't even need to expose `_marshalArgs`.
+213395493-5339-nu	Why not just put `LegacyDataMixin` on top of the user class?
+213395897-5339-nu	Did you consider altering this method to get the info needed to present a good error? I'm concerned that since the intension is to warn, but the code throws here, we're depending on catching that where it's called.
+213396813-5339-nu	Ok, disregard that. It's clear that we need to abort the effect of marshaling the arguments and throwing let's us do this.
+229911882-5303-nu	Why is this changed needed?
+229911949-5303-nu	Isn't it incorrect to do this if `this._template` is explicitly `null`?
+140803900-5301-nu	LGTM Can we maybe include the new types already since you issued a new update on the generator?
+203560709-5295-nu	Ensure this acts as expected when using the custom elements polyfill.
+399037619-5266-nu	Also the tests appear to fail on IE11, likely related to how it handles exceptions. And the latest version of shadydom appears to be now failing some of our tests. We have to look into these regressions separately.
+197190316-5266-nu	what is a bag? perhaps restate as a \"hash\" or key value collection of ...
+197192196-5266-nu	any reason why we are _ prefixing this prototype value?
+388885056-5230-nu	Once you're ready, let's make sure to merge this into `master` also.
+386892054-5217-nu	Done that, thanks. Lets see if that fixes the issue.
+374027314-5153-nu	So, follow up: With this fix, does any falsy value work, as originally documented, or does it have to be `null`?
+369000091-5134-nu	I think we can close https://github.com/Polymer/polymer/issues/4611 with this by explaining Polymer 2 on NPM is not supported?
+170777318-5124-nu	I get a 404 in `index.html` trying to load `components/iron-component-page/iron-component-page.html` when I try these instructions.    `iron-component-page` is not listed in `bower.json` anymore, which `index.html` relies on... is there some magic in `polymer serve` that is supposed to make that available, or do we just need to add it to `bower.json` `devDependencies`?
+165774763-5089-nu	This is good info.
+362297471-5068-nu	Is this the sort of fix that we could get a 2.4.1 release out of? Possibly soon?
+90935450-5051-nu	Just one little nit and then looks good.
+89127491-5048-nu	We generally keep it in one file if it concerns one feature. I think it is okay for now to keep it like this, to not overflow the tests directory.
+90228660-5048-nu	Implementation and test look good. We have to fix #5050 first and then we can merge this one
+90938962-5048-nu	Awesome fix, @MajorBreakfast and @michalsukupcak.  Thanks for the contribution.
+363522178-5039-nu	@azakus Is this PR mergeable with just the smoke test or would you like some unit tests for this one as well?
+163344535-5038-nu	It looks like `foo` will match in `a-foo`
+356087823-5025-nu	Hm, the glitch website itself does not seem to load in IE11 🤔
+356088039-5025-nu	Oh nvm. I can do "show live" and then open that link in IE11. Maybe worth mentioning in the guide as well?
+359895364-5025-nu	Hm it is seems to be working for me. It might have been a time bug in the matrix?
+92323228-5023-nu	We talked about this in our meeting. I am okay with this change, given that the `unsafeHTML` function will be provided soon too.\r\n\r\nP.S. build fails because you need to update the TypeScript types (this sadly also takes into account docs)
+164863388-5023-nu	It was an attempt to write less code, since both types can return their string value via `innerHTML`; fair that it's a bit short-cutty.
+356299120-5007-nu	Please process the feedback of https://github.com/Polymer/polymer/pull/5007#discussion_r159123572 and then this is good to be merged :smile: 
+85195071-5003-nu	Nice! Seems like a good simple way to do it.
+157933725-5000-nu	I wonder why we had these `@function` annotations... @justinfagnani do you know if these are important?
+158105739-5000-nu	Seems like a bug in polymer-analyzer.
+158119394-5000-nu	Not sure why it was annotated that way. I wonder if it had to do with the container being a namespace. It'd be good to run these annotation-changing PRs through doc generation.
+157933861-5000-nu	Oh, I guess those `@function` annotations were important!
+158118999-5000-nu	Is there a way to type this in Closure to simulate TypeScript overrides? Something like: `@type {(function(Node=):!DomApi)|(function(Event=):!EventApi)}`
+85049831-5000-nu	We are getting closer and closer to the correct types, nice!
+158267317-5000-nu	I think this can be just `:void`

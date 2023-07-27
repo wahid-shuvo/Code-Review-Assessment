@@ -1,0 +1,65 @@
+5640	Why was this moved?
+5632	Did you consider chunking the update work and making this behavior non-optional?
+5630	Think it's more readable to put the positive case first.
+5630	sorry, this is the only case, ignore.
+5595	Is this just styling-scoped.html, with the flag turned on and @apply removed?
+5587	It looks like the templateInfo can be its own parent, which is weird. Can we avoid this by just changing applyTemplateInfo to set parent directly instead of _parentTemplateInfo?
+5570	The unconditional @implements {Polymer_DirMixin} annotation should be fine here?
+5560	Does this need to be on the instance and could we remove it if not?
+5560	Bookmark: it seems like we could potentially not create accessors for these and instead mark them as having accessors so setPendingProperty is used and then we wouldn't have to remove the value here.
+5560	We're calling _showHideChildren here when it previously was not called (if == false and restamp == true), is that intentional? Seems like it means implementations have to check if there is an instance?
+5560	What happens to the previous version of this if this happens more than 1x?
+5560	This appears to be identical in both subclasses. Can it just be implemented here?
+5560	Does this implementation really need to be in the subclasses? It's almost identical.
+5560	Is it safer to set this first?
+5533	I am okay for this. Let's see what the others say before merging.
+5501	What does hasPaths have to do with this
+5495	All of our internal users have --generate_exports enabled. We're also advocating for it to become enabled by default. So I think that's our preferred solution. Any reason you don't want to turn on the flag?
+5495	, seems odd. I thought it was just a JS compiler pass. Maybe it's like JSCompiler_renameProperty and just requires any implementation of the functions that it generates, since the compiler replaces the call anyway?
+5480	LGTM once the @suppress lines are moved above the @licenenses
+5452	Not sure why this changed... revert? (And don't forget to remove the trailing semicolon for lint)
+5452	Decided not to change since this was fine in closure.
+5452	Order of operations is confusing, is this always guaranteed to coerce to a []?Maybe change last expression to a ternary?
+5359	I see. That's really hard to typecheck!
+5359	Why B|V and not just V?
+5359	What do you think about putting these types in an importable file? Or, are these types importable? I guess they're using export so they shouldn't be global by default. How would you get these types, as a Polymer user?
+5357	This SFTM, but I would like to have @aomarks take a look. Especially given the widespread usage of TypeScript internally in Google, it might encover some unforseen issues.
+5357	Looks good, running some tests will ping when done.
+5339	Can we just check the arguments here and avoid the need to try catch the error? Then you don't even need to expose _marshalArgs
+5339	Why not just put LegacyDataMixin on top of the user class?
+5339	Did you consider altering this method to get the info needed to present a good error? I'm concerned that since the intension is to warn, but the code throws here, we're depending on catching that where it's called.
+5339	Ok, disregard that. It's clear that we need to abort the effect of marshaling the arguments and throwing let's us do this.
+5303	Why is this changed needed?
+5303	Isn't it incorrect to do this if this._template is explicitly null?
+5301	LGTM Can we maybe include the new types already since you issued a new update on the generator?
+5295	Ensure this acts as expected when using the custom elements polyfill.
+5266	Also the tests appear to fail on IE11, likely related to how it handles exceptions. And the latest version of shadydom appears to be now failing some of our tests. We have to look into these regressions separately.
+5266	what is a bag? perhaps restate as a "hash" or key value collection of ..
+5266	any reason why we are _ prefixing this prototype value?
+5230	Once you're ready, let's make sure to merge this into master also.
+5217	Done that, thanks. Lets see if that fixes the issue.
+5153	So, follow up: With this fix, does any falsy value work, as originally documented, or does it have to be null?
+5134	I think we can close #4611 with this by explaining Polymer 2 on NPM is not supported?
+5124	I get a 404 in index.html trying to load components/iron-component-page/iron-component-page.html when I try these instructions.iron-component-page is not listed in bower.json anymore, which index.html relies on... is there some magic in polymer serve that is supposed to make that available, or do we just need to add it to bower.json devDependencies?
+5089	This is good info.
+5068	Is this the sort of fix that we could get a 2.4.1 release out of? Possibly soon?
+5051	Just one little nit and then looks good.
+5048	We generally keep it in one file if it concerns one feature. I think it is okay for now to keep it like this, to not overflow the tests directory.
+5048	Implementation and test look good. We have to fix #5050 first and then we can merge this one
+5048	Awesome fix, @MajorBreakfast and @michalsukupcak. Thanks for the contribution.
+5039	azakus Is this PR mergeable with just the smoke test or would you like some unit tests for this one as well?
+5038	It looks like foo will match in a-foo
+5025	Hm, the glitch website itself does not seem to load in IE11 🤔
+5025	Oh nvm. I can do "show live" and then open that link in IE11. Maybe worth mentioning in the guide as well?
+5025	Hm it is seems to be working for me. It might have been a time bug in the matrix?
+5023	We talked about this in our meeting. I am okay with this change, given that the unsafeHTML function will be provided soon too.P.S. build fails because you need to update the TypeScript types (this sadly also takes into account docs)
+5023	It was an attempt to write less code, since both types can return their string value via innerHTML; fair that it's a bit short-cutty.
+5007	Please process the feedback of #5007 (comment) and then this is good to be merged 😄
+5003	Nice! Seems like a good simple way to do it.
+5000	I wonder why we had these @function annotations... @justinfagnani do you know if these are important?
+5000	Seems like a bug in polymer-analyzer.
+5000	Not sure why it was annotated that way. I wonder if it had to do with the container being a namespace. It'd be good to run these annotation-changing PRs through doc generation.
+5000	Oh, I guess those @function annotations were important!
+5000	Is there a way to type this in Closure to simulate TypeScript overrides? Something like: @type {(function(Node=):!DomApi)|(function(Event=):!EventApi)}
+5000	We are getting closer and closer to the correct types, nice!
+5000	I think this can be just :void

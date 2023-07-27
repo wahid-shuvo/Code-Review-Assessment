@@ -1,0 +1,219 @@
+943736910-20115-u	This looks like a good fix, the new data makes it clearer what is going on.
+776423507-20088-u	Thanks, annoying complexity here with that value-based promotion/casting :(.  An obvious fix though, since it just extends the ugly logic from above.\r\n\r\nMy only comment is to try to be a bit more clear that this helper _only_ makes sense in the context of `np.result_type`
+726223544-20088-u	Maybe rename to `get_descr_from_cast_or_value`?  But not sure.
+726225624-20088-u	(I am tempted to overindent the arguments, but it is probably just me who does that...)
+726592422-20071-u	If these imports are unused they can be removed. The only imports that matter in the array_api are the ones in `__init__.py`.
+723891106-20061-u	Maybe   ```  When both ``x1`` and ``x2`` are of an integer type, equivalent to `numpy.true_divide`  ```
+723811792-20059-u	I wonder if `shutil.rmtree(output_dir, ignore_errors=True)` might be a bit more idiomatic? Avoid catching a generic `Exception`, take advantage of an API that was designed with the failure case (directory doesn't exist, etc.) in mind?
+723123128-20047-u	Additionally, I think you can show that `b.flags["WRITEABLE"]` is True before this line if you think it makes sense. 
+723125242-20047-u	The refguide check (and subsequently the build) is failing because it expects this:    ```  >>> b  array([3, 2, 3])  ```
+770257162-20019-u	The LGTM warning is a bit nitpicky in my opinion, but the proposed change looks fine.
+931337151-20004-u	The typo fixes look good, can you remove the .replit file this added? Thanks
+719465719-20004-u	`atleast` is a function name, so it should not be corrected. More precisely, it turns up as `atleast_(1d|2d|3d)`
+718735353-20000-u	Can you add the NumPy version in the message?  Just for completeness sake (could just be a parantheses at the end, I guess, like `(warning added in NumPy 1.22)`.  I know that most older warnings don't have it, but it is nice, I think.
+718752712-19997-u	```suggestion\r\n        \"\"\")\r\n```\r\nI don't see why this dedent should be necessary?\r\n\r\nBut otherwise, I am happy if this just goes in.
+719596078-19997-u	This part, which I assume leads to the doc change need, is confusing me slightly.  Anyway, I am happy with this, and OK with just putting this in as a step in the right direction in any case.  Are Pearu or Melissa following these f2py issues?
+718192264-19997-u	Ooops, blind replacement doesn't always work :).    I wonder if these shouldn't be 4 spaces rather than the tab character though, we don't really use hard-tabs anywhere.
+717812264-19992-u	This is a bit odd, having one blank line between methods is preferred.
+929994226-19992-u	The doucumented `nagfor` option is `-unsharedrts`, not `-unsharedf95`.
+717527066-19988-u	Should the other reference links be changed to include the page number?
+717549385-19988-u	Most of the references have a page number, just not in the link. The argument for making the fix now is that it will otherwise slip into the background and get lost.
+718104467-19978-u	It seems weird to assign `.r` to `clongdouble`? Unless you also add the `.r` on the right hand side?  The `+sizeof(npy_clongdouble)` seems just wrong?  (Would be nice to have a test that fails, but I know that is pushing it, probably...)
+928372874-19977-u	I suspect `clang-tidy` might be a problem. Why not run `clang-format -i <path-to-file>` ? It gives me better results than I see here.
+716924295-19969-u	I'm guessing this is a typo in the spec, since the spec never mentions None other than by the use of `Optional`. 
+716753765-19957-u	I'd actually suggest including a label for the f2py main documentation page and referencing it here: \r\n\r\n```suggestion\r\nThe interface definition file (.pyf) is how you can fine-tune the interface\r\nbetween Python and Fortran. There is decent documentation for f2py at\r\n:ref:`f2py`. There is also more information on using f2py (including how to use\r\nit to wrap C codes) at the `\"Interfacing With Other Languages\" heading of the\r\nSciPy Cookbook.\r\n<https://scipy-cookbook.readthedocs.io/items/idx_interfacing_with_other_languages.html>`_\r\n```\r\n\r\nand adding `.. _f2py:` to the top of `doc/source/f2py/index.rst`\r\n
+716105173-19953-u	Hmm. Don't know of one for sure, but it looks like line continuation works inside the quotes  ```  >>> """  ... Hello \  ... World  ... """  '\nHello World\n'  ```  The problem might be the indentation of the next line cannot be aligned with the opening "(", but that might not matter.
+715374938-19937-u	Not critical for this PR, but `Device` is currently defined as an alias for `Any`. Based on how it's used throughout the API implementation you should be able to narrow it down to a string-literal.\r\n\r\n``` diff\r\n- Device = typing.Any\r\n+ Device = typing.Literal[\"cpu\"]\r\n```
+714360584-19925-u	```suggestion\r\n```\r\nThanks, looks good, except that key is already being decref'd by the fail cleanup.
+713987519-19921-u	I think we should, yes. As a safeguard against forgetfulness I would recommend placing a note though:\r\n\r\n``` diff\r\n- delimitor=...,\r\n+ # NOTE: deprecated\r\n+ # delimitor=...,  \r\n```
+714008930-19921-u	It should be commented. `delimitor` is a (now-deprecated) alias for `delimiter`, a deprecation that we'd want to be treating as if it were completed in the stub file.
+924488982-19921-u	I suppose considering how exotic this function is, we can likely get away with changing it.  But it will have to be a proper deprecation then: give a deprecation warning (with a test), so that we can officially remove it in two versions.\r\n\r\n> in the style of numpy.deprecate()?\r\n\r\nYou can probably ignore that...  Just give a Deprecation warning, and end on a note about the current version of NumPy (1.22).  (You can search the code for `DEPRECATED` or `DeprecationWarning`, for examples I guess).
+713951638-19921-u	Might as well add the `, *,` to make this keyword only.
+713996959-19921-u	See https://github.com/numpy/numpy/pull/19921#discussion_r713987519 for a suggestion.\r\nThe usual approach with annotations and deprecations is to pretend that the deprecation has already been completed, _i.e._ as if the `delimitor` parameters has been removed in this particular case.
+714078544-19921-u	Unless you are tired of updating... we have to start somewhere to use the better versions for these things (`assert_deprecated` doesn't apply, this is a different file.)
+714830555-19921-u	I don't think this quite works.  Suppose I used `fromtextfile("a.txt", ",")`.  Then I will get a warning.  It is a real pain to do this completely correctly (I think it requires moving to *args, and **kwargs and then a lot of manual parsing.  You might simple add to the warning string when delimiter is not None that end users can use the keyword argument delimitor=value to silence the warning, since you don't know if they really misspelled it or not.
+714837019-19921-u	The only problem I see is if the user passes `delimitor=None`.  The solution to which is using `np._NoValue` rather than None?  I assume we have tests that would fail if `fromtextfile("a.txt", ",")` gave a spurious warning?
+713482808-19920-u	Personally, I would prefer spelling the "is" out.  Formal written out text should not normally use `'`?  The usable surprised me, but seems like generally the more typical spelling.
+713134085-19916-u	This shouldn't be needed, since with statements are in 2.7
+713223961-19916-u	Feel free to tweak the wording to whatever you think drives the point home, I wasn't able to make this as a suggestion on github.
+713113087-19911-u	This fix is wrong.  The work is not vacuum. It is essentially v_accum.
+713114273-19911-u	Please restore all vaccum to vaccum, or possibly change to v_accum.
+713263453-19911-u	I'm always weary of correcting variable names even if there is a typo, just my 2 cents here.
+712259067-19903-u	I think you removed this line by accident
+712305577-19893-u	Maybe "as well as the ``build_ext`` and  ``build_clib`` commands that are also ..."
+712377186-19893-u	Commas around "or simply contiguous arrays".    "refer to data stored rowwise"
+712404268-19893-u	"F2PY automatically generates as few ..., e.g., "
+712408610-19893-u	Replace "So" by "In such cases"
+712409023-19893-u	Replace "emitted" by "written"
+712409633-19893-u	Replace "printed" by "written"
+712410858-19893-u	Maybe a definition list?
+710517390-19884-u	```suggestion\r\n```\r\nDo we even need this?  If it isn't there, presumably the `get_path` doesn't use it?
+708613145-19869-u	By the looks of the array-subclass tests are also missing from the `nanmedian` test suite.  Might it be an idea to add this new test there as well?
+708437326-19869-u	Thanks for checking that. If `out` isn't used it would be best to remove it and document the assumptions about how the function should be used.
+707580548-19863-u	The `ids` look to be in reverse order here and below.
+704338453-19849-u	I have a feeling that Universal Functions is a \"proper name\" and should be capitalized, but I'd defer to a native English speaker to confirm... 
+704338688-19849-u	Similarly, I think Trac is a proper name and should be capitalized.
+704337111-19849-u	Any reason to remove this date?
+704339475-19849-u	I am mixed on this, Roadmap is usually capitalized everywhere I look... I don't have strong feelings either way but not sure about the sentence case rule here.
+749484254-19844-u	I can't review the technical details, so I'll leave that for others to look at. The only question I have is if the `core/include/numpy/multiarray_api.txt` file also needs to be updated to include the \"docstring\" for `PyArray_CopyObject`- I'm not sure what is the function of that file.
+913039333-19821-u	LGTM, couple of nits. I assume the main fix here is for the case of non-array objects being returned.
+701444157-19818-u	You should remove this line too
+701444296-19818-u	```suggestion\r\n    Union[int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64]\r\n```\r\nis identical but more readable.
+704858848-19814-u	Could you add a space after the colon for all of these?  Just to increase the chance that the user has it in there. 
+700911508-19814-u	I think markdown renders here?\r\n```suggestion\r\n    description: Output from `import sys, numpy; print(numpy.__version__, sys.version)`\r\n```
+749720331-19814-u	I would be happy to move forward with this and iterate more when we feel something else should be done.\r\n\r\nSciPy has a bit of additional text:\r\n```\r\nThank you for taking the time to file a bug report.\r\n\r\nBefore continuing, please check the issue tracker for existing issues and the development documentation. Your issue could be already fixed on the development version\r\n```\r\nAdding something like this seems good to me.  I might personally write something in the direction of: Thank you... Before creating a new issue, please make sure to take a few minutes to...\r\n\r\nBut, we can do all of that in a followup, below two small nitpicks.
+711046954-19814-u	Breaking the line here renders this break in the final form:\r\n![Screen Shot 2021-09-17 at 10 16 10 AM](https://user-images.githubusercontent.com/3949932/133788789-949fa86b-fe96-4ba7-9c62-fd69ed4186ae.png)\r\n\r\nI believe if you use the character `>` instead of `|` at the `value: ` line, the line break in the source file is not respected when rendering, which should fix this issue. Can you try this out?
+700603438-19805-u	We'll let the compiler to validate --> We'll let the compiler validate    Minor comment modification
+698515484-19781-u	Could you merge the check in lines 667-671 into this loop so we iterate once over `arrayList`
+698518310-19781-u	Couldn't this be written more compactly without the loop as `assert_almost_equal(y, y_r)`? What am I missing?    Edit: same thing in the following changes in this file
+908235930-19781-u	Thanks, I was paying attention to this aspect, as zip will stop on the shortest iteration. But also `x[i], y[i]` would have raised `IndexError` before if they were different lengths.
+699279823-19781-u	Does this need a `if len(res) != len(desired): raise ...` or is it guarenteed that they will be equal length in all the tests?
+702211274-19776-u	I don't think this is correct. There's both the squaring and addition operations to consider: doesn't the addition require 101**2 operations?\r\n\r\nIn any case, my two cents is that this could benefit from less detail as it's easy to lose the forest through the trees here. I'd advocate for chopping out the text from `Here,`: IMO the best way to provide more detail would be to add a reference to the [2011 NumPy paper](https://arxiv.org/abs/1102.1523), which has an excellent detailed example of broadcasting with \"sparse\" arrays.\r\n\r\nJust my two cents though - leaving the detail is also fine, but we should double check to make sure the numbers are correct.
+747293409-19776-u	Oops - I only meant that the text about performance should be removed, not the example. I think the clearest way to demonstrate what the `sparse` kwarg does is to show it:\r\n\r\n```python\r\n>>> xx, yy = np.meshgrid(x, y)\r\n>>> xx.shape, yy.shape\r\n((101, 101), (101, 101))\r\n>>> xs, ys = np.meshgrid(x, y, sparse=True)\r\n>>> xs.shape, ys.shape\r\n((1, 101), (101, 1))\r\n>>> zs = np.sin(xs**2 + ys**2) / (xs**2 + ys**2)\r\n>>> np.array_equal(z, zs, equal_nan=True)\r\nTrue\r\n>>> zs.shape\r\n(101, 101)\r\n```\r\n\r\nAlso, it seems that `sparse` keeps getting replaced with `spare` in the pushes.
+697297643-19715-u	Is this run at all? Please look at the other tests to see how this should be done. The test function should start with `def test_ ...` and the only parameter in your case should be `self`. You can make sure your test is run by checking that your test name appears in the output of\r\n```\r\npython runtests.py -t numpy/core/tests/test_casting_unittests.py -vv \r\n```
+703104726-19715-u	@yashasvimisra2798 this tes tis missing an `res.astype(np.float16)` to actually exercise the casting code, could you maybe make small PR to add that?
+693483019-19686-u	This is a mistake. If you add a space before the function, it will changes the complete functioning of variable, Remove the spacing.
+693486441-19686-u	print(",".join("1234"))  print(", ".join("1234"))    Test both the codes, they will give different outputs. We need to add spaces where there is no change in the output.
+736146952-19686-u	Could you also add support for the new `\"1.21\"` legacy-option in the [arrayprint.pyi](https://github.com/numpy/numpy/blob/main/numpy/core/arrayprint.pyi) stub file?\r\nAll you'd have to do is a bit of copy pasting with the following pattern:\r\n``` diff\r\n- Optional[Literal[False, \"1.13\"]]\r\n+ Optional[Literal[False, \"1.13\", \"1.21\"]]\r\n```
+688403176-19663-u	The fact that the semantics match those of `ContextVar`s does not sound like an implementation detail; only the fact it contains a `PyCapsule` is. Perhaps something more like:\r\n```suggestion\r\n``PyDataMem_Handler`` thread safety and lifetime\r\n================================================\r\nThe active handler is stored in the current :py:class:`~contextvars.Context`\r\nvia a :py:class:`~contextvars.ContextVar`. This ensures it can be configured both\r\nper-thread and per-async-coroutine.\r\n\r\nThere is currently no lifetime management of ``PyDataMem_Handler``.\r\nThe user of `PyDataMem_SetHandler` must ensure that the argument remains alive\r\nfor as long as any objects allocated with it, and while it is the active handler.\r\nIn practice, this means the handler must be immortal.\r\n\r\nAs an implementation detail, currently this ``ContextVar`` contains a ``PyCapsule``\r\nobject storing a pointer to a ``PyDataMem_Handler``.
+688433546-19663-u	Shouldn't we just fix our call to free to be consistent here?
+686717106-19645-u	```suggestion\r\n```\r\nThis info is quite dated - I think it can safely be discarded
+686719136-19645-u	I actually don't think this is correct - I tested this by randomly injecting an fft test into a document and running the `refguide_check` on it and didn't get any failures. Please double-check me, but I think this should be removed.
+686899899-19645-u	IMO it's so niche that it's not worth mentioning here --- maybe adding a blurb to the f2py docs would be better.
+687141933-19645-u	Actually, this is not even necessary as the documentation for f2py follows a different pattern and does not rely on importing f2py anywhere, so feel free to just remove the note.
+686719989-19645-u	Minor improvement: we should use intersphinx for these links.
+686114266-19638-u	It probably makes sense to keep the old behavior\r\n```suggestion\r\n                                        co_filename='<__array_function__ internals>')\r\n```\r\nunless there's a reason not to.
+686245253-19638-u	(Not sure what old behavior you're referring to, but making the string more specific sounds good.)
+684265383-19620-u	Is it the case that the input to `_CONVERTERS` is always a `str` and never `bytes`? If so, can you add a comment to `_getconv` saying that the converters are for parsing data from `str`
+684114871-19618-u	Can you explain this change to an `elif`?
+684055440-19618-u	I think using `itemgetter` is overkill here, especially as its forcing you to go through a slice which is slower - perhaps better as:\r\n```suggestion\r\n        # performance optimization - do not iterate `usecols` on every row if not needed\r\n        if len(usecols) > 1:\r\n            usecols_getter = lambda obj: [obj[c] for c in usecols]\r\n        else:\r\n            usecols_getter = lambda obj, c=usecols[0]: [obj[c]]\r\n```
+684115439-19618-u	`itemgetter` is implemented in Python as far as I can tell, so I can't see why it would be faster.
+693525373-19618-u	It would be easier to parse this code if this was moved up into the `read_data` function that is the only place it is used. It could then be handled with the usual if statements.    I must say this function is a mess, I salute you for wading through it.
+693559675-19618-u	I would use ordinary `if` statements to define `usecols_getter` rather than a lengthy right hand side. It would be easier to read and parse.
+683500736-19616-u	This logic is not the same as what it used to be when the file is empty; previously it set `ncols` to `len(usecols)`, but now it sets it to zero.
+684063325-19610-u	Can you use an approach more like #19618 here? That way, the logic inside this helper becomes simpler, and as a bonus you only have to do the `if` statement once per file rather than once per line.
+684108755-19610-u	Can you  add a note here that where possible the returned converter should be equality-comparable to enable optimizations?
+684109320-19610-u	I think you may as well extract this `lambda` and the other two in this this function as `_boolconv`, `_complexconv`, and `_intconv`; right now your optimization in this PR doesn't work for these types.
+684124515-19610-u	At this point you could inline the lambdas into the table without causing any issues.
+682779373-19609-u	While not required by variable scoping, perhaps it would be more readable if `decode` were passed in as an argument to `read_data`. Or would that slow things down?
+684400297-19609-u	Do you think we can eliminate the use of `decode_line` on lines in the file entirely? Either by detecting whether the file is text right at the beginning:\r\n```python\r\n# are we going to break on some janky file-like object that doesn't play ball?\r\nneeds_decode = not isinstance(fh, io.TextIOBase)\r\n```\r\nor pulling off the first line much earlier:\r\n```python\r\nfor first_line in fh:\r\n    needs_decode = isinstance(first_line, bytes)\r\n    fh = itertools.chain([first_line], fh)\r\n    break\r\nelse:\r\n    needs_decode = False\r\n```
+684412153-19609-u	The only reason I raise it is that this refactor leads to the `latin1` encoding cropping up in multiple places.\r\n\r\n> This should be possible, but makes things a bit more complicated because then you also need (in the later case where you need to pull lines out to know the type) to handle the possibility that the generator is empty, and then emit the empty-file warning in that case.\r\n\r\nI don't think you do - you can still defer emitting the that warning until you try and count the columns of the file; you can always retry to iterate an empty iterator.
+682115487-19607-u	I don't think you need this, the `((b) != (b) && (a) ==(a)))` part is for dealing with nans, which isn't a problem with integer types like `npy_datetime` and `npy_timedelta`.
+682117505-19607-u	What if both `a` and `b` are NaT? I note that sort order is not necessarily the same as comparison, which is one of the reasons only `LT`  is used for sorting.
+681206370-19600-u	I'd just put this on the previous line and avoid the lint complaint. TBH, I'm not sure why it is complaining :)
+681894027-19599-u	If these are lifted from internal helpers inside `_loadtxt`, we should prefix their names with `_loadtxt`\r\n\r\nI think it's probably worth a comment explaining _why_ these are lifted to the top level, and the refcounting / performance problems that putting them inside `loadtxt` caused.
+892064669-19599-u	Please delete it, its just unnecessary garbage code now, it is not like it has any immediate use (or probably even any use at all).
+682582324-19598-u	It might be good to add a comment here to explain why the nested try's & ifs.
+683288819-19598-u	I think it would be clearer with this if outside the try
+683306830-19598-u	Well this line was stupid!
+680560554-19587-u	I'd maybe capitalize as `NPY_DT_CALL_discover_descr_from_pyobject` to make the commonality of these macros even clearer. Or `NPY_DT_METH_discover...`, etc. (or `C_METH`?)
+680561741-19587-u	Should this also be a macro? `NPY_DT_common_instance(common_dtype, result, curr)`?
+677137716-19565-u	I think this belongs at the end of the section, which would order these functions alphabetically and also make the helper function used after registering the user-defined dtype come after all the registering functions. Also may be worth changing the heading from `New data types` to `User-defined data types`. 
+677140803-19565-u	I think we should leave this as a hanging reference to remind us to document this function. Unfortunately it is not even documented in the [public header file](https://github.com/numpy/numpy/blob/df6d2600c51502e1877aac563658d0616a75c5e5/numpy/core/include/numpy/ndarraytypes.h#L793) where it is declared, and I don't see any example use of it in tests.
+677141825-19565-u	If you really want to expose a new macro, it should be in a separate PR, not in a documentation PR.
+675750606-19554-u	```suggestion\r\n        exc_type: None | Type[BaseException],\r\n        exc_value: None | BaseException,\r\n        traceback: None | TracebackType,\r\n```\r\nStyle nit: the PEP 604 pipe operator generally looks cleaner compared to `Union`/`Optional`.
+675833619-19554-u	Yup, the `|` syntax has been supported for annotations (not type aliases) since the [mypy 0.800 release](https://mypy-lang.blogspot.com/2021/01/mypy-0800-released.html).
+675755236-19554-u	```suggestion\r\n    def __getitem__(self, index: SupportsIndex | slice) -> Any: ...\r\n    def __setitem__(self, index: SupportsIndex | slice, value: Any) -> None: ...\r\n    def __delitem__(self, key: SupportsIndex | slice) -> None: ...\r\n```\r\nThe `__<x>item__` dunders can also take `slice` objects or any object implementing the `__index__` methods (not just `int`).
+725140994-20071-nu	The tests do indeed seem to be duplicated exactly starting at L1037. Nice catch!
+724003482-20061-nu	Strange, I cannot find this rendered in the docs preview. [numpy.divide](https://22558-908607-gh.circle-artifacts.com/0/doc/build/html/reference/generated/numpy.divide.html?highlight=divide#numpy.divide) is actually the docstring for [true_divide](https://22558-908607-gh.circle-artifacts.com/0/doc/build/html/reference/generated/numpy.true_divide.html?highlight=divide#numpy.true_divide). If we don't fix this in this PR, we should open a new issue about the confusion.
+939422789-20061-nu	Thanks @DimitriPapadopoulos. Let's leave the aliasing of `np.divide` and `np.true_divide` for a future PR.
+724119920-20061-nu	I think we can delete this whole docstring, and refactor the `true_divide` docstring to acknowledge it is an alias to np.divide since `np.divide is np.true_divide` returns `True`
+932010153-20004-nu	Ideally you should rebase and squash toa single commit so that this unnecessary file doesn't enter the repo as an object.  
+767853829-20002-nu	This looks great, thanks @BvB93. It's also more than style changes only, the PEP 585 and `.py` -> `.pyi` changes are useful.
+932839054-20000-nu	Thanks Bas, if no-one else has any concerns, lets put this in!  (I suppose we should probably ping the mailing list very briefly about this, but I feel it is just a formality.)
+766985060-20000-nu	This looks good to me, thanks!  I am happy with deprecating bools as well, since the new behaviour would mirror indexing.\r\n(Just in case someone wonders:  The casting can lead to integer overflows during the cast in theory, this is something we have to live with right now unfortunately, we do the same in indexing.
+718731742-20000-nu	OK, I think we may have to switch hat over to a same-kind casting (possibly with a time exception).  But it is what indexing currently uses, so I think it is fine.  (This would not allow custom user integer DTypes.)
+719439098-20000-nu	All NumPy integers should pass fine?  The main problem is that bools and datetimes may also.  If same-kind casting doesn't do the trick, we could also consider adding an abstract `Indexer` DType that users have to register or implement promotion with.
+719451463-20000-nu	But you are right, an abstract IndexingDType may be a good way to add some useful formalism and better generalization.
+765760997-19992-nu	Thanks @dimpase. This looks reasonable, if it fixes the SciPy issue we should just go ahead and merge it. It cannot break anything else.
+929875369-19978-nu	Thanks, when no cast is necessary, it could even just assign.  Otherwise yeah, using real and imag explicitly would be much nicer, but doesn't need to be done here.
+717036849-19977-nu	Hmm, I thought single line statements like this would get brackets. Might need to check .clang-format.
+717054735-19977-nu	Google style allows this if there is no `else` or `else if` in the conditional.
+717126653-19977-nu	Although I'm happy to live with this. It is perhaps easier to live with a few inflexible rules than try to remember a bunch of exceptions.
+717039244-19977-nu	Actually prefer this a bit, but will defer to the formatter  in this case.
+928308949-19977-nu	Definitely an improvement in readability. `clang-format` doesn't quite match the NumPy style sheet yet, and may not ever get there, but it does help a lot. I think the big question at this point is when to use it. I'd be happy to put this in, but others may disagree.
+928421022-19977-nu	I ran\r\n```\r\n$ clang-format -i  numpy/f2py/src/fortranobject.c\r\n$ clang-format --version\r\nclang-format version 12.0.1 (Fedora 12.0.1-1.fc34)\r\n```\r\nAnd it looked pretty good. Is `.clang-format` in your branch?\r\n\r\n
+929539932-19977-nu	Let's get this in, it is a reasonable cleanup and doesn't break anything. Thanks @HaoZeke .
+931786402-19969-nu	Well, if Aaron thinks this is good, lets get it in. Thanks Bas!
+930577229-19969-nu	This looks good to me. 
+716927514-19969-nu	The dtypes in the annotation were defined just as the names, like `int8`, not a complex expression like `np.dtype(np.int8)`. Are type checkers really not able to work even with basic names? Any function that has Dtype should basically only pass a type check if it uses the exact same name from this namespace, like `dtype=int8`. 
+717033857-19957-nu	Got it - I was worried that removing the `none` would mean that the code-block would fall back to highlighting the block as if it were Python. I think this *is* the default behavior, though fortunately that doesn't matter for these blocks since everything is all caps :).\r\n\r\nThanks for the follow-up, LGTM then!
+714934126-19921-nu	Please don't, we have used this trick for similar things already, it is nice and simple, and I am not aware of a (reasonable) failure mode.
+762212024-19921-nu	I am happy with this changes right now.  Unless anyone has more comments or thinks we just should do this (or feels this is not fringe enough to skip announcing to the mailing list, just comment).\r\n\r\nIt probably should get a very brief release note for completeness sake though, those are files in `doc/release/upcoming_changes` with the PR number in the name (there is a README).\r\n\r\nOne last note: It is possible to pass the argument by position as a work-around for anyone who must support multiple versions.
+713497491-19920-nu	 British dictionaries tend to mention only _usable_.\r\n\r\n\"The United States and Great Britain are two countries separated by a common language\" -- GBS :)
+924492268-19920-nu	Aside from the `its` (and the `us(e)able`), all of these seem like clear typos so lets put this in.  Thanks.
+759996006-19916-nu	I've updated the readme to make it slightly more obvious that we have to keep them compatible with python 2.
+713269855-19911-nu	Should we open an issue to fix this? Not sure if this gets exposed to the users at all.
+713487904-19911-nu	Ooopst :/!  I missed that this ended up being changed.  Could you make a PR to revert this?    EDIT: I am not 100% sure if we cannot get away with changing it, but we can discuss on the reverse PR.
+713482955-19911-nu	I'm not sure what you mean by "not exported". `numpy.ma.mrecords` is "public API" I think (although I suspect an extremely unused part of it).
+924436349-19911-nu	For the future reference, fixing typos in NEPs is OK IMHO. 
+924446592-19911-nu	Thanks @DimitriPapadopoulos and everyone going through the changes! LGTM, and I am happy to change those variable typos.
+712334120-19893-nu	Maybe     "This command compiles and wraps ``fib1.f`` (``-c``)  to create the extension module ``fib1.so`` (``-m``)  in the current directory.  A list of command line options can be seen by executing ``python -m numpy.f2py``."
+712393328-19893-nu	The meaning or "routine" is unclear here. Maybe "subroutine" or some such?
+712458609-19893-nu	OK, let's leave that for another PR.
+923178357-19893-nu	There is a lot of work here. Sorry to spam the comments, but Github isn't ideal for copy editing.
+922075250-19884-nu	Thanks!  Looks right to me.  And since this only affects developers anyway, lets put it in.
+927189504-19879-nu	Let's give it a shot. Sounds like we will want it in Python >= 3.9 in any case. Thanks Bas.
+918464694-19863-nu	LGTM apart from the `ids`.
+917112353-19849-nu	Merging this, any remaining items can be solved in a follow-up. Thanks @sayantikabanik !
+917403801-19844-nu	I'd suggest merging this once content seems ready, and using Doxygen-Breathe in a follow-up PR to not mix content and tooling changes.
+704718307-19844-nu	These are un-indented on purpose so that the macros can be linked to from elsewhere
+915518408-19844-nu	This seems like a good opportunity to use the new [doxygen-breathe infrastructure](https://numpy.org/devdocs/dev/howto-docs.html?highlight=doxygen#documenting-c-c-code) to pull the comments out of the source files and render them in the rst files
+917627521-19844-nu	 using Doxygen-Breathe in a follow-up PR to not mix content and tooling changes.\r\n\r\nFWIW the tooling changes have already been merged, so the proposal is to use this as a test-case for the C autodocumentation workflow. @Mukulikaa has expressed interest (or at least willingness) to give this a try and provide feedback on how the process goes. @rgommers brings up a good point though - if you get stuck don't feel the need to keep pushing on the autodocumenting \"experiment\", that shouldn't be a blocker for the content itself. 
+702324734-19821-nu	`np.typecodes['AllFloat'][1:]` would remove `'e'`, but is not quite as robust.
+702326401-19821-nu	A comment on why this is correct would be helpful.
+913246948-19821-nu	Thanks Bas.    The circleci failure may be ignored, it would be fixed by a rebase.  It might be worth testing some of these function with 0-D arrays, but that is for another PR. 
+915239631-19821-nu	Ah OK, I did not realize we already have this logic in other places.
+702491919-19821-nu	I can't see it making a difference in the big picture.  There might be a small difference in clarity, but with one liners that is debatable ...
+701457202-19818-nu	That PR is wrong in multiple ways
+700964037-19814-nu	~~I'm curious; how are you testing this? I tried to set this up in another repo, and couldn't come up with anything beyond clobbering `main` on my fork.~~ edit: I should read your description more carefully.
+705302443-19814-nu	All of these end up on a single line without spaces when I go to your fork.  Or is that an older version?
+705326961-19814-nu	OK, still getting it on one line, but I am willing to blame it on buggy github + browser variations if it looks right to for you, thanks.  I think we still should remove the `python` from the first line.    (Additional nit, we can delay)  I now see that we do write `python myproblem.py`, I think we should maybe write: can be copy-pasted into the python interpreter or run as.  Just noting this because I remember 2-3 occasions were I was wondering why users bothered to provide actual scripts for 10 line snippets, and this might be it ;).
+700604364-19805-nu	Are these values arbitrary?
+700605662-19805-nu	Should there be a warning here?
+744450672-19805-nu	This looks fantastic! I will recheck the issues to see if this fixes more than the one referenced here; but this is a huge step forward.
+698521554-19781-nu	I don't see anywhere in numpy or scipy that uses this function. Can we deprecate it?
+698522645-19781-nu	The changes here look like a nice cleanup
+698523879-19781-nu	This looks better now
+908380412-19781-nu	OK, I had a deeper look. Only one of these looks out of place, the rest are either improvements or "doesn't matter". Some of the code can be cleaned up further.
+909198447-19781-nu	This looks good now, just two small nits that if broken now they were broken before too.
+917633456-19776-nu	Personally I'm -1 on this change. This is an example of a very common use-case that demonstrates how these two fundamental packages (numpy and matplotlib) are used together. It'd be a shame to lose that, and I don't really think the 4 extra lines for matplotlib make the example difficult to follow.\r\n\r\nIf you feel strongly about removing it, I'd recommend opening a separate PR for it.
+713276467-19775-nu	We did talk about running a linter through all the code at some point. Maybe we can do that in a subsequent PR
+905826520-19754-nu	Nice, browsing the options a bit, would `ContinuationIndentWidth: 8` be closer to current usage?
+905854662-19754-nu	Our includes are terrible :(  (and I am happy to admit, that I am not making it better).  There is some maze where include order matters due to INTERNAL BUILD and maybe other things.  Or where files just work because they include a header that incidentally includes something they need...\r\n\r\nIt would be extremely nice to clean it up a bit, I feel I am missing some best practices/intuition, though.
+700256064-19754-nu	As far as I can tell this include is not moved, it is new to the file.
+912865647-19754-nu	FYI I don't recall how I came up with that original file, but presumably I did it myself since I felt comfortable releasing it the first time someone asked, so if that licensing question is still active you have my blessing (not sure if it even qualifies for copyright anyway). 
+765699130-19731-nu	Thanks @tylerjereddy, I think I like this approach and the removal of negative time factors (in principle ideal or not, both seem like the practical choice to me).\r\n\r\nFor me, this PR can go in, if anyone would prefer e.g. a release note, please make a comment.  Otherwise, we should just merge it soon.
+901694130-19713-nu	This looks great to me, but I don't know how easy it will be to get this working in our build system.
+901921499-19713-nu	No, but I think I've seen build/distribution-issue-based resistance to switching to c++ before, and am merely expecting someone else to bring those up again. I don't know the details I'm afraid.
+901948861-19713-nu	Okay thanks. I think there are likely to be some fiddly details, but given that `numpy.distutils` supports C++ just fine and it works for SciPy, I would not expect any really fundamental problems.
+692161572-19713-nu	Why is this a template, instead of just\r\n```cpp\r\nnpy_half _NPY_MAX(npy_half a, npy_half b, floating_point_tag const &)\r\n```\r\n\r\nThis would remove the need to have per-dtype tag types.
+901967796-19713-nu	We discussed that in one of the triage meetings and decided modern C++ was acceptable, @seiko2plus wanted it.
+949558012-19713-nu	In the recent developer meeting, we decided to put this in as an experimental enhancement, without actually pushing to migrate the templated code to c++ templates for the 1.22 release. That way we can see if the infrastructure is solid before progressing.
+693486553-19686-nu	@shubham11941140, the whole point in this PR is that @anntzer _wants_ to change the output
+925111817-19686-nu	We discussed this briefly and I think we can move ahead with this.
+930421265-19686-nu	Thanks @anntzer lets give this a shot!  If anyone stumbles on it or has concerns please make a note/open an issue.
+898954090-19665-nu	I think we should drop LGTM. Was there a PR that was improved due to its output over the past year or so?
+899106122-19665-nu	Hi @charris, thanks for the ping. Yes, let me see if I can get a member of the Python team to get back to you on this.
+906503864-19663-nu	Adding the caveat seems right to me, lets get this in.  If anyone has comments we can fix it up. Thanks!  (I will assume the circle CI is just a hiccup.)
+687059621-19648-nu	```suggestion\r\n        python-version: [3.7, 3.8, 3.9, 3.10.0-rc.1]\r\n```\r\nWas dropping 3.8 here intentional?
+896114622-19638-nu	I think I remember a while being spent on this in person at BIDS, but we might not have been aware of `__code__.replace` at the time (or maybe it didn't exist?)
+896124351-19638-nu	Is there documentation anywhere for `code.replace`? It looks like it's new in 3.8, which would explain why we didn't use it before.
+897118973-19638-nu	We discussed it briefly today, and since there is a good chance we will drop 3.7, and the traceback does not look like a disaster without replacement either, the `hasattr` solution seems like a good solution for now.
+905892160-19638-nu	Hmm, took the liberty to apply the suggestion and remove the draft mark.  Had to change the indentation to make the linter happy, not perfect, but OK.    Also rebased now, since CI was failing.  Hopefully, it is ready with those small fixups.
+906114280-19638-nu	Could you run `python -X importtime -c \"import numpy\"` before and after this PR? I think the change simplifies code anyway, but it would be nice to know if this helps import time as well.
+684134857-19610-nu	I assume this loop is not slower by a relevant factor than the chained `if`s?
+684059489-19609-nu	Maybe worth adding a comment about expected input being already decoded?
+724128904-19609-nu	LGTM, just one nit, but could be merged without that.
+894104378-19609-nu	It seems CI is acting up. Maybe close/open this in a few hours to see if that clears the problem
+894108671-19609-nu	Doesn't this conflict with some of your other PRs? Do you have a preference for merge order?
+892253123-19607-nu	Thanks @asmeurer . This ~probably~ maybe could be tested using an object array containing time* types, something like\r\n```\r\nIn [20]: a = array([timedelta64('NaT'), timedelta64(0)], dtype=object)          \r\n\r\nIn [21]: a.sort() \r\n```\r\nBut that is hard to check without merging this.
+722238305-19598-nu	This LGTM - do you think it'd be worth to convert my previous comments into two tests? If you have no objection I'd be happy to push that up.
+719692964-19587-nu	Bit of a shaky review here, but to me the change to `flags` is definitely an improvement, while for the `slots` the case is a little less clear, since it combines such disparate items. \r\n\r\nMy overall sense, though, is to just get this in and keep going - you may well find another adjustment would be good, but I think that is OK.
+680560207-19587-nu	Ah, clearly you were thinking about these as a separate entity as well...
+681122854-19587-nu	OK, that makes sense. Regardless, with the macros it becomes an implementation detail, which is nice.
+887236734-19565-nu	Something is weird with `PyArray_MultiIter_SIZE`. I don't understand why it [is documented](https://21173-908607-gh.circle-artifacts.com/0/doc/build/html/user/c-info.beyond-basics.html?highlight=pyarray_multiiter_size#broadcasting-over-multiple-arrays) but never defined. Did it get removed in a refactor?
+887436928-19565-nu	Then we would need to redo that example that uses it. Perhaps leave it out of this PR for now\r\n\r\n> to add `PyArray_FinalizeFunc` ...\r\n\r\nYes, but what should that documentation be?
+677635017-19565-nu	Heh, nice re-use from `__array_finalize__`
+677635017-19565-nu	Heh, nice re-use from `__array_finalize__`
+887392378-19554-nu	In any case, the added tests look good to me.

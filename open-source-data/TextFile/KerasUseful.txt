@@ -1,0 +1,119 @@
+15604	"Note that to avoid dividing by zero, a small epsilon value is added to the denominator."
+15459	Is there a way to factor this code so as not to modify / nest the entire logic? Something likeif show_trainable:   some_list.append(...)Basically you want to append to positions, to_display, fields. You should typically not modify more than a handful of lines to achieve it.
+15447	Avoid putting -> Don't put (this is imperative)Add parens: preprocess_input()
+15447	Mention Rescaling(1. / 255.) since typically this is the only layer needed
+15356	Is there any usage of negative number for this method (eg -1 for unknown shape). If all the intended use case for this method is for positive int, then let's just update this method instead.
+15356	kernel_size should always be positive. dilation_rate is always positive too. For stride, I think it should be positive and non-zero as well (0 mean the window doesn't even move?). Padding is not validated by this function (checked by normalize_padding() instead).With that, I think let's just update the existing normalize_tuple with an positive number check instead.
+15356	Please find all the negative values, rather than just the first one.
+15356	Please check the content of the error message as well.
+15356	Please change the cmp to validation_fn, and the function should return False for illegal inputs.The lambda function above should also be changed to lambda x: x > 0 instead, which is more readable (not using negation).
+15356	Now both the method signature and the caller are quite weird now.Seems that there are only true use case, and majority of them are strict positive. I don't think there will be any new use case, eg different lambda. So let's just add a kwarg for allow_zero and default to False, which will allow the caller side to skip all the labmdas and msgs.
+15356	please update this accordingly.
+15356	When user getting this error message, it is unclear to them what is the actual requirement for a valid param (eg it need to be positive or non-negative). The lambda approach makes it hard for showing the actual requirement.
+15356	errr, this method has way too many param now.
+15356	non-negative integer or integers into an integer tuple. or a negative value is received.
+15356	Default to False. A ValueError will raised if zero is received and this param is False.
+15356	err, shouldn't this just be [v for v in value_tuple if v >= 0]. Using list() filter() and lambda make this quite hard to read.
+15356	Add space between >= and 0
+15356	Please use assertRaisesRegex to check the error type and message at same time.
+15356	Let's put a quote around the {req_msg}
+15356	Please also verify that -1 is included in the error message.
+15356	Since user only provide one -4 as the input, we probably should use set() rather than list for the unqualified_values in the code.
+15355	To avoid spilling on the left side, use string concatenation like this:reference_str = ('Model: "model_2"'                 '_________________________________________________________________'                 ' Layer (type)                Output Shape              Param #   '                 ...)
+15355	Please add one more space indent to match the indent above
+15342	typo: accurancy => accuracy, accurancy_1 => accuracy_1
+15342	Could u add another model.eval below this line, and make sure the output are the same as the first model.eval()?This will make sure we don't include the any result from model.test_on_batch().
+15326	Presumably this should beif ((inputs.shape[2] is not None and sum(self.cropping[0]) >= inputs.shape[2]) or    (inputs.shape[3] is not None and sum(self.cropping[1]) >= inputs.shape[3]))):
+15326	"Argument cropping" (with backticks)"of Cropping layer" is not necessary, the traceback will show the origin
+15315	Missing a space here at the end. Also always prefer spaces at the end rather than at the beginning of each string.
+15288	Sure. How about just remove the smaller/larger here since it is really depending the m_mul value here. "m_mul times initial learning rate" as the new learning rate seems reasonable to me as well.
+15286	Likewise indent should be 4. You can shorten the line by using a f-string instead of %
+15286	Agreed that it does not look very readable. Please go with the option you think works best.To put a string across two lines, prefer doingst = ('first part'      'second part')
+15251	You should use if isinstance(layer, Model) and layer.layers:
+15251	Always use lines shorter than 80 chars
+15251	Make sure to respect style conventions, e.g. no spaces around =. Please use a style linter.
+15200	prefer or self.monitor == 'auc' to avoid potential collisions
+15200	Then use endswith. Otherwise unrelated metrics that have the substring "auc" will get caught.
+15200	I would say '_acc' and '_auc' to further reduce chances of accidental name clash.
+15200	There are various possible names for accuracy, including acc itself. But we could use self.monitor.endswith('acc') or self.monitor.endswith('accuracy')
+15195	Add period at the end of the sentence
+15158	"When padding="same" and strides=1, the output has the same size as the input."
+15158	Use backticks around codde keywords
+15133	This is the bazel test target name which can be different from the test file name. Please refer to the BUILD file for the corresponding test nam
+15133	This is the BUILD package path, which is bazel specific. You can have a target like a:b_test, but the actual test python file lives in a/b/c_test.py
+15075	IMO the whole thing does become a lot more readable as code blocks like this. But the output of the code ("4" here) should be moved to a comment, like # Returns "4"
+15063	Let's mention that the CLA will pop up when you create a PR. You don't need to worry about it before you get started. In fact, let's move the CLA section to after the "open a PR" section.
+15063	Keep lines short everywhere (but keep links on a single line).Remove the extra period at the end
+15015	I think we should only remove the cast for sparse_categorical_crossentropy(), since the label value could be large based on the dimension of the prediction. The rest of them like binary_crossentropy or categorical_crossentropy, the label value is either one_hot or just 0 and 1, which won't be affected when casting.Also since backend.sparse_categorical_crossentropy will cast the y_true to int64 anyway, removing the y_true cast here is correct.
+15015	I think you should keep this cast here, since the y_true are expect to be either {-1, +1} or {0, 1} (i.e. a one-hot-encoded tensor). See the docstring.We probably want to fix the example in the docstring since the y_true is given in the range of 0-3.
+14970	The ValueError needs to be tested with a test that uses assertRaisesRegex
+14970	inputs.shape[1] can be None. The check would need to use tf.shape(inputs). In fact you probably want to use https://www.tensorflow.org/api_docs/python/tf/debugging/assert_greater
+14970	I think this check would be better asif inputs.shape[1] is not None and sum(self.cropping) >= inputs.shape[1]:You could still construct a tensor with size 0 and shape (None, None) that would cause this to crash.
+14970	This would read clearer with format strings, and we are trying to gravitate towards more uniform error messages in keras.f'cropping parameter of Cropping layer must be greater than the input shape. 'f'Recieved: inputs.shape={inputs.shape}, and cropping={self.cropp
+14935	Application names should use camel case, e.g. EfficientNetV2B0
+14935	This file should not be included in the PR. You can host in on GitHub or Colab as a way to share your workflow for creating the checkpoints.
+14935	Moved round_filters and round_repeats outside model function.
+14935	The signature of a public-facing Application should match the signature of every other application. Only include **kwargs for backwards compatibility with deprecated args; here there are none (since the application is new), so you should not need **kwargs.
+14935	I'd recommend using closures for this type of Functional API block, so you can apply the block in a way that's stylistically consistent with layer calls, e.g.def Block0(...):   def apply(x):        ...        return x   return applyx = Block0(...)(x)
+14935	This cannot default to "". Default to None.
+14935	By default every time you'd apply this block you'd get the same layer names. But layer names should be unique.You can do:... name=None):if name is None:    name = backend.get_uid("block0")x = layers.Conv2D(..., name=name + "_expand_conv")
+14935	Oh sorry, I meant add the quotes along with the backticks here as well. It is just that github is grabbing my backticks and rendering them as markdown.A string literal should be surrounded by backticks and quoted. None should be surrounded by backticks and not quoted. So `'avg'`, `'max'` and `None`.Basically anything inside the backticks should be valid python you could pass for the argument in question.
+14935	When raising errors like this, try putting the value that caused the error in the error message. This would follow our standard format:'The weights argument should be either ''None (random initialization), imagenet ''(pre-training on ImageNet), ''or the path to the weights file to be loaded.'f'Received: weights={weights}'
+14935	Same here, add a Received: classes={classes}
+14935	this comment makes it look like the input_tensor must be a Keras tensor, but that does not seem to be the case in the code below.
+14935	what does this comment mean? is this a todo to investigate a warning?
+14935	choose a quote delimiter for this file and stick to it (there's a good amount of both " and ')
+14920	Use backticks around code keywords, e.g. (attention_output, attention_scores) and attention_output
+14905	This factoring seems confusing. Consider using get_batch_input_shape(batch_size, dim) and calling it using partial
+14817	This is inaccurate: you can configure the depth, it doesn't have to be depth 1 .That's the depth_multiplier argument.
+14817	This sentence is important and should be kept
+14750	Please move this part of the change to a separate PR. It's going to be more complicate than that.
+14750	I really don't see how incrementing self.wait at the end of each epoch is the correct behavior.You have access to the epoch counter epoch, if you just want to skip the first epoch you can? E.g. if it's the first epoch, then set the best score / weights and contin
+14748	Let's use the names serialize_as_bytecode and deserialize_from_bytecode to be more explicit.
+14748	This parameterization isn't useful here.
+14748	Let's test all model types (Sequential, Functional, subclass). We have a parameterization for that. @keras_parameterized.run_with_all_model_types. See examples.
+14748	Import pickle_utils and then access its members in the code
+14748	The : should come before, model:
+13477	would using for layer in sorted(layers, key=lambda x: x.name): work too in this case?
+13477	In your case, you can use the tmp_path fixture, which will ensure temporary files are cleaned up, even in case of failure. Please take a look at this: http://doc.pytest.org/en/latest/tmpdir.html#the-tmp-path-fixtureWhen using the fixture, you don't have to import it, nor to remove the directory afterwards, pytest takes care of it.
+13297	Does that actually work with the Keras compile/fit/evaluate methods? If I recall correctly, there were changes made between tf.keras and external Keras (e.g. the update_state method returning a list).
+13297	Related: please add a metric test that does, roughly, for every M among the object metrics:model = Sequential([Dense(2, input_shape=(3,)])model.compile('rmsprop', metrics=[M()])model.fit(x, y)loss_val, metric_val = model.evaluate(x, y)No need to test correctness (which is tested separately).Importantly this test does not need to exclude Theano and CNTK (so it should be in a separate file). Theano / CNTK should only be excluded specifically for MeanIoU.
+13297	Avoid adding new symbols to the backend (since they aren't present in tf.keras) and instead do an inline import of tf after checking K.backend().
+13265	Please remove the __init__ docstrings and move the arguments sections to the class-level docstring (applicable everywhere)
+13265	These two lines can be made conditional on threshold != 0.5
+13265	To avoid type issues, please use float, e.g. 3. / 4. (test is failing with Python 2)
+13256	Here rather than using call (which we deliberately disable with non-TF backends), we should use a new internal method
+13138	Yes, good catch. Keras tensors should be moved to the input list, and should be removed from kwargs.
+13138	You shouldn't need to pop these args here. Rather, you should remove them from kwargs before calling the layer (which is fine since they are transferred to the input list)
+13043	self.dtype = dtype or K.floatx() is equivalent and simpler.
+12894	Print statements not necessary.
+12859	Fix indent; use 4 space indent.
+12859	Use convention # Arguments --start with #no :This applies to all new docstrings.
+12859	.numpy() would be TF-specific. Please remove print statement.
+12721	These variables are symbolic tensors, not layer instances, so I think it would be misleading to name them "*_layer".
+12675	You should put this series of checks into a utility function, because 1) you do it multiple times, 2) it would improve code readability
+12675	Imports should be done at the top of the file.
+12627	Don't use \ for line breaks.Also: the previous code snippet was a lot more readable than this, please don't change it.
+12568	Please use standard formatting for the docstrings, e.g.# Arguments
+12568	This is not relevant to Keras (which does not accept tf.data.Dataset instances as inputs)
+12551	Please skip the check if int_shape is None or int_shape[0] is None (same below).
+12544	dtype in str(var.dtype) like in CNTK would seem like a better check. Dtypes in TF are weird, and both float32_ref and float32 are possible values for the name attribute of a float32 variable.
+12539	This could potentially return without crashing despite incorrect values for start or size (due to the use of zip). I would suggest adding a check that both start and size are tuples of the same length as ndim(x).
+12536	I'd say we can remove both warnings.
+12534	Let's keep the signature eye(size, ...)But then let's accept either an int or a tuple:if isinstance(size, (list, tuple)):   n, m = sizeelse:   n, m = size, size
+12500	In order to avoid this for loop, I think it would be better to have the test for logsumexp be a separate function, with a parameterization decorator over axes and shapes.
+12492	In modern TF you don't need this cast anymore (I've removed this pattern in the tf-2 branch).
+12406	Thank you for the PR, @tjochmann. Could you add depth, here?
+12336	Thank you for the PR, @abhaikollara. How about changing here as range(1, num_classes + 1)?
+12299	Prefer importing layers then using e.g. layers.Conv2D
+12299	Please standardize the docstrings formatting to be the same as other docstrings in the codebase.
+12241	This looks like a breaking behavior change. Why does it need to default to True?
+12205	This should be structured as an if block for better readability:if ...:   output_masks = ...else:   output_masks = ...
+12203	Use ' everywhere for consistency
+12203	No types, our examples are meant to be compatible with Python 2.7
+12203	Please use the standard docstring format in use elsewhere in the Keras repo
+12203	These are functions defined inside a function, used once? They should just be regular utilities.
+12203	Prefer from keras import layers then use layers.Conv2D, for every layer.
+12203	You do not need to make these functions underscore-private, I would think
+12203	You do not need to call print, the summary is printed automatically.
+12147	Prefer os.path.join instead of /, everywhere (will work on Windows, and generally is cleaner)

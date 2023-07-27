@@ -1,0 +1,73 @@
+11681	I just reviewed the accounts-passwordless part. See my feedback, I don't think your fixes are necessary.
+11681	I'll review accounts-ui onde the passwordless part is finished.It should be in a different PR btw.
+11681	The changes look good, it would be important to ask feedback on Slack in Forums for people who uses this package in production, as maybe this could break something and this is a critical flow for apps.
+11671	What are the other changes in this PR? I was able to find one but as we have many format changes I'm not sure if there aren't others.
+11660	LGTM we just need to double check everything after merging to devel as there are different flows for different branches.Also, all the checks should be passing before we merge.
+11657	This is a breaking change, no?
+11650	I don't think you know that but we have prettier configured in the root project.We should format with prettier every new code section.We don't format everything because it was going to cause a huge diff but new code sections should follow the new prettier format 😉
+11650	I don't think I fully understand the question and the comment as well. Could you clarify what needs to be defined here?
+11638	Looks like tools/tests/cordova-builds.js will need some review as well.
+11615	 last changes like this are dangerous, make sure you test these changes properly 😉
+11614	Are you sure this works for cordova? I saw this code and it might seem we are defaulting to legacy always on cordova.
+11614	Yes that is correct this is not Cordova, for various reasons we end up hosting a webview inside of our app that points to our Meteor app. It is for sure a weird edge case that is not too common, but this change definitely matches reality more since the WKWebview is completely a modern browser.
+11614	If it's not targeting Cordova, that's fine!
+11614	I did end up noticing that some ipads use the user agent that resolves to appleMail. So I ended up defining its minimum version too, but it is not an alias to these other ones since its version is like 600+Not sure what the right thing to do in the meteor repro is, but i just added added a minimumBrowserVersion call in my code to make sure it is marked as modern.
+11602	Mostly issues with comments. Also missing history entry. accounts-base and accounts-password will require patch release. If I understood the code correctly we could split changes to those two packages up into a separate PR and release that pretty much immediately.
+11602	Just use 3600000 no need to perform calculations for something so basic that doesn't change.
+11602	Big numbers usually are represented like this so it's easier to understand, you can see many places like this in our codebase and in general as well.
+11602	Yes, I know. But I think that could be solved by a comment and no need to process math when it isn't needed. Just a suggestion.
+11602	I think the name of the const provides all the info for readability that is needed. 🤷‍♂️
+11590	It's working fine on MacOS as well.
+11590	It seems this message is sometimes printed on top of a progress bar:
+11590	I'm curious why we are using the native tar instead of 7zip here.
+11590	When using npm installer on Linux an error appears:LOCALAPPDATA env var is not setI thought this env was only for Windows users...
+11580	The issue with babel-parser is fixed in this PR, I just tested it. Thank you!
+11580	Was this just breaking tests and not actual code?
+11545	Hi, these changes are affecting the app load on iOS and Android, at least in the simulator/emulator the app is not loading.After the splash screen I just get a blank screen. Running with Meteor 2.3.2 it works fine.
+11545	I think we should start using Logging package for log output.
+11506	thanks for the extensive description! It is not something I have personally a use case for, but I'll take a look at it after 2.3.1 release. Right now considering this for inclusion in 2.4.
+11506	 to be clear, my long feedback here was just to provide more background on how I'm solving this problem in a different way.Your changes are going in a good direction, you can proceed with this PR, please provide the changes that I asked in the code review.
+11506	Thanks for the updates. I just rerun it on CircleCI now.
+11480	 belated thanks for sorting that out. For some reason, when I tested with our MySQL-based publications, they worked in async mode without the bind().
+11478	I think it would be better to use Console.success here to make it clear that the process has finished.
+11478	We are using error, but let's shelve this for a bigger overview then.
+11445	Looks good to me. Can you also create a PR for the documentation?
+11445	Better to keep it separate so that it is easier to review and hence quicker to merge unless you want it to supersede this PR.
+11444	Such a change will make all publications async, which I think is not desired. The solution would be to either use Promise.await (but that relies on fibers), or use an optionally-asynchronous then (like the one I made here, but without the callIfAsync option).The type signature of such a then function is:function then<T, U>(value: Promise<T>, fn: (value: T) => U): Promise<U>;function then<T, U>(value: T, fn: (value: T) => U): U;
+11395	This removal causes conflicts with mrt:soundcloud
+11395	Absolutely agree -- was just leaving a note here as more of an FYI. I've created a patched version in my packages folder that uses OAuth.launchLogin instead.
+11374	mikekibz59 Making a good progress on this! I think we will be able to merge this soon!
+11374	mikekibz59 I think it is fine in this branch if it makes things better. I would say go ahead and we will then review once you are done.
+11374	Shouldn't the code to determine the message follow here, or am I missing something here?
+11244	Thanks @tchiers, as your changes are in the meteor tool they will be available in the next version of Meteor.
+11208	Great work!How can I help in getting this production ready?
+11208	Is it a downgrade @costinelmarin? if we don't have a strong reason to downgrade, we probably should not.
+11208	why wasn't it working? maybe we have another solution.
+11202	Excellent solution, thanks Filipe! In my tests this solves my issue without breaking the original issue.I'm approving because the only comments are about the logs
+11165	This is great, just a small suggestion to avoid repetition.
+11165	You can use Console.noWrap to not wrap the text:
+11162	Hi @StorytellerCZ I support this idea.Are you using this in a package already? It would be useful to already have a working example here in this PR.
+11162	I'm waiting the docs PR to review everything together.
+11162	Hi @StorytellerCZ I would like to see the docs PR so I can test your changes, ok?I also want to be sure that this deprecated flag is available on Troposphere db so we can expose it on Atmosphere 😉
+11162	I'm adding these fields to troposphere database as well.
+11119	moving forward with this version but we have many different ways to integrate with Apollo, in my projects I don't use like this. But I'm ok with this approach.I'm still torn between examples or more skeletons, this case seems to be more a example than a skeleton as you are selecting React already as the view layer. For Cordova, as I'm making a lot of choices as well, I'm going with example #11072What do you think?
+11118	We had a lot of handling added in our app to manage that race condition that the other fields are not yet available for the UI to check. Thanks for this, @menelike.
+11105	 I just suggested a small adjustment and also we need a PR against the docs documenting these options, ok? Link the Docs PR here as well.
+11105	You can use optional chaining, it’s built in feature for meteor
+11105	Do note that this also means you should not use const & let etc.
+11105	Since Meteor supports browsers that don't support const & let and this package's code doesn't get transpiled. You should stick to var.
+11105	This works like a charm. After 2 years, I can finally remove my dynamic-import monkeypatch. Thanks @leonardoventurini !
+11100	MongoDB 4.4 is in the release candidate stage at the moment, so maybe we should wait until 4.4 is released.
+11100	Ok, that makes sense. However, I currently don't have access to a computer that is fast enough to build MongoDB in a reasonable amount of time. 😄 @filipenevola Does Meteor have a build farm or Linux VM that we can use to build MongoDB?
+11100	hi @klaussner we could add a job to our Jenkins 😉I'm trying first locally but it is failing here
+11100	Looks like a temporary problem. If I run the container locally, it starts compiling
+11100	The MongoDB update I was already going to include on 1.10.3 so let's include these updates as wel
+11100	I'm going to run the tests on 1.10.3 branch.
+11100	thank you, we are using your version already 😉
+11066	What about using the logging facility instead of standard console log?
+10969	This looks good to me.The synchronous write/rename is part of the initial work done when there's a cache miss, which gets amortized over time by all the future cache hits—as long as the cache is doing its job. Unless compilation times for cold-cache builds get noticeably worse because of this change, I'm fine with using the sync versions here.
+10960	might be because options might be null and underscore is able to handle that?
+10960	🤔 you're right... awesome PR btw, can't wait to use arrayFilters without relying on rawCollection(), it's a bit awkward to bypass Meteor collection when using redis-oplog
+10929	Just rungit submodule update --init --recursiveand you should get the right packages/non-core/blaze code. Shouldn't be related to these changes in any way.
+10929	On second thought, I'm happy to jump in and wrap up these last few things, if you like. You've done all the interesting work already, and what's left is mostly just process stuff.
+10929	Ok, assuming the tests pass, this looks good to me!

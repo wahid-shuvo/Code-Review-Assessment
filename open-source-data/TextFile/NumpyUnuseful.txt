@@ -1,0 +1,105 @@
+20071	The tests do indeed seem to be duplicated exactly starting at L1037. Nice catch!
+20061	Strange, I cannot find this rendered in the docs preview. numpy.divide is actually the docstring for true_divide. If we don't fix this in this PR, we should open a new issue about the confusion.
+20061	Thanks @DimitriPapadopoulos. Let's leave the aliasing of np.divide and np.true_divide for a future PR.
+20061	I think we can delete this whole docstring, and refactor the true_divide docstring to acknowledge it is an alias to np.divide since np.divide is np.true_divide returns True
+20004	Ideally you should rebase and squash toa single commit so that this unnecessary file doesn't enter the repo as an object.
+20002	This looks great, thanks @BvB93. It's also more than style changes only, the PEP 585 and .py -> .pyi changes are useful.
+20000	Thanks Bas, if no-one else has any concerns, lets put this in! (I suppose we should probably ping the mailing list very briefly about this, but I feel it is just a formality.)
+20000	This looks good to me, thanks! I am happy with deprecating bools as well, since the new behaviour would mirror indexing.(Just in case someone wonders: The casting can lead to integer overflows during the cast in theory, this is something we have to live with right now unfortunately, we do the same in indexing.)
+20000	OK, I think we may have to switch hat over to a same-kind casting (possibly with a time exception). But it is what indexing currently uses, so I think it is fine. (This would not allow custom user integer DTypes.)
+20000	All NumPy integers should pass fine? The main problem is that bools and datetimes may also. If same-kind casting doesn't do the trick, we could also consider adding an abstract Indexer DType that users have to register or implement promotion with.
+20000	But you are right, an abstract IndexingDType may be a good way to add some useful formalism and better generalization.
+19992	Thanks @dimpase. This looks reasonable, if it fixes the SciPy issue we should just go ahead and merge it. It cannot break anything else.
+19978	Thanks, when no cast is necessary, it could even just assign. Otherwise yeah, using real and imag explicitly would be much nicer, but doesn't need to be done here.
+19977	Hmm, I thought single line statements like this would get brackets. Might need to check .clang-format.
+19977	Google style allows this if there is no else or else if in the conditional.
+19977	Although I'm happy to live with this. It is perhaps easier to live with a few inflexible rules than try to remember a bunch of exceptions.
+19977	Actually prefer this a bit, but will defer to the formatter in this case.
+19977	Definitely an improvement in readability. clang-format doesn't quite match the NumPy style sheet yet, and may not ever get there, but it does help a lot. I think the big question at this point is when to use it. I'd be happy to put this in, but others may disagree.
+19977	I ran$ clang-format -i  numpy/f2py/src/fortranobject.c$ clang-format --versionclang-format version 12.0.1 (Fedora 12.0.1-1.fc34)And it looked pretty good. Is .clang-format in your branch?
+19977	Let's get this in, it is a reasonable cleanup and doesn't break anything. Thanks @HaoZeke .
+19969	Well, if Aaron thinks this is good, lets get it in. Thanks Bas!
+19969	This looks good to me.
+19969	The dtypes in the annotation were defined just as the names, like int8, not a complex expression like np.dtype(np.int8). Are type checkers really not able to work even with basic names? Any function that has Dtype should basically only pass a type check if it uses the exact same name from this namespace, like dtype=int8.
+19957	Got it - I was worried that removing the none would mean that the code-block would fall back to highlighting the block as if it were Python. I think this is the default behavior, though fortunately that doesn't matter for these blocks since everything is all caps :).Thanks for the follow-up, LGTM then!
+19921	Please don't, we have used this trick for similar things already, it is nice and simple, and I am not aware of a (reasonable) failure mode.
+19921	I am happy with this changes right now. Unless anyone has more comments or thinks we just should do this (or feels this is not fringe enough to skip announcing to the mailing list, just comment).It probably should get a very brief release note for completeness sake though, those are files in doc/release/upcoming_changes with the PR number in the name (there is a README).One last note: It is possible to pass the argument by position as a work-around for anyone who must support multiple versions.
+19920	"The United States and Great Britain are two countries separated by a common language" -- GBS :)
+19920	Aside from the its (and the us(e)able), all of these seem like clear typos so lets put this in. Thanks.
+19916	I've updated the readme to make it slightly more obvious that we have to keep them compatible with python 2.
+19911	Should we open an issue to fix this? Not sure if this gets exposed to the users at all.
+19911	Ooopst :/! I missed that this ended up being changed. Could you make a PR to revert this?EDIT: I am not 100% sure if we cannot get away with changing it, but we can discuss on the reverse PR.
+19911	I'm not sure what you mean by "not exported". numpy.ma.mrecords is "public API" I think (although I suspect an extremely unused part of it).
+19911	For the future reference, fixing typos in NEPs is OK IMHO.
+19911	Thanks @DimitriPapadopoulos and everyone going through the changes! LGTM, and I am happy to change those variable typos.
+19893	Maybe"This command compiles and wraps fib1.f (-c) to create the extension module fib1.so (-m) in the current directory. A list of command line options can be seen by executing python -m numpy.f2py."
+19893	The meaning or "routine" is unclear here. Maybe "subroutine" or some such?
+19893	OK, let's leave that for another PR.
+19893	There is a lot of work here. Sorry to spam the comments, but Github isn't ideal for copy editing.
+19884	Thanks! Looks right to me. And since this only affects developers anyway, lets put it in.
+19879	Let's give it a shot. Sounds like we will want it in Python >= 3.9 in any case. Thanks Bas.
+19863	LGTM apart from the ids.
+19849	Merging this, any remaining items can be solved in a follow-up. Thanks @sayantikabanik !
+19844	I'd suggest merging this once content seems ready, and using Doxygen-Breathe in a follow-up PR to not mix content and tooling changes.
+19844	These are un-indented on purpose so that the macros can be linked to from elsewhere
+19844	This seems like a good opportunity to use the new doxygen-breathe infrastructure to pull the comments out of the source files and render them in the rst files
+19844	FWIW the tooling changes have already been merged, so the proposal is to use this as a test-case for the C autodocumentation workflow. @Mukulikaa has expressed interest (or at least willingness) to give this a try and provide feedback on how the process goes. @rgommers brings up a good point though - if you get stuck don't feel the need to keep pushing on the autodocumenting "experiment", that shouldn't be a blocker for the content itself.
+19821	np.typecodes['AllFloat'][1:] would remove 'e', but is not quite as robust.
+19821	A comment on why this is correct would be helpful.
+19821	Thanks Bas.The circleci failure may be ignored, it would be fixed by a rebase. It might be worth testing some of these function with 0-D arrays, but that is for another PR.
+19821	Ah OK, I did not realize we already have this logic in other places.
+19821	I can't see it making a difference in the big picture. There might be a small difference in clarity, but with one liners that is debatable …
+19818	That PR is wrong in multiple ways
+19814	I'm curious; how are you testing this? I tried to set this up in another repo, and couldn't come up with anything beyond clobbering main on my fork. edit: I should read your description more carefully.
+19814	All of these end up on a single line without spaces when I go to your fork. Or is that an older version?
+19814	OK, still getting it on one line, but I am willing to blame it on buggy github + browser variations if it looks right to for you, thanks. I think we still should remove the python from the first line.(Additional nit, we can delay) I now see that we do write python myproblem.py, I think we should maybe write: can be copy-pasted into the python interpreter or run as. Just noting this because I remember 2-3 occasions were I was wondering why users bothered to provide actual scripts for 10 line snippets, and this might be it ;).
+19805	Are these values arbitrary?
+19805	Should there be a warning here?
+19805	This looks fantastic! I will recheck the issues to see if this fixes more than the one referenced here; but this is a huge step forward.
+19781	I don't see anywhere in numpy or scipy that uses this function. Can we deprecate it?
+19781	The changes here look like a nice cleanup
+19781	This looks better now
+19781	OK, I had a deeper look. Only one of these looks out of place, the rest are either improvements or "doesn't matter". Some of the code can be cleaned up further.
+19781	This looks good now, just two small nits that if broken now they were broken before too.
+19776	Personally I'm -1 on this change. This is an example of a very common use-case that demonstrates how these two fundamental packages (numpy and matplotlib) are used together. It'd be a shame to lose that, and I don't really think the 4 extra lines for matplotlib make the example difficult to follow.If you feel strongly about removing it, I'd recommend opening a separate PR for it.
+19775	We did talk about running a linter through all the code at some point. Maybe we can do that in a subsequent PR
+19754	Nice, browsing the options a bit, would ContinuationIndentWidth: 8 be closer to current usage?
+19754	Our includes are terrible :( (and I am happy to admit, that I am not making it better). There is some maze where include order matters due to INTERNAL BUILD and maybe other things. Or where files just work because they include a header that incidentally includes something they need...It would be extremely nice to clean it up a bit, I feel I am missing some best practices/intuition, though.
+19754	As far as I can tell this include is not moved, it is new to the file.
+19754	FYI I don't recall how I came up with that original file, but presumably I did it myself since I felt comfortable releasing it the first time someone asked, so if that licensing question is still active you have my blessing (not sure if it even qualifies for copyright anyway).
+19731	Thanks @tylerjereddy, I think I like this approach and the removal of negative time factors (in principle ideal or not, both seem like the practical choice to me).For me, this PR can go in, if anyone would prefer e.g. a release note, please make a comment. Otherwise, we should just merge it soon.
+19713	This looks great to me, but I don't know how easy it will be to get this working in our build system.
+19713	No, but I think I've seen build/distribution-issue-based resistance to switching to c++ before, and am merely expecting someone else to bring those up again. I don't know the details I'm afraid.
+19713	Okay thanks. I think there are likely to be some fiddly details, but given that numpy.distutils supports C++ just fine and it works for SciPy, I would not expect any really fundamental problems.
+19713	Why is this a template, instead of justnpy_half _NPY_MAX(npy_half a, npy_half b, floating_point_tag const &)This would remove the need to have per-dtype tag types.
+19713	We discussed that in one of the triage meetings and decided modern C++ was acceptable, @seiko2plus wanted it.
+19713	In the recent developer meeting, we decided to put this in as an experimental enhancement, without actually pushing to migrate the templated code to c++ templates for the 1.22 release. That way we can see if the infrastructure is solid before progressing.
+19686	the whole point in this PR is that @anntzer wants to change the output
+19686	We discussed this briefly and I think we can move ahead with this.
+19686	hanks @anntzer lets give this a shot! If anyone stumbles on it or has concerns please make a note/open an issue.
+19665	I think we should drop LGTM. Was there a PR that was improved due to its output over the past year or so?
+19665	Hi @charris, thanks for the ping. Yes, let me see if I can get a member of the Python team to get back to you on this.
+19663	Adding the caveat seems right to me, lets get this in. If anyone has comments we can fix it up. Thanks! (I will assume the circle CI is just a hiccup.
+19648	Was dropping 3.8 here intentional?
+196454	This looks good to me - happy to see a better organization for these pages!
+19638	I think I remember a while being spent on this in person at BIDS, but we might not have been aware of __code__.replace at the time (or maybe it didn't exist?)
+19638	Is there documentation anywhere for code.replace? It looks like it's new in 3.8, which would explain why we didn't use it before.
+19638	We discussed it briefly today, and since there is a good chance we will drop 3.7, and the traceback does not look like a disaster without replacement either, the hasattr solution seems like a good solution for now
+19638	Hmm, took the liberty to apply the suggestion and remove the draft mark. Had to change the indentation to make the linter happy, not perfect, but OK.Also rebased now, since CI was failing. Hopefully, it is ready with those small fixups.
+19618	Could you run python -X importtime -c "import numpy" before and after this PR? I think the change simplifies code anyway, but it would be nice to know if this helps import time as well.
+19618	LGTM, let's wait for CI to go green just in case.
+19610	I assume this loop is not slower by a relevant factor than the chained ifs?
+19609	Maybe worth adding a comment about expected input being already decoded
+19609	LGTM, just one nit, but could be merged without that.
+19609	It seems CI is acting up. Maybe close/open this in a few hours to see if that clears the problem
+19609	Doesn't this conflict with some of your other PRs? Do you have a preference for merge order?
+19607	Thanks @asmeurer . This probably maybe could be tested using an object array containing time* types, something like In [20]: a = array([timedelta64('NaT'), timedelta64(0)], dtype=object) In [21]: a.sort() But that is hard to check without merging this.
+19598	This LGTM - do you think it'd be worth to convert my previous comments into two tests? If you have no objection I'd be happy to push that up.
+19587	Bit of a shaky review here, but to me the change to flags is definitely an improvement, while for the slots the case is a little less clear, since it combines such disparate items.My overall sense, though, is to just get this in and keep going - you may well find another adjustment would be good, but I think that is OK.
+19587	Ah, clearly you were thinking about these as a separate entity as well…
+19587	OK, that makes sense. Regardless, with the macros it becomes an implementation detail, which is nice
+19565	Something is weird with PyArray_MultiIter_SIZE. I don't understand why it is documented but never defined. Did it get removed in a refactor?
+19565	Then we would need to redo that example that uses it. Perhaps leave it out of this PR for now Yes, but what should that documentation be?
+19565	Looks good to me except for one small nit.
+19565	Heh, nice re-use from __array_finalize__
+19554	In any case, the added tests look good to me.

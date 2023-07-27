@@ -1,0 +1,169 @@
+746070913-15604-u	"Note that to avoid dividing by zero, a small epsilon value is added to the denominator."
+725536873-15459-u	Is there a way to factor this code so as not to modify / nest the entire logic? Something like    ```  if show_trainable:     some_list.append(...)  ```    Basically you want to append to `positions`, `to_display`, `fields`. You should typically not modify more than a handful of lines to achieve it.
+720878013-15447-u	Avoid putting -> Don't put (this is imperative)    Add parens: `preprocess_input()`
+720878083-15447-u	Mention `Rescaling(1. / 255.)` since typically this is the only layer needed
+710444117-15356-u	Is there any usage of negative number for this method (eg -1 for unknown shape). If all the intended use case for this method is for positive int, then let's just update this method instead. 
+711216326-15356-u	kernel_size should always be positive. dilation_rate is always positive too. For stride, I think it should be positive and non-zero as well (0 mean the window doesn't even move?). Padding is not validated by this function (checked by normalize_padding() instead).    With that, I think let's just update the existing normalize_tuple with an positive number check instead.
+711216703-15356-u	Please find all the negative values, rather than just the first one.
+711216892-15356-u	Please check the content of the error message as well.
+711636084-15356-u	Please change the cmp to validation_fn, and the function should return False for illegal inputs.    The lambda function above should also be changed to lambda x: x > 0 instead, which is more readable (not using negation).
+711682484-15356-u	Now both the method signature and the caller are quite weird now.     Seems that there are only true use case, and majority of them are strict positive. I don't think there will be any new use case, eg different lambda. So let's just add a kwarg for allow_zero and default to False, which will allow the caller side to skip all the labmdas and msgs.
+711636107-15356-u	please update this accordingly.
+711636449-15356-u	When user getting this error message, it is unclear to them what is the actual requirement for a valid param (eg it need to be positive or non-negative). The lambda approach makes it hard for showing the actual requirement.
+711682787-15356-u	errr, this method has way too many param now.
+711763992-15356-u	non-negative integer or integers into an integer tuple.
+711764221-15356-u	Default to False. A ValueError will raised if zero is received and this param is False.
+711764458-15356-u	err, shouldn't this just be [v for v in value_tuple if v >= 0]. Using list() filter() and lambda make this quite hard to read.
+711764516-15356-u	Add space between >= and 0
+711765261-15356-u	Please use assertRaisesRegex to check the error type and message at same time.
+711765421-15356-u	Let's put a quote around the {req_msg}
+711765540-15356-u	Please also verify that -1 is included in the error message.
+711870100-15356-u	Since user only provide one -4 as the input, we probably should use set() rather than list for the unqualified_values in the code.
+708804465-15355-u	To avoid spilling on the left side, use string concatenation like this:    ```  reference_str = ('Model: "model_2"'                   '_________________________________________________________________'                   ' Layer (type)                Output Shape              Param #   '                   ...  )  ```
+709620975-15355-u	Please add one more space indent to match the indent above
+709294783-15342-u	typo: `accurancy` => `accuracy`, `accurancy_1` => `accuracy_1`
+709375148-15342-u	Could u add another model.eval below this line, and make sure the output are the same as the first model.eval()?    This will make sure we don't include the any result from model.test_on_batch().
+703821555-15326-u	Presumably this should be    ```  if ((inputs.shape[2] is not None and sum(self.cropping[0]) >= inputs.shape[2]) or      (inputs.shape[3] is not None and sum(self.cropping[1]) >= inputs.shape[3]))):  ```
+706404061-15326-u	"Argument `cropping`" (with backticks)     "of Cropping layer" is not necessary, the traceback will show the origin
+703817069-15315-u	Missing a space here at the end. Also always prefer spaces at the end rather than at the beginning of each string.
+701341799-15288-u	Sure. How about just remove the smaller/larger here since it is really depending the m_mul value here. "`m_mul` times initial learning rate" as the new learning rate seems reasonable to me as well.
+700397713-15286-u	Likewise indent should be 4. You can shorten the line by using a f-string instead of `%`
+702330901-15286-u	Agreed that it does not look very readable. Please go with the option you think works best.    To put a string across two lines, prefer doing    ```  st = ('first part'        'second part')  ```
+696824586-15251-u	You should use `if isinstance(layer, Model) and layer.layers:`
+696824818-15251-u	Always use lines shorter than 80 chars
+697595073-15251-u	Make sure to respect style conventions, e.g. no spaces around `=`. Please use a style linter.
+694718764-15200-u	prefer `or self.monitor == 'auc'` to avoid potential collisions
+695600697-15200-u	Then use `endswith`. Otherwise unrelated metrics that have the substring "auc" will get caught.
+695998067-15200-u	I would say '_acc' and '_auc' to further reduce chances of accidental name clash. 
+697045067-15200-u	There are various possible names for accuracy, including `acc` itself. But we could use `self.monitor.endswith('acc') or self.monitor.endswith('accuracy')`
+691746930-15195-u	Add period at the end of the sentence
+689125589-15158-u	"When `padding="same"` and `strides=1`, the output has the same size as the input."
+690842330-15158-u	Use backticks around codde keywords
+687071840-15133-u	This is the bazel test target name which can be different from the test file name. Please refer to the BUILD file for the corresponding test name.
+687072519-15133-u	This is the BUILD package path, which is bazel specific. You can have a target like a:b_test, but the actual test python file lives in a/b/c_test.py
+683338945-15075-u	IMO the whole thing does become a lot more readable as code blocks like this. But the output of the code ("4" here) should be moved to a comment, like `# Returns "4"`
+683014218-15063-u	Let's mention that the CLA will pop up when you create a PR. You don't need to worry about it before you get started. In fact, let's move the CLA section to *after* the \"open a PR\" section.
+683014506-15063-u	Keep lines short everywhere (but keep links on a single line).\r\n\r\nRemove the extra period at the end.
+717325485-15015-u	I think we should only remove the cast for sparse_categorical_crossentropy(), since the label value could be large based on the dimension of the prediction. The rest of them like binary_crossentropy or categorical_crossentropy, the label value is either one_hot or just 0 and 1, which won't be affected when casting.\r\n\r\nAlso since backend.sparse_categorical_crossentropy will cast the y_true to int64 anyway, removing the y_true cast here is correct.\r\nhttps://github.com/keras-team/keras/blob/00518dcf7f5b7de7064267979d7e9f9916e777eb/keras/backend.py#L4952
+678568408-15015-u	I think you should keep this cast here, since the y_true are expect to be either `{-1, +1}` or `{0, 1}` (i.e. a one-hot-encoded tensor). See the docstring.    We probably want to fix the example in the docstring since the y_true is given in the range of 0-3.
+674419279-14970-u	The ValueError needs to be tested with a test that uses `assertRaisesRegex`
+674419074-14970-u	`inputs.shape[1]` can be None. The check would need to use `tf.shape(inputs)`. In fact you probably want to use https://www.tensorflow.org/api_docs/python/tf/debugging/assert_greater\r\n\r\nAlso: why `sum`?
+687139781-14970-u	I think this check would be better as    if inputs.shape[1] is not None and sum(self.cropping) >= inputs.shape[1]:    You could still construct a tensor with size 0 and shape (None, None) that would cause this to crash.
+687149750-14970-u	This would read clearer with format strings, and we are trying to gravitate towards more uniform error messages in keras.\r\n\r\nf'`cropping` parameter of Cropping layer must be greater than the input shape. '\r\nf'Recieved: inputs.shape={inputs.shape}, and cropping={self.cropping}'
+719843062-14935-u	Application names should use camel case, e.g. `EfficientNetV2B0`
+719847379-14935-u	This file should not be included in the PR. You can host in on GitHub or Colab as a way to share your workflow for creating the checkpoints.
+723893701-14935-u	Moved `round_filters` and `round_repeats` outside model function.
+719846696-14935-u	The signature of a public-facing Application should match the signature of every other application. Only include **kwargs for backwards compatibility with deprecated args; here there are none (since the application is new), so you should not need **kwargs.
+719848616-14935-u	I'd recommend using closures for this type of Functional API block, so you can apply the block in a way that's stylistically consistent with layer calls, e.g.    ```  def Block0(...):     def apply(x):          ...          return x     return apply    x = Block0(...)(x)  ```
+719848731-14935-u	This cannot default to `""`. Default to `None`.
+719849356-14935-u	By default every time you'd apply this block you'd get the same layer names. But layer names should be unique.\r\n\r\nYou can do:\r\n\r\n```\r\n... name=None):\r\nif name is None:\r\n    name = backend.get_uid(\"block0\")\r\nx = layers.Conv2D(..., name=name + \"_expand_conv\")\r\n```\r\n\r\nto make sure that you get unique names every time you apply the block.\r\n
+721656755-14935-u	Oh sorry, I meant add the quotes along with the backticks here as well. It is just that github is grabbing my backticks and rendering them as markdown.\r\n\r\nA string literal should be surrounded by backticks and quoted. None should be surrounded by backticks and not quoted. So \\`'avg'\\`, \\`'max'\\` and \\`None\\`.\r\n\r\nBasically anything inside the backticks should be valid python you could pass for the argument in question.
+719973608-14935-u	When raising errors like this, try putting the value that caused the error in the error message. This would follow our standard format:    'The `weights` argument should be either '  '`None` (random initialization), `imagenet` '  '(pre-training on ImageNet), '  'or the path to the weights file to be loaded.'  f'Received: weights={weights}'
+719973844-14935-u	Same here, add a Received: classes={classes}
+719975318-14935-u	this comment makes it look like the input_tensor must be a Keras tensor, but that does not seem to be the case in the code below.
+719977587-14935-u	what does this comment mean? is this a todo to investigate a warning?
+719980217-14935-u	choose a quote delimiter for this file and stick to it (there's a good amount of both " and ')
+669034059-14920-u	Use backticks around code keywords, e.g. `(attention_output, attention_scores)` and `attention_output`
+668400781-14905-u	This factoring seems confusing. Consider using `get_batch_input_shape(batch_size, dim)` and calling it using `partial`
+660024790-14817-u	This is inaccurate: you can configure the depth, it doesn't have to be depth 1
+663555522-14817-u	This sentence is important and should be kept
+655715763-14750-u	Please move this part of the change to a separate PR. It's going to be more complicate than that.
+665024069-14750-u	I really don't see how incrementing `self.wait` at the end of each epoch is the correct behavior.\r\n\r\nYou have access to the epoch counter `epoch`, if you just want to skip the first epoch you can? E.g. if it's the first epoch, then set the best score / weights and continue.
+654977016-14748-u	Let's use the names `serialize_as_bytecode` and `deserialize_from_bytecode` to be more explicit.
+654977088-14748-u	This parameterization isn't useful here.
+654977174-14748-u	Let's test all model types (Sequential, Functional, subclass). We have a parameterization for that. `@keras_parameterized.run_with_all_model_types`. See examples.
+667520723-14748-u	Import `pickle_utils` and then access its members in the code
+667520801-14748-u	The `:` should come before, `model:`
+337062521-13477-u	would using `for layer in sorted(layers, key=lambda x: x.name):` work too in this case?
+337064380-13477-u	In your case, you can use the `tmp_path` fixture, which will ensure temporary files are cleaned up, even in case of failure. Please take a look at this: http://doc.pytest.org/en/latest/tmpdir.html#the-tmp-path-fixture      When using the fixture, you don't have to import it, nor to remove the directory afterwards, pytest takes care of it.
+321948795-13297-u	Does that actually work with the Keras `compile`/`fit`/`evaluate` methods? If I recall correctly, there were changes made between tf.keras and external Keras (e.g. the `update_state` method returning a list).
+321949157-13297-u	Related: please add a metric test that does, roughly, for every `M` among the object metrics:    ```  model = Sequential([Dense(2, input_shape=(3,)])  model.compile('rmsprop', metrics=[M()])  model.fit(x, y)  loss_val, metric_val = model.evaluate(x, y)  ```  No need to test correctness (which is tested separately).    Importantly this test does not need to exclude Theano and CNTK (so it should be in a separate file). Theano / CNTK should only be excluded specifically for MeanIoU.
+321949008-13297-u	Avoid adding new symbols to the backend (since they aren't present in tf.keras) and instead do an inline import of tf after checking `K.backend()`.
+319341508-13265-u	Please remove the `__init__` docstrings and move the `arguments` sections to the class-level docstring (applicable everywhere)
+319342173-13265-u	These two lines can be made conditional on `threshold != 0.5`
+319342369-13265-u	To avoid type issues, please use float, e.g. `3. / 4.` (test is failing with Python 2)
+318702419-13256-u	Here rather than using __call__ (which we deliberately disable with non-TF backends), we should use a new internal method
+265716154-13138-u	Yes, good catch. Keras tensors should be moved to the input list, and should be removed from kwargs.
+306565339-13138-u	You shouldn't need to pop these args here. Rather, you should remove them from kwargs before calling the layer (which is fine since they are transferred to the input list)
+299666559-13043-u	`self.dtype = dtype or K.floatx()` is equivalent and simpler.
+289226865-12894-u	Print statements not necessary.
+287076470-12859-u	Fix indent; use 4 space indent.
+287076723-12859-u	Use convention `# Arguments` --\r\n\r\n- start with `#`\r\n- no `:`\r\n\r\nThis applies to all new docstrings.
+287077297-12859-u	`.numpy()` would be TF-specific. Please remove print statement.
+277912571-12721-u	These variables are symbolic tensors, not layer instances, so I think it would be misleading to name them "*_layer".
+275595900-12675-u	You should put this series of checks into a utility function, because 1) you do it multiple times, 2) it would improve code readability.
+276846632-12675-u	Imports should be done at the top of the file.
+272806994-12627-u	Don't use \ for line breaks.    Also: the previous code snippet was a lot more readable than this, please don't change it.
+271542356-12568-u	Please use standard formatting for the docstrings, e.g.    ```  # Arguments  ```
+271542421-12568-u	This is not relevant to Keras (which does not accept tf.data.Dataset instances as inputs)
+268978601-12551-u	Please skip the check if `int_shape` is None or `int_shape[0]` is None (same below).
+268924974-12544-u	`dtype in str(var.dtype)` like in CNTK would seem like a better check. Dtypes in TF are weird, and both `float32_ref` and `float32` are possible values for the `name` attribute of a float32 variable.
+268484075-12539-u	This could potentially return without crashing despite incorrect values for `start` or `size` (due to the use of `zip`). I would suggest adding a check that both `start` and `size` are tuples of the same length as `ndim(x)`.
+268464851-12536-u	I'd say we can remove both warnings.
+268426663-12534-u	Let's keep the signature `eye(size, ...)`\r\n\r\nBut then let's accept either an int or a tuple:\r\n\r\n```python\r\nif isinstance(size, (list, tuple)):\r\n   n, m = size\r\nelse:\r\n   n, m = size, size\r\n```
+266209370-12500-u	In order to avoid this `for` loop, I think it would be better to have the test for `logsumexp` be a separate function, with a parameterization decorator over axes and shapes.
+266209457-12492-u	In modern TF you don't need this cast anymore (I've removed this pattern in the `tf-2` branch).
+265832050-12406-u	Thank you for the PR, @tjochmann. Could you add `depth, ` here?
+265838069-12336-u	Thank you for the PR, @abhaikollara. How about changing here as `range(1, num_classes + 1)`?
+259647424-12299-u	Prefer importing `layers` then using e.g. `layers.Conv2D`
+259647442-12299-u	Please standardize the docstrings formatting to be the same as other docstrings in the codebase.
+257432338-12241-u	This looks like a breaking behavior change. Why does it need to default to True?
+254074957-12205-u	This should be structured as an `if` block for better readability:\r\n\r\n```\r\nif ...:\r\n   output_masks = ...\r\nelse:\r\n   output_masks = ...\r\n```\r\n\r\nYou can simply specify a lack of mask by passing `None` (it doesn't have to be a list of None)
+253688435-12203-u	Use `'` everywhere for consistency
+253688563-12203-u	No types, our examples are meant to be compatible with Python 2.7
+253688643-12203-u	Please use the standard docstring format in use elsewhere in the Keras repo
+253688972-12203-u	These are functions defined inside a function, used once? They should just be regular utilities.
+254507469-12203-u	Prefer `from keras import layers` then use `layers.Conv2D`, for every layer.
+254507614-12203-u	You do not need to make these functions underscore-private, I would think
+254507893-12203-u	You do not need to call `print`, the summary is printed automatically.
+251557379-12147-u	Prefer `os.path.join` instead of `/`, everywhere (will work on Windows, and generally is cleaner)
+720877957-15447-nu	You verified that the output is the same? I wasn't sure
+720878200-15447-nu	"Once the PR is approved, you should create" (no need to update keras.io until we're actually publishing the new model)
+738622841-15447-nu	In addition this, should we also ask them to provide regular unit test to sanity check their application code?
+742279744-15447-nu	I see. Not necessarily asking for one here, but I was curious that if there's no unit test in place I wonder how people make sure their code runs.
+738627936-15447-nu	Out of curiosity, what breaks when such function is not provided?
+741701694-15447-nu	@mattdangerw \r\nHow is the term **...widely used model** defined? Is it based on only the number of citations of the model used in well-reputed conferences/journals? In that case, I think the conf/journal publisher should be realized also. 20 citations from random journals/publishers would be easy to find these days.
+752987852-15355-nu	Thanks for the PR! Please add a simple test for the fixes. It could be an integration test checking the output of the summary for a given model.
+753053985-15342-nu	Thanks for sending this PR. I assume this is an minimal repro for the issue and not intended for merge, is it?
+707559410-15342-nu	Is this line expected here?
+755375212-15342-nu	Thanks for the fix. Overall it looks good. We need to make sure train_on_batch doesn't have any side effects left.
+709375205-15342-nu	I think this is probably needed as well, otherwise the follow up model.eval() will accumulate the metric result from this train/test_on_batch.
+751792513-15315-nu	There are still 8 failing tests, e.g.\r\n\r\nkeras/layers:convolutional_test
+905926056-15251-nu	Thanks for the PR. Please share an example showing the results of the change on the summary display.
+740730189-15251-nu	Looks good, the boxes are a nice touch! Please add a unit test and fix the code style.
+697596311-15200-nu	Hence why we should use `endswith`. To ignore any prefix.
+697992676-15200-nu	my point was to use `endswith('_acc')` rather than `endswith('acc')`
+687070253-15133-nu	These tests won't run automatically if the PR author is not in the contributor group. The reviewer need to apply a label with "kokoro force-run" to trigger the build.
+687072966-15133-nu	I still think the --test_filter should work for bazel. let me have a try.
+687288876-15133-nu	If `test_filter` doesn't work, then an alternative method to commenting things out is to globally rename the tests to add some prefix like 'NORUN_' to the method name.
+687073999-15133-nu	Will this slow down the test execution? (potentially cause test to timeout as well)
+723616353-15075-nu	LGTM. Note that such changes should only be done in other files if we're in a similar situation where we have inconsistent formatting or where we just have very long code comments in the examples.
+682938707-15063-nu	Not sure if there is any item need to be configured for the container, eg python version etc. will it use the docker container file we provided?
+893028300-15063-nu	Strong agree with this. It's good to provide people with an easy way to use their favorite development tools, but we should not prescribe one specific workflow.
+905820010-14970-nu	I think that's a good plan, but let's hold off for a day, about to discuss this with @fchollet later
+907534661-14970-nu	OK this is in! (with a typo fix for received and a couple linter fixes)\r\n\r\nThanks for patience. Please go ahead and address the same for `Cropping2D` and `Cropping3D` if you have time, that would be very helpful!
+762668291-14935-nu	Thanks for adding it. Overall looks good to me!
+719843342-14935-nu	Do we really need all these models? Why not just the Bs (like for v1)?
+720018839-14935-nu	@fchollet isn't it ok to keep all variants of the v2 model? In v1, it's included almost all. Also, in v2, the variants of `s`, `m`, `l` and `xl` have much higher top-1 accuracy compare to the rest (`bs`).
+719971183-14935-nu	if you follow @fchollet's note to add a rescaling layer to the model, this note can be removed.
+948862596-14935-nu	Also, while landing we will upload the weights to our own bucket. Is https://drive.google.com/file/d/1UCtqTFQ5G-eg1LoK08qxTq3t-O-h0Sib/view the current link for the weights?    Thanks!
+900950735-14750-nu	@fchollet Is there any plan to make a patch release containing this fix?
+901289889-14750-nu	Hello @harupy, the next release is estimated to be a while from now. Would `pip install keras-nightly` work if you'd like the latest change to be picked up?
+654976790-14748-nu	Will this work across all systems?
+865400437-14748-nu	Correction: this object is actually replicated in `keras/utils/object_identity.py`.
+866182172-14748-nu	Yes, I think it would be straightforward. We'd have to do it for `ObjectIdentityDictionary`, `_ObjectIdentityWrapper`, `ObjectIdentitySet`. Some have weakrefs so it will require a little bit of thinking but still very straightforward.\r\n\r\nChanges would have to be replicated in the TF versions of these objects in a separate PR (for consistency)
+544907333-13477-nu	Hi @gabrieldemarmiesse , I added the modifications to the `test_mean_iou`
+337469914-13477-nu	I believe that we have too much problems with this tests for what it's worth. Can you disable it? We'll enable it again later once we find a fix.\r\n```suggestion\r\n@pytest.mark.skipif(True, reason='It is a flaky test, see #13477 for more context.')\r\n```\r\n\r\nYou can also remove the flaky decorator and import.
+318736730-13256-nu	Is this strictly necessary? I thought internally we were only calling metrics from `compile` which is already a symbolic scope.  This will prevent calling a metric in eager mode if TF 2.
+281031033-13256-nu	The attribute `_call_result` will always be present on a scalar tensor that's the output of a metric, right?\r\n\r\nDo we have any graph nodes that are descendants of scalar metric results? Are are these tensors terminal nodes in all cases?
+279200998-12751-nu	This is a nice improvement over the previous version. But the main problem is that the submodels with multiple input and/or outputs are incorrectly represented when their first and last nodes are retained.     Proper way would be to keep track of the inputs and outputs of each wrapper/submodel in these dictionaries.
+228856333-12675-nu	Thanks a lot! Could you also send a PR to apply the same fix in tf.keras? https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/keras/utils/vis_utils.py"
+222387470-12568-nu	Excellent, thank you!
+265953022-12336-nu	Do you have plans to investigate the weird behavior of `in_top_k` in CNTK?
+257856493-12299-nu	The bug you encountered is a bug appearing only in keras 2.2.4. The version from master can run this script without any issues.
+260620928-12299-nu	@farizrahman4u could this be related to tour recent modifications of batch dot?
+215431102-12299-nu	The changes look reasonable, thank you.
+200888194-12205-nu	Ok, sounds good. Please add a unit test for this.
+199859890-12203-nu	The example script works fine at this time. I do not understand the purpose of the changes in this PR.
+200874472-12203-nu	Ok, sounds reasonable! Thanks for the update.
+254507776-12203-nu	These 2 functions probably don't need to be nested in this function, and can live outside

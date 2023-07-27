@@ -1,0 +1,368 @@
+2168	On the bad device, once you add that fix, do we have other messages where msg.obj is a IBinder and can we still do service death detection? If yes then this fix is great, if no then I wonder if we could detect this ahead of time and not set up the hook at all. Thoughts?
+2168	I guess I just want to confirm you're still also seeing IBinder messages on that device.
+2133	👍 waiting for green build to merge
+2124	Great to see there's a fix for this. Any chance that it's going to be released?
+2124	It will definitely be released some day. I don't know if that'll happen while I'm on paternity leave.
+2122	oooh I see. So that's because segments of the path contain periods because they're packages. Great. So there's no max but generally don't expect too many I guess
+2122	This is ok but based on the video there's a little amount of time where one might think they have to click on "import hprof" on that new screen, when in fact the hprof was already being imported. So now I'm wondering if we should add a virtual row for "pending analysis" on that screen (for this new feature but also any time we import).
+2122	I'm not sure we'd want to update the DB as this is very much an "in progress" thing that's only true while the program is running, so we'd risk having out of date info after a restart.We could probably file this as a follow up... but I'm thinking maybe an internal thing that keeps track of "are we running an analysis right now" and a way to subscribe to that.
+2122	Thx, this is a great PR!
+2090	Using Build.VERSION_CODES.R instead of "30" requires updating compileSDK from 29 to 30. This update caused other issues. So, it is better to do compileSDK update in a separate PR
+2044	This change seems unrelated – why lower this number?
+2044	Because I asked in the previous PR :) . The Travis CI ran on 16 so we shouldn't lose that. Though ideally we'd run on a few versions maybe.
+2044	This isn't needed anymore, right?
+2014	is is really cool! Is this hitting any API grey list / black list?
+2014	Thanks! Sorry for the slow review, this is really cool but I need time to dig into it
+2012	Why are you cleaning before building? There shouldn't be nothing there.
+2012	That line doesn't explain why the clean is there at all in travis, although it could be that travis was leaking files between builds, and this was the workaround. Shouldn't be needed here.
+2012	I'd love to ditch TravisCI entirely and have something else for the snapshot deploy.
+2012	Another PR sounds good!
+1973	Shouldn't this go before val result = condition.evaluate() ?
+1973	Suggestion: have you considered adding sdk > 21? On older Android phones it much be too much of a pressure to run analysis in background. Or, maybe, make it configurable?
+1973	How safe is this !! here? E.g. emulators, custom hardware and firmware can potentially return null here?
+1973	This is how you delete the file after the heap dump analysis, right (assuming happy path and no errors)?
+1973	As an alternative you can use the measureTime, but it's experimental, might be too risky for release
+1958	yeaaaah that's... a very unfortunate piece of code :) . That thing adds font tags. You did the right thing.
+1948	Thanks! Sorry it took so long to merge :)
+1931	Thanks for testing! Sounds good.
+1893	Wow, so you're using LeakCanary to catch leaks in the cars? We should start advertising this library as a good car plumbing solution! 😄
+1878	his is confusing, why do we need to call this before invoking moveReaderTo(reader.startPosition) ?
+1878	Note: LongLongScatterMap and LongObjectScatterMap potentially can improve memory usage here; depends on how many items are in the map, of course
+1878	Just noting that you use currentRecord instead of localCurrentRecord here. Shouldn't matter, but you know this code better, might think of possible edge cases?
+1877	Then that's the answer ;) . Favor expression over optimization unless you can prove the optimization is worth the loss in expressio
+1875	PathFinder is an internal class. You can change the signature of its methods and change everything else. Definitely shouldn't live here but in PathFinder if you think we should keep it, but I'm not sure why.
+1875	Looking good but left some more feedback on the test.
+1875	Is there really only a contains that takes a vararg?
+1875	Is there any world in which a change to LongScatterSet could break this behavior?
+1875	What's "a lot" ? How does the test demonstrate that resizing occurred? Also, resizing is not an interesting part the API, it's an impl detail, what should we test instead?
+1865	Is it unused? The flag seems to be a regular boolean
+1842	This is brilliant! 😮
+1838	did this happen, or is it to be safe?
+1838	Looking great! I left a few comments to address. My only concern is with the fix for ActivityChooserModel, I'd like some pointers at the sources showing how it happens, because that fix is a bit more involved.
+1818	Thanks for the great work and for following up, sorry I didn't merge any earlier!
+1818	The JDK Stack class should be avoided. ArrayList and ArrayDeque are good alternativ
+1818	Took a first look at the new implementation and left some feedback. Once feedback is addressed, I'll do another deep dive.
+1818	Let me know when you want me to take another look ;)
+1808	Does this need to live in the leakcanary-android-core module or could we move it and then make it internal?
+1808	Can be converted to a Kotlin property
+1808	Instead of surfacing just the current state, we should surface why we're in that state.
+1808	Looks good to me! I'll let @pyricau decide whether it's ready to be merged!Thanks again! 🙏
+1808	Looking good! I left a few nit comments. A screenshot would be nice too ;)
+1806	Oh, that's interesting! Hadn't thought of this, makes sense to reenable.
+1806	I'd definitely avoid adding a new public API for something not directly related.At some point in the future (?) we're supposed to be able to share access to internal symbols across modules of the same project. Until that's available, two options: if there's internal state that must be shared, I rely on public methods under an "internal" package. Otherwise (ie, like here), I'd much rather duplicate the code.
+1806	nit: this says both "production" and "release". We should ideally pick one, as changing vocabulary can be confusing. Probably release?
+1806	Welp, I wanted to make a PR but I pushed to master instead. Oh well.28d5378🤫 don't tell anyone
+1806	Thanks!! I'll merge and follow up with the wording nit.
+1802	As long as it's not in the LeakCanary exported deps, that's fine anyway.
+1802	This sounds nicer because it tells us what's wrong
+1802	The one already in place because isEmpty() will log the content of missingInConfigBuilder automatically. => you shouldn't log it in the error message.
+1802	Should have another test for the opposite case, a field in the builder that's not in the config class. Less likely but maybe with deprecation.
+1802	instead of subtract, how about asserting the two lists are equal? That way the framework tells us what's different. If there's a reason not to use equals, then the error message should include both lists
+1800	I'm hoping to release 2.3 sometimes next week. Ping me again if that's not the case!
+1800	I'm writing the release notes :)
+1786	Not sure, but maybe suspected references?
+1774	nit: wondering if folder, buffer size and interval should be params with default values. Not necessary thoug
+1734	ah, I hadn't thought of that, makes sense
+1734	One question: why did you first have config.copy(enabled = InternalAppWatcher.isDebuggableBuild) and then changed it to config.copy(enabled = true) ?
+1715	Did you hide it by using the "SinceKotlin(999)" hack?What does "won't work" mean here?
+1677	Force downgrading is not a safe operation and other libraries using Okio 2.x are liable to break. This library already depends on Kotlin so downgrading Okio provides no advantage. You're of course welcome to proceed with this since it doesn't affect much. I would push back on the user either way.
+1677	Personally I’d build against either 1.x or 2.x, but not both. But this looks safe.
+1677	Oh and in great irony the bug report is from a user on a version that precedes this one. That is, this bug can occur exclusively within 1.x releases. My recommendation is to decline this PR and tell your user to use the latest 1.x
+1650	What is this change about?
+1633	Sorry, nope: if we're not adding something as public API, then we should not be adding it to Config. Sources of API classes are read by users of the library so we should aim to limit private code in it.
+1633	welp the idea is to only keep the activity reference while the activity is resumed (and therefore won't crash when toasting) so that likely won't work
+1633	wow, UiModeManager has been here since API lvl 8, first time I see it.
+1633	Nice! Ok I was confused as to why it was added in both places. That way is even better :)
+1633	Seems this has been approved, when will it get merged?Was looking since we need to check TV application for memory leaks
+1633	Damn, I did a merge instead of a squash, so all those 21 commits are now on master. Oh well. Next time, can you squash as you go ;)
+1622	Currently, there are combinations of when and if in this method which make it a bit harder to follow, and also a lot of if conditions are inverted (if (a != x) .. else ..).I refactored it in a way so it mostly uses when + few more touch up; what do you think?
+1611	Approving (a few changes still needed but overall looking good)
+1611	I'm ok with waiting, would love to give you the opportunity to finish this.Once this is ready we should probably use it on a jetified project and make sure Gradle won't complain.
+1611	I checked out the branch, deployed locally, added the support library only to a project then support library + jetifier and it's all been working, no issue.I'm going to merge :)
+1589	Once this land, will the plugin be automatically available as soon as we make the next release to maven central? Wondering if publishing a gradle plugin is as simple as publishing a jar, or if there's more work that needs to happen.
+1589	I find it interesting to have a group, when listing tasks they are grouped. Maybe a more general group such as "memory monitoring" would provide more insights on what the tasks are doing.
+1559	typeSize is an artifact of older code prior to creating PrimitiveType, so I would actually favor the latter (PrimitiveType). In both cases we're doing a map lookup so it's kind of equivalent.
+1551	This test is testing that SharkLog.d passes the result of the callback to SharkLog.logger.d, right?
+1542	I was wondering if the mapping should happen when parsing instead? ie either passing proguardMapping to Hprof.open or HprofReader.readHprofRecords. This would provide the mapping capabilities even if you're not using the index. One issue though is that you can't tell if a string is a class name, a field name, or something else. So it probably wouldn't work?
+1542	I'm curious about the distinct casing (dash for "analyze-process" vs underscore for "proguard_mapping"), is there a standard practice?
+1535	Thanks!How do I generate / override the baseline? Btw I hadn't realized we'd have so many things in the baseline, that's a lot a content committed :)
+1535	do we need empty files?
+1535	with that we can get rid of the vararg and lose the new Object[0]
+1535	I like the stats reports per module! Let's keep it.Maybe we can make ./gradlew check a commit hook?
+1535	oh sorry yeah I actually should have said push hook :)
+2168	On the bad device, once you add that fix, do we have other messages where msg.obj is a IBinder and can we still do service death detection? If yes then this fix is great, if no then I wonder if we could detect this ahead of time and not set up the hook at all. Thoughts?
+2168	I guess I just want to confirm you're still also seeing IBinder messages on that device.
+2133	👍 waiting for green build to merge
+2124	Great to see there's a fix for this. Any chance that it's going to be released?
+2124	It will definitely be released some day. I don't know if that'll happen while I'm on paternity leave.
+2122	oooh I see. So that's because segments of the path contain periods because they're packages. Great. So there's no max but generally don't expect too many I guess
+2122	This is ok but based on the video there's a little amount of time where one might think they have to click on "import hprof" on that new screen, when in fact the hprof was already being imported. So now I'm wondering if we should add a virtual row for "pending analysis" on that screen (for this new feature but also any time we import).
+2122	I'm not sure we'd want to update the DB as this is very much an "in progress" thing that's only true while the program is running, so we'd risk having out of date info after a restart.We could probably file this as a follow up... but I'm thinking maybe an internal thing that keeps track of "are we running an analysis right now" and a way to subscribe to that.
+2122	Thx, this is a great PR!
+2090	Using Build.VERSION_CODES.R instead of "30" requires updating compileSDK from 29 to 30. This update caused other issues. So, it is better to do compileSDK update in a separate PR
+2044	This change seems unrelated – why lower this number?
+2044	Because I asked in the previous PR :) . The Travis CI ran on 16 so we shouldn't lose that. Though ideally we'd run on a few versions maybe.
+2044	This isn't needed anymore, right?
+2014	is is really cool! Is this hitting any API grey list / black list?
+2014	Thanks! Sorry for the slow review, this is really cool but I need time to dig into it
+2012	Why are you cleaning before building? There shouldn't be nothing there.
+2012	That line doesn't explain why the clean is there at all in travis, although it could be that travis was leaking files between builds, and this was the workaround. Shouldn't be needed here.
+2012	I'd love to ditch TravisCI entirely and have something else for the snapshot deploy.
+2012	Another PR sounds good!
+1973	Shouldn't this go before val result = condition.evaluate() ?
+1973	Suggestion: have you considered adding sdk > 21? On older Android phones it much be too much of a pressure to run analysis in background. Or, maybe, make it configurable?
+1973	How safe is this !! here? E.g. emulators, custom hardware and firmware can potentially return null here?
+1973	This is how you delete the file after the heap dump analysis, right (assuming happy path and no errors)?
+1973	As an alternative you can use the measureTime, but it's experimental, might be too risky for release
+1958	yeaaaah that's... a very unfortunate piece of code :) . That thing adds font tags. You did the right thing.
+1948	Thanks! Sorry it took so long to merge :)
+1931	Thanks for testing! Sounds good.
+1893	Wow, so you're using LeakCanary to catch leaks in the cars? We should start advertising this library as a good car plumbing solution! 😄
+1878	his is confusing, why do we need to call this before invoking moveReaderTo(reader.startPosition) ?
+1878	Note: LongLongScatterMap and LongObjectScatterMap potentially can improve memory usage here; depends on how many items are in the map, of course
+1878	Just noting that you use currentRecord instead of localCurrentRecord here. Shouldn't matter, but you know this code better, might think of possible edge cases?
+1877	Then that's the answer ;) . Favor expression over optimization unless you can prove the optimization is worth the loss in expressio
+1875	PathFinder is an internal class. You can change the signature of its methods and change everything else. Definitely shouldn't live here but in PathFinder if you think we should keep it, but I'm not sure why.
+1875	Looking good but left some more feedback on the test.
+1875	Is there really only a contains that takes a vararg?
+1875	Is there any world in which a change to LongScatterSet could break this behavior?
+1875	What's "a lot" ? How does the test demonstrate that resizing occurred? Also, resizing is not an interesting part the API, it's an impl detail, what should we test instead?
+1865	Is it unused? The flag seems to be a regular boolean
+1842	This is brilliant! 😮
+1838	did this happen, or is it to be safe?
+1838	Looking great! I left a few comments to address. My only concern is with the fix for ActivityChooserModel, I'd like some pointers at the sources showing how it happens, because that fix is a bit more involved.
+1818	Thanks for the great work and for following up, sorry I didn't merge any earlier!
+1818	The JDK Stack class should be avoided. ArrayList and ArrayDeque are good alternativ
+1818	Took a first look at the new implementation and left some feedback. Once feedback is addressed, I'll do another deep dive.
+1818	Let me know when you want me to take another look ;)
+1808	Does this need to live in the leakcanary-android-core module or could we move it and then make it internal?
+1808	Can be converted to a Kotlin property
+1808	Instead of surfacing just the current state, we should surface why we're in that state.
+1808	Looks good to me! I'll let @pyricau decide whether it's ready to be merged!Thanks again! 🙏
+1808	Looking good! I left a few nit comments. A screenshot would be nice too ;)
+1806	Oh, that's interesting! Hadn't thought of this, makes sense to reenable.
+1806	I'd definitely avoid adding a new public API for something not directly related.At some point in the future (?) we're supposed to be able to share access to internal symbols across modules of the same project. Until that's available, two options: if there's internal state that must be shared, I rely on public methods under an "internal" package. Otherwise (ie, like here), I'd much rather duplicate the code.
+1806	nit: this says both "production" and "release". We should ideally pick one, as changing vocabulary can be confusing. Probably release?
+1806	Welp, I wanted to make a PR but I pushed to master instead. Oh well.28d5378🤫 don't tell anyone
+1806	Thanks!! I'll merge and follow up with the wording nit.
+1802	As long as it's not in the LeakCanary exported deps, that's fine anyway.
+1802	This sounds nicer because it tells us what's wrong
+1802	The one already in place because isEmpty() will log the content of missingInConfigBuilder automatically. => you shouldn't log it in the error message.
+1802	Should have another test for the opposite case, a field in the builder that's not in the config class. Less likely but maybe with deprecation.
+1802	instead of subtract, how about asserting the two lists are equal? That way the framework tells us what's different. If there's a reason not to use equals, then the error message should include both lists
+1800	I'm hoping to release 2.3 sometimes next week. Ping me again if that's not the case!
+1800	I'm writing the release notes :)
+1786	Not sure, but maybe suspected references?
+1774	nit: wondering if folder, buffer size and interval should be params with default values. Not necessary thoug
+1734	ah, I hadn't thought of that, makes sense
+1734	One question: why did you first have config.copy(enabled = InternalAppWatcher.isDebuggableBuild) and then changed it to config.copy(enabled = true) ?
+1715	Did you hide it by using the "SinceKotlin(999)" hack?What does "won't work" mean here?
+1677	Force downgrading is not a safe operation and other libraries using Okio 2.x are liable to break. This library already depends on Kotlin so downgrading Okio provides no advantage. You're of course welcome to proceed with this since it doesn't affect much. I would push back on the user either way.
+1677	Personally I’d build against either 1.x or 2.x, but not both. But this looks safe.
+1677	Oh and in great irony the bug report is from a user on a version that precedes this one. That is, this bug can occur exclusively within 1.x releases. My recommendation is to decline this PR and tell your user to use the latest 1.x
+1650	What is this change about?
+1633	Sorry, nope: if we're not adding something as public API, then we should not be adding it to Config. Sources of API classes are read by users of the library so we should aim to limit private code in it.
+1633	welp the idea is to only keep the activity reference while the activity is resumed (and therefore won't crash when toasting) so that likely won't work
+1633	wow, UiModeManager has been here since API lvl 8, first time I see it.
+1633	Nice! Ok I was confused as to why it was added in both places. That way is even better :)
+1633	Seems this has been approved, when will it get merged?Was looking since we need to check TV application for memory leaks
+1633	Damn, I did a merge instead of a squash, so all those 21 commits are now on master. Oh well. Next time, can you squash as you go ;)
+1622	Currently, there are combinations of when and if in this method which make it a bit harder to follow, and also a lot of if conditions are inverted (if (a != x) .. else ..).I refactored it in a way so it mostly uses when + few more touch up; what do you think?
+1611	Approving (a few changes still needed but overall looking good)
+1611	I'm ok with waiting, would love to give you the opportunity to finish this.Once this is ready we should probably use it on a jetified project and make sure Gradle won't complain.
+1611	I checked out the branch, deployed locally, added the support library only to a project then support library + jetifier and it's all been working, no issue.I'm going to merge :)
+1589	Once this land, will the plugin be automatically available as soon as we make the next release to maven central? Wondering if publishing a gradle plugin is as simple as publishing a jar, or if there's more work that needs to happen.
+1589	I find it interesting to have a group, when listing tasks they are grouped. Maybe a more general group such as "memory monitoring" would provide more insights on what the tasks are doing.
+1559	typeSize is an artifact of older code prior to creating PrimitiveType, so I would actually favor the latter (PrimitiveType). In both cases we're doing a map lookup so it's kind of equivalent.
+1551	This test is testing that SharkLog.d passes the result of the callback to SharkLog.logger.d, right?
+1542	I was wondering if the mapping should happen when parsing instead? ie either passing proguardMapping to Hprof.open or HprofReader.readHprofRecords. This would provide the mapping capabilities even if you're not using the index. One issue though is that you can't tell if a string is a class name, a field name, or something else. So it probably wouldn't work?
+1542	I'm curious about the distinct casing (dash for "analyze-process" vs underscore for "proguard_mapping"), is there a standard practice?
+1535	Thanks!How do I generate / override the baseline? Btw I hadn't realized we'd have so many things in the baseline, that's a lot a content committed :)
+1535	do we need empty files?
+1535	with that we can get rid of the vararg and lose the new Object[0]
+1535	I like the stats reports per module! Let's keep it.Maybe we can make ./gradlew check a commit hook?
+1535	oh sorry yeah I actually should have said push hook :)
+2168	On the bad device, once you add that fix, do we have other messages where msg.obj is a IBinder and can we still do service death detection? If yes then this fix is great, if no then I wonder if we could detect this ahead of time and not set up the hook at all. Thoughts?
+2168	I guess I just want to confirm you're still also seeing IBinder messages on that device.
+2133	👍 waiting for green build to merge
+2124	Great to see there's a fix for this. Any chance that it's going to be released?
+2124	It will definitely be released some day. I don't know if that'll happen while I'm on paternity leave.
+2122	oooh I see. So that's because segments of the path contain periods because they're packages. Great. So there's no max but generally don't expect too many I guess
+2122	This is ok but based on the video there's a little amount of time where one might think they have to click on "import hprof" on that new screen, when in fact the hprof was already being imported. So now I'm wondering if we should add a virtual row for "pending analysis" on that screen (for this new feature but also any time we import).
+2122	I'm not sure we'd want to update the DB as this is very much an "in progress" thing that's only true while the program is running, so we'd risk having out of date info after a restart.We could probably file this as a follow up... but I'm thinking maybe an internal thing that keeps track of "are we running an analysis right now" and a way to subscribe to that.
+2122	Thx, this is a great PR!
+2090	Using Build.VERSION_CODES.R instead of "30" requires updating compileSDK from 29 to 30. This update caused other issues. So, it is better to do compileSDK update in a separate PR
+2044	This change seems unrelated – why lower this number?
+2044	Because I asked in the previous PR :) . The Travis CI ran on 16 so we shouldn't lose that. Though ideally we'd run on a few versions maybe.
+2044	This isn't needed anymore, right?
+2014	is is really cool! Is this hitting any API grey list / black list?
+2014	Thanks! Sorry for the slow review, this is really cool but I need time to dig into it
+2012	Why are you cleaning before building? There shouldn't be nothing there.
+2012	That line doesn't explain why the clean is there at all in travis, although it could be that travis was leaking files between builds, and this was the workaround. Shouldn't be needed here.
+2012	I'd love to ditch TravisCI entirely and have something else for the snapshot deploy.
+2012	Another PR sounds good!
+1973	Shouldn't this go before val result = condition.evaluate() ?
+1973	Suggestion: have you considered adding sdk > 21? On older Android phones it much be too much of a pressure to run analysis in background. Or, maybe, make it configurable?
+1973	How safe is this !! here? E.g. emulators, custom hardware and firmware can potentially return null here?
+1973	This is how you delete the file after the heap dump analysis, right (assuming happy path and no errors)?
+1973	As an alternative you can use the measureTime, but it's experimental, might be too risky for release
+1958	yeaaaah that's... a very unfortunate piece of code :) . That thing adds font tags. You did the right thing.
+1948	Thanks! Sorry it took so long to merge :)
+1931	Thanks for testing! Sounds good.
+1893	Wow, so you're using LeakCanary to catch leaks in the cars? We should start advertising this library as a good car plumbing solution! 😄
+1878	his is confusing, why do we need to call this before invoking moveReaderTo(reader.startPosition) ?
+1878	Note: LongLongScatterMap and LongObjectScatterMap potentially can improve memory usage here; depends on how many items are in the map, of course
+1878	Just noting that you use currentRecord instead of localCurrentRecord here. Shouldn't matter, but you know this code better, might think of possible edge cases?
+1877	Then that's the answer ;) . Favor expression over optimization unless you can prove the optimization is worth the loss in expressio
+1875	PathFinder is an internal class. You can change the signature of its methods and change everything else. Definitely shouldn't live here but in PathFinder if you think we should keep it, but I'm not sure why.
+1875	Looking good but left some more feedback on the test.
+1875	Is there really only a contains that takes a vararg?
+1875	Is there any world in which a change to LongScatterSet could break this behavior?
+1875	What's "a lot" ? How does the test demonstrate that resizing occurred? Also, resizing is not an interesting part the API, it's an impl detail, what should we test instead?
+1865	Is it unused? The flag seems to be a regular boolean
+1842	This is brilliant! 😮
+1838	did this happen, or is it to be safe?
+1838	Looking great! I left a few comments to address. My only concern is with the fix for ActivityChooserModel, I'd like some pointers at the sources showing how it happens, because that fix is a bit more involved.
+1818	Thanks for the great work and for following up, sorry I didn't merge any earlier!
+1818	The JDK Stack class should be avoided. ArrayList and ArrayDeque are good alternativ
+1818	Took a first look at the new implementation and left some feedback. Once feedback is addressed, I'll do another deep dive.
+1818	Let me know when you want me to take another look ;)
+1808	Does this need to live in the leakcanary-android-core module or could we move it and then make it internal?
+1808	Can be converted to a Kotlin property
+1808	Instead of surfacing just the current state, we should surface why we're in that state.
+1808	Looks good to me! I'll let @pyricau decide whether it's ready to be merged!Thanks again! 🙏
+1808	Looking good! I left a few nit comments. A screenshot would be nice too ;)
+1806	Oh, that's interesting! Hadn't thought of this, makes sense to reenable.
+1806	I'd definitely avoid adding a new public API for something not directly related.At some point in the future (?) we're supposed to be able to share access to internal symbols across modules of the same project. Until that's available, two options: if there's internal state that must be shared, I rely on public methods under an "internal" package. Otherwise (ie, like here), I'd much rather duplicate the code.
+1806	nit: this says both "production" and "release". We should ideally pick one, as changing vocabulary can be confusing. Probably release?
+1806	Welp, I wanted to make a PR but I pushed to master instead. Oh well.28d5378🤫 don't tell anyone
+1806	Thanks!! I'll merge and follow up with the wording nit.
+1802	As long as it's not in the LeakCanary exported deps, that's fine anyway.
+1802	This sounds nicer because it tells us what's wrong
+1802	The one already in place because isEmpty() will log the content of missingInConfigBuilder automatically. => you shouldn't log it in the error message.
+1802	Should have another test for the opposite case, a field in the builder that's not in the config class. Less likely but maybe with deprecation.
+1802	instead of subtract, how about asserting the two lists are equal? That way the framework tells us what's different. If there's a reason not to use equals, then the error message should include both lists
+1800	I'm hoping to release 2.3 sometimes next week. Ping me again if that's not the case!
+1800	I'm writing the release notes :)
+1786	Not sure, but maybe suspected references?
+1774	nit: wondering if folder, buffer size and interval should be params with default values. Not necessary thoug
+1734	ah, I hadn't thought of that, makes sense
+1734	One question: why did you first have config.copy(enabled = InternalAppWatcher.isDebuggableBuild) and then changed it to config.copy(enabled = true) ?
+1715	Did you hide it by using the "SinceKotlin(999)" hack?What does "won't work" mean here?
+1677	Force downgrading is not a safe operation and other libraries using Okio 2.x are liable to break. This library already depends on Kotlin so downgrading Okio provides no advantage. You're of course welcome to proceed with this since it doesn't affect much. I would push back on the user either way.
+1677	Personally I’d build against either 1.x or 2.x, but not both. But this looks safe.
+1677	Oh and in great irony the bug report is from a user on a version that precedes this one. That is, this bug can occur exclusively within 1.x releases. My recommendation is to decline this PR and tell your user to use the latest 1.x
+1650	What is this change about?
+1633	Sorry, nope: if we're not adding something as public API, then we should not be adding it to Config. Sources of API classes are read by users of the library so we should aim to limit private code in it.
+1633	welp the idea is to only keep the activity reference while the activity is resumed (and therefore won't crash when toasting) so that likely won't work
+1633	wow, UiModeManager has been here since API lvl 8, first time I see it.
+1633	Nice! Ok I was confused as to why it was added in both places. That way is even better :)
+1633	Seems this has been approved, when will it get merged?Was looking since we need to check TV application for memory leaks
+1633	Damn, I did a merge instead of a squash, so all those 21 commits are now on master. Oh well. Next time, can you squash as you go ;)
+1622	Currently, there are combinations of when and if in this method which make it a bit harder to follow, and also a lot of if conditions are inverted (if (a != x) .. else ..).I refactored it in a way so it mostly uses when + few more touch up; what do you think?
+1611	Approving (a few changes still needed but overall looking good)
+1611	I'm ok with waiting, would love to give you the opportunity to finish this.Once this is ready we should probably use it on a jetified project and make sure Gradle won't complain.
+1611	I checked out the branch, deployed locally, added the support library only to a project then support library + jetifier and it's all been working, no issue.I'm going to merge :)
+1589	Once this land, will the plugin be automatically available as soon as we make the next release to maven central? Wondering if publishing a gradle plugin is as simple as publishing a jar, or if there's more work that needs to happen.
+1589	I find it interesting to have a group, when listing tasks they are grouped. Maybe a more general group such as "memory monitoring" would provide more insights on what the tasks are doing.
+1559	typeSize is an artifact of older code prior to creating PrimitiveType, so I would actually favor the latter (PrimitiveType). In both cases we're doing a map lookup so it's kind of equivalent.
+1551	This test is testing that SharkLog.d passes the result of the callback to SharkLog.logger.d, right?
+1542	I was wondering if the mapping should happen when parsing instead? ie either passing proguardMapping to Hprof.open or HprofReader.readHprofRecords. This would provide the mapping capabilities even if you're not using the index. One issue though is that you can't tell if a string is a class name, a field name, or something else. So it probably wouldn't work?
+1542	I'm curious about the distinct casing (dash for "analyze-process" vs underscore for "proguard_mapping"), is there a standard practice?
+1535	Thanks!How do I generate / override the baseline? Btw I hadn't realized we'd have so many things in the baseline, that's a lot a content committed :)
+1535	do we need empty files?
+1535	with that we can get rid of the vararg and lose the new Object[0]
+1535	I like the stats reports per module! Let's keep it.Maybe we can make ./gradlew check a commit hook?
+1535	oh sorry yeah I actually should have said push hook :)
+2168	On the bad device, once you add that fix, do we have other messages where msg.obj is a IBinder and can we still do service death detection? If yes then this fix is great, if no then I wonder if we could detect this ahead of time and not set up the hook at all. Thoughts?
+2168	I guess I just want to confirm you're still also seeing IBinder messages on that device.
+2133	👍 waiting for green build to merge
+2124	Great to see there's a fix for this. Any chance that it's going to be released?
+2124	It will definitely be released some day. I don't know if that'll happen while I'm on paternity leave.
+2122	oooh I see. So that's because segments of the path contain periods because they're packages. Great. So there's no max but generally don't expect too many I guess
+2122	This is ok but based on the video there's a little amount of time where one might think they have to click on "import hprof" on that new screen, when in fact the hprof was already being imported. So now I'm wondering if we should add a virtual row for "pending analysis" on that screen (for this new feature but also any time we import).
+2122	I'm not sure we'd want to update the DB as this is very much an "in progress" thing that's only true while the program is running, so we'd risk having out of date info after a restart.We could probably file this as a follow up... but I'm thinking maybe an internal thing that keeps track of "are we running an analysis right now" and a way to subscribe to that.
+2122	Thx, this is a great PR!
+2090	Using Build.VERSION_CODES.R instead of "30" requires updating compileSDK from 29 to 30. This update caused other issues. So, it is better to do compileSDK update in a separate PR
+2044	This change seems unrelated – why lower this number?
+2044	Because I asked in the previous PR :) . The Travis CI ran on 16 so we shouldn't lose that. Though ideally we'd run on a few versions maybe.
+2044	This isn't needed anymore, right?
+2014	is is really cool! Is this hitting any API grey list / black list?
+2014	Thanks! Sorry for the slow review, this is really cool but I need time to dig into it
+2012	Why are you cleaning before building? There shouldn't be nothing there.
+2012	That line doesn't explain why the clean is there at all in travis, although it could be that travis was leaking files between builds, and this was the workaround. Shouldn't be needed here.
+2012	I'd love to ditch TravisCI entirely and have something else for the snapshot deploy.
+2012	Another PR sounds good!
+1973	Shouldn't this go before val result = condition.evaluate() ?
+1973	Suggestion: have you considered adding sdk > 21? On older Android phones it much be too much of a pressure to run analysis in background. Or, maybe, make it configurable?
+1973	How safe is this !! here? E.g. emulators, custom hardware and firmware can potentially return null here?
+1973	This is how you delete the file after the heap dump analysis, right (assuming happy path and no errors)?
+1973	As an alternative you can use the measureTime, but it's experimental, might be too risky for release
+1958	yeaaaah that's... a very unfortunate piece of code :) . That thing adds font tags. You did the right thing.
+1948	Thanks! Sorry it took so long to merge :)
+1931	Thanks for testing! Sounds good.
+1893	Wow, so you're using LeakCanary to catch leaks in the cars? We should start advertising this library as a good car plumbing solution! 😄
+1878	his is confusing, why do we need to call this before invoking moveReaderTo(reader.startPosition) ?
+1878	Note: LongLongScatterMap and LongObjectScatterMap potentially can improve memory usage here; depends on how many items are in the map, of course
+1878	Just noting that you use currentRecord instead of localCurrentRecord here. Shouldn't matter, but you know this code better, might think of possible edge cases?
+1877	Then that's the answer ;) . Favor expression over optimization unless you can prove the optimization is worth the loss in expressio
+1875	PathFinder is an internal class. You can change the signature of its methods and change everything else. Definitely shouldn't live here but in PathFinder if you think we should keep it, but I'm not sure why.
+1875	Looking good but left some more feedback on the test.
+1875	Is there really only a contains that takes a vararg?
+1875	Is there any world in which a change to LongScatterSet could break this behavior?
+1875	What's "a lot" ? How does the test demonstrate that resizing occurred? Also, resizing is not an interesting part the API, it's an impl detail, what should we test instead?
+1865	Is it unused? The flag seems to be a regular boolean
+1842	This is brilliant! 😮
+1838	did this happen, or is it to be safe?
+1838	Looking great! I left a few comments to address. My only concern is with the fix for ActivityChooserModel, I'd like some pointers at the sources showing how it happens, because that fix is a bit more involved.
+1818	Thanks for the great work and for following up, sorry I didn't merge any earlier!
+1818	The JDK Stack class should be avoided. ArrayList and ArrayDeque are good alternativ
+1818	Took a first look at the new implementation and left some feedback. Once feedback is addressed, I'll do another deep dive.
+1818	Let me know when you want me to take another look ;)
+1808	Does this need to live in the leakcanary-android-core module or could we move it and then make it internal?
+1808	Can be converted to a Kotlin property
+1808	Instead of surfacing just the current state, we should surface why we're in that state.
+1808	Looks good to me! I'll let @pyricau decide whether it's ready to be merged!Thanks again! 🙏
+1808	Looking good! I left a few nit comments. A screenshot would be nice too ;)
+1806	Oh, that's interesting! Hadn't thought of this, makes sense to reenable.
+1806	I'd definitely avoid adding a new public API for something not directly related.At some point in the future (?) we're supposed to be able to share access to internal symbols across modules of the same project. Until that's available, two options: if there's internal state that must be shared, I rely on public methods under an "internal" package. Otherwise (ie, like here), I'd much rather duplicate the code.
+1806	nit: this says both "production" and "release". We should ideally pick one, as changing vocabulary can be confusing. Probably release?
+1806	Welp, I wanted to make a PR but I pushed to master instead. Oh well.28d5378🤫 don't tell anyone
+1806	Thanks!! I'll merge and follow up with the wording nit.
+1802	As long as it's not in the LeakCanary exported deps, that's fine anyway.
+1802	This sounds nicer because it tells us what's wrong
+1802	The one already in place because isEmpty() will log the content of missingInConfigBuilder automatically. => you shouldn't log it in the error message.
+1802	Should have another test for the opposite case, a field in the builder that's not in the config class. Less likely but maybe with deprecation.
+1802	instead of subtract, how about asserting the two lists are equal? That way the framework tells us what's different. If there's a reason not to use equals, then the error message should include both lists
+1800	I'm hoping to release 2.3 sometimes next week. Ping me again if that's not the case!
+1800	I'm writing the release notes :)
+1786	Not sure, but maybe suspected references?
+1774	nit: wondering if folder, buffer size and interval should be params with default values. Not necessary thoug
+1734	ah, I hadn't thought of that, makes sense
+1734	One question: why did you first have config.copy(enabled = InternalAppWatcher.isDebuggableBuild) and then changed it to config.copy(enabled = true) ?
+1715	Did you hide it by using the "SinceKotlin(999)" hack?What does "won't work" mean here?
+1677	Force downgrading is not a safe operation and other libraries using Okio 2.x are liable to break. This library already depends on Kotlin so downgrading Okio provides no advantage. You're of course welcome to proceed with this since it doesn't affect much. I would push back on the user either way.
+1677	Personally I’d build against either 1.x or 2.x, but not both. But this looks safe.
+1677	Oh and in great irony the bug report is from a user on a version that precedes this one. That is, this bug can occur exclusively within 1.x releases. My recommendation is to decline this PR and tell your user to use the latest 1.x
+1650	What is this change about?
+1633	Sorry, nope: if we're not adding something as public API, then we should not be adding it to Config. Sources of API classes are read by users of the library so we should aim to limit private code in it.
+1633	welp the idea is to only keep the activity reference while the activity is resumed (and therefore won't crash when toasting) so that likely won't work
+1633	wow, UiModeManager has been here since API lvl 8, first time I see it.
+1633	Nice! Ok I was confused as to why it was added in both places. That way is even better :)
+1633	Seems this has been approved, when will it get merged?Was looking since we need to check TV application for memory leaks
+1633	Damn, I did a merge instead of a squash, so all those 21 commits are now on master. Oh well. Next time, can you squash as you go ;)
+1622	Currently, there are combinations of when and if in this method which make it a bit harder to follow, and also a lot of if conditions are inverted (if (a != x) .. else ..).I refactored it in a way so it mostly uses when + few more touch up; what do you think?
+1611	Approving (a few changes still needed but overall looking good)
+1611	I'm ok with waiting, would love to give you the opportunity to finish this.Once this is ready we should probably use it on a jetified project and make sure Gradle won't complain.
+1611	I checked out the branch, deployed locally, added the support library only to a project then support library + jetifier and it's all been working, no issue.I'm going to merge :)
+1589	Once this land, will the plugin be automatically available as soon as we make the next release to maven central? Wondering if publishing a gradle plugin is as simple as publishing a jar, or if there's more work that needs to happen.
+1589	I find it interesting to have a group, when listing tasks they are grouped. Maybe a more general group such as "memory monitoring" would provide more insights on what the tasks are doing.
+1559	typeSize is an artifact of older code prior to creating PrimitiveType, so I would actually favor the latter (PrimitiveType). In both cases we're doing a map lookup so it's kind of equivalent.
+1551	This test is testing that SharkLog.d passes the result of the callback to SharkLog.logger.d, right?
+1542	I was wondering if the mapping should happen when parsing instead? ie either passing proguardMapping to Hprof.open or HprofReader.readHprofRecords. This would provide the mapping capabilities even if you're not using the index. One issue though is that you can't tell if a string is a class name, a field name, or something else. So it probably wouldn't work?
+1542	I'm curious about the distinct casing (dash for "analyze-process" vs underscore for "proguard_mapping"), is there a standard practice?
+1535	Thanks!How do I generate / override the baseline? Btw I hadn't realized we'd have so many things in the baseline, that's a lot a content committed :)
+1535	do we need empty files?
+1535	with that we can get rid of the vararg and lose the new Object[0]
+1535	I like the stats reports per module! Let's keep it.Maybe we can make ./gradlew check a commit hook?
+1535	oh sorry yeah I actually should have said push hook :)

@@ -1,0 +1,50 @@
+15447	You verified that the output is the same? I wasn't sure
+15447	"Once the PR is approved, you should create" (no need to update keras.io until we're actually publishing the new model)
+15447	In addition this, should we also ask them to provide regular unit test to sanity check their application code?
+15447	I see. Not necessarily asking for one here, but I was curious that if there's no unit test in place I wonder how people make sure their code runs.
+15447	Out of curiosity, what breaks when such function is not provided?
+15447	How is the term ...widely used model defined? Is it based on only the number of citations of the model used in well-reputed conferences/journals? In that case, I think the conf/journal publisher should be realized also. 20 citations from random journals/publishers would be easy to find these days.
+15355	Thanks for the PR! Please add a simple test for the fixes. It could be an integration test checking the output of the summary for a given model.
+15342	Thanks for sending this PR. I assume this is an minimal repro for the issue and not intended for merge, is it?
+15342	Is this line expected here?
+15342	Thanks for the fix. Overall it looks good. We need to make sure train_on_batch doesn't have any side effects left.
+15342	I think this is probably needed as well, otherwise the follow up model.eval() will accumulate the metric result from this train/test_on_batch.
+15315	There are still 8 failing tests, e.g.keras/layers:convolutional_test
+15251	Thanks for the PR. Please share an example showing the results of the change on the summary display.
+15251	Looks good, the boxes are a nice touch! Please add a unit test and fix the code style.
+15200	Hence why we should use endswith. To ignore any prefix.
+15200	my point was to use endswith('_acc') rather than endswith('acc')
+15133	These tests won't run automatically if the PR author is not in the contributor group. The reviewer need to apply a label with "kokoro force-run" to trigger the build.
+15133	I still think the --test_filter should work for bazel. let me have a try.
+15133	If test_filter doesn't work, then an alternative method to commenting things out is to globally rename the tests to add some prefix like 'NORUN_' to the method name
+15133	ill this slow down the test execution? (potentially cause test to timeout as well).
+15075	LGTM. Note that such changes should only be done in other files if we're in a similar situation where we have inconsistent formatting or where we just have very long code comments in the examples.
+15063	Not sure if there is any item need to be configured for the container, eg python version etc. will it use the docker container file we provided?
+15063	Strong agree with this. It's good to provide people with an easy way to use their favorite development tools, but we should not prescribe one specific workflow.
+14970	I think that's a good plan, but let's hold off for a day, about to discuss this with @fchollet later
+14970	OK this is in! (with a typo fix for received and a couple linter fixes)Thanks for patience. Please go ahead and address the same for Cropping2D and Cropping3D if you have time, that would be very helpfu
+14935	Thanks for adding it. Overall looks good to me!
+14935	Do we really need all these models? Why not just the Bs (like for v1)?
+14935	isn't it ok to keep all variants of the v2 model? In v1, it's included almost all. Also, in v2, the variants of s, m, l and xl have much higher top-1 accuracy compare to the rest (bs
+14935	if you follow @fchollet's note to add a rescaling layer to the model, this note can be removed.
+14935	Also, while landing we will upload the weights to our own bucket. Is https://drive.google.com/file/d/1UCtqTFQ5G-eg1LoK08qxTq3t-O-h0Sib/view the current link for the weights?Thanks!
+14750	Is there any plan to make a patch release containing this fix?
+14750	Hello @harupy, the next release is estimated to be a while from now. Would pip install keras-nightly work if you'd like the latest change to be picked up?
+14748	Will this work across all systems?
+14748	Correction: this object is actually replicated in keras/utils/object_identity.py.
+14748	Yes, I think it would be straightforward. We'd have to do it for ObjectIdentityDictionary, _ObjectIdentityWrapper, ObjectIdentitySet. Some have weakrefs so it will require a little bit of thinking but still very straightforward.Changes would have to be replicated in the TF versions of these objects in a separate PR (for consistency).I think another alternative might be to require pickle protocol >=3 (default as of Python 3.4 I believe); I'll test this and report back.That is fine too if that works
+13477	Hi @gabrieldemarmiesse , I added the modifications to the test_mean_iou
+13477	I believe that we have too much problems with this tests for what it's worth. Can you disable it? We'll enable it again later once we find a fix.Suggested change @pytest.mark.skipif(K.backend() != 'tensorflow', reason='requires tensorflow')@pytest.mark.skipif(True, reason='It is a flaky test, see #13477 for more context.')You can also remove the flaky decorator and import.
+13256	Is this strictly necessary? I thought internally we were only calling metrics from compile which is already a symbolic scope.This will prevent calling a metric in eager mode if TF 2.
+13256	The attribute _call_result will always be present on a scalar tensor that's the output of a metric, right?Do we have any graph nodes that are descendants of scalar metric results? Are are these tensors terminal nodes in all cases?
+12751	This is a nice improvement over the previous version. But the main problem is that the submodels with multiple input and/or outputs are incorrectly represented when their first and last nodes are retained.Proper way would be to keep track of the inputs and outputs of each wrapper/submodel in these dictionaries.
+12675	Thanks a lot! Could you also send a PR to apply the same fix in tf.keras? https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/keras/utils/vis_utils.py
+12568	Excellent, thank you!
+12336	Do you have plans to investigate the weird behavior of in_top_k in CNTK?
+12299	The bug you encountered is a bug appearing only in keras 2.2.4. The version from master can run this script without any issues.
+12299	 could this be related to tour recent modifications of batch dot?
+12299	The changes look reasonable, thank you.
+12205	Ok, sounds good. Please add a unit test for this.
+12203	The example script works fine at this time. I do not understand the purpose of the changes in this PR.
+12203	Ok, sounds reasonable! Thanks for the update.
+12203	These 2 functions probably don't need to be nested in this function, and can live outside

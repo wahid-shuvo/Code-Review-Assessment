@@ -1,0 +1,73 @@
+11702	"a".concat(null, "b") would result in "anullb" and undefined as well "aundefinedb".So I would suggest to change this code to:url = location.origin.concat(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '', url);
+11684	I believe this should be removed.
+11681	This is not the ideal solution.Meteor.startup(() => {}) is better here imo
+11681	If this is happening is probably because in another place Accounts.emailTemplates is being assigned directly.The bug is not here.You need to do this in other places:    ...(Accounts.emailTemplates || {}),
+11681	I believe @renanccastro's idea was to make this optional.Maybe we could have a settings to disable it. But we need to think in which case people will want to disable it.
+11681	Yes... my idea was to make this optional. Thinking again, we should prefer convention over configuration, and in this case I think the most common case is to use it automatically. It also doesn't introduce major performance issues, so I think it's fine.
+11672	We should avoid the word discussion here, too confusing.
+11671	Do you need to repeat "firefox"? I don't think so looking the others.
+11671	You could get the property first and then return or proceed
+11649	The key should be called accounts-base and not accounts.
+11649	You could get the value first and then later test it instead of testing and later getting it.
+11645	If we are already updating the version here, we should also bump the Typescript version in the tool and meteor-babel and go to 4.4.3 to keep the versioning schema that was started.
+11638	Nice comment about the change, but that should have been just a comment here, no need to have it in the code itself.
+11638	I'll need a bit of context on this removal.
+11615	You can use here forEach, it has been added in callback-hook@1.4.0 which is available on the release branch.
+11602	I believe there is an extra .Accounts here.
+11602	Should we use something from accounts-password?
+11602	It's missing the selector
+11602	where is loginToken defined?
+11602	Should be v1.0.0 or will be releasing it as an experimental package for now?
+11590	we should centralize this in a var like isWindows
+11590	this is a constant (should be UPPER_CASE) and could be declared in the file scope.
+11590	I never updated these instructions after adding the meteor-installer command. An easier way to do this might be to run meteor-installer uninstall and meteor-installer install.
+11588	See my inline comment and also I believe it's missing a test for error handling.It would be nice to be sure the error is handled correctly when thrown from within an asynchronous function.
+11585	if you want to deprecate this it would be nice a jsdoc here saying that.
+11582	Please avoid else's using return statements.For example:if (x) {  // doSomething();  return;}if (y) {  // doSomethingElse();  return;}// doLastCase();
+11556	This code should check if createIndex is available and if so it should use createIndex as well.
+11556	As this is a public API we shouldn't have _ before the name, I would go with createIndex
+11556	I believe it's important to mention that createIndex was added in 3. Otherwise people can think it's only going to work with Mongo 5.
+11532	we need to remove posix from here, otherwise it's going to fail on Windows.
+11506	We are avoiding underscore. This would be better
+11506	I would suggest a single object param here so next changes would be easier without breaking changes due to the order.
+11506	I don't think this comment is necessary
+11506	We don't need single quotes here. And also not below.
+11506	A Comment would be nice, explaining what hooks will contain and also what update will contain.I would rename update to isUpdatedByArch or something similar
+11478	was informed shouldn't this be was provided?
+11469	As we are adding new code here we should use new patterns, like const here instead of var.Also everywhere below this point.
+11469	a function would be better here to isolate this part.like: getDetails(sequence) so the try/catch would be within the function.
+11451	I believe we don't need any let on this code. const + one new variable should be enough.
+11445	import readFileSync and chmodSync in the same line?
+11443	This should point to meteor, not your personal repo.
+11440	Beware when using this. If, for instance, you do not include email when excluding the fields, you can have problems with functions like forgotPassword that will break because they won't have the required data available. It's recommend that you always keep the fields _id, username, and email.
+11395	these 3 should be under meteor-tool@2.3
+11374	Im not sure if meteor code style enforces the use of ";", but everywhere else is used. It might be better to keep using it in the new code.
+11374	Would be nice to have a bit more info here. This will show up in documentation, so it should include that by default it is false and that people should keep it that way for security purposes.
+11321	Maybe string.includes()?
+11244	I would change this toSuggested change           if (realpath) {          if (!realpath) {              throw new Error(`Broken symbolic link encountered at ${path}`);          }          return isWithinProdPackage(realpath);so we avoid if/else and also handle the problematic case first.
+11225	also we need to update meteor-babel's TS to 4.0.5 https://github.com/meteor/babel/blob/master/package.json#L50
+11204	Shouldn't the locus here be everywhere
+11202	The indentation is causing random spaces in the message(Also, tinyest of nitpicks, but the other log messages start with a capital letter, I think it improves readability)
+11189	The R in React should be capitalized as it is a name of a package/technology.
+11165	you could write this as:...(showDetails ? packageToPrint : {})
+11119	I believe you need to change this as wellSuggested change import { useQuery } from '@apollo/react-hooks';import { useQuery } from '@apollo/client';
+11118	Nice addition, thanks. I'm requesting a change in the format 😉
+11118	I would prefer to use the MongoDB standard here, using a map with fieldName: 1 to select fields.
+11118	we don't need this, the API should expect the field projection in the format MongoDB expects so we don't need to convert and we also can support other cases, like restricting fields.
+11105	You could add || {} in the end so you know you always have the settings object.
+11105	I think it would make sense to keep the keys in packages consistent with the package names. In this case: packages["dynamic-import"] instead of packages.dynamicImport. This would make it even more clear that the settings belong to the dynamic-import package and might encourage third-party package authors to follow the same pattern, e.g., packages["some-organization:package-name"].
+11105	If you apply the feedback above you don't need these conditions.
+11100	We are using a custom build of MongoDB on Linux, so this won't work until we release a build for 4.2.7 here: https://github.com/meteor/mongodb-builder/releases.
+11100	I believe you just need to adjust the npm version
+11066	(without MINE) is not needed.While at it why not add this to reset password, etc. ?
+10976	I think all Meteor specific settings should be under a specific Meteor key, something like Galaxy has "galaxy.meteor.com" for its env variables. So I'm thinking Meteor.settings.meteor.mongoOptions. We can then leverage Meteor.settings.meteor object later for anything else.UPDATE: Read your last general comment, agree with that!
+10976	var here, const down bellow. What version of ES are we using in this file?
+10960	Is Underscore really needed here? Wouldn'toptions.hasOwnProperty('arrayFilters')be enough?
+10932	Unfortunately, you can't use ES6 imports for weak-linked packages. If you wouldn't have the mongo-decimal package installed, this will throw since it can't find the imported package.The way to work with weak-linked packages is by using the Meteor's package system:const Decimal = Package['mongo-decimal']?.DecimalBut then the instanceOf will throw since you would be checking against undefined.So either you will have to check first that Decimal isn't undefined, or, since it's only for instanceof checks, you could do something like:const Decimal = Package['mongo-decimal']?.Decimal || class DecimalStub {}
+10932	This minimal implementation is pretty useless here, since the instanceof checks will never be true for this class.
+10932	For clarity: The reason I proposed a DecimalStub{} class was just to have some kind of object that doesn't throw an error when we do instanceof, but which would never be true. If someone wants to have decimal support, they should add the mongo-decimal package.
+10929	This would need a major version bump, since the API is not compatible
+10929	Since this is basically the only user of the xmlbuilder package in Meteor I wonder why we don't load the npm package directly. @benjamn @filipenevola : Can you shine some light on this?
+10929	The node_modules of the dependency kit are defined in: ./scripts/dev-bundle-tool-package.jsIf you change these, you should also change the dev bundle version in ./meteor .The consequence is that the tests here will fail, since the bundle first needs to be published.However, there might still be a reason I'm not aware of this xmlbuilder was loaded from an isopackage instead of NPM. So maybe it's better to wait for feedback from @benjamn if this is the right approach.
+10929	I am 100% in favor of adding xmlbuilder2 to the dev bundle, rather than loading it into the command-line tools codebase from a Meteor package. The implementation of that package is just one line, after all:XmlBuilder = Npm.require('xmlbuilder');Maybe we can also move meteor/packages/xmlbuilder into meteor/packages/non-core while we're at it, since that package is definitely not used by any core packages (including meteor-tool) now?
+10929	I should have mentioned that the dev bundle version doesn't follow semver. Basically we keep the first numbers for the node version (so that should stay 12.16.1) and then just increase the last number for other changes that need a new dev bundle, so 12.16.1.4 is ok.

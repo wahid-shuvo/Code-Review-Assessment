@@ -1,0 +1,166 @@
+2168	Add comments explaining what this is about, specifically calling out the device and use case
+2133	Thx! We should actually just remove this method alltogether and use text.encodeUtf8().sha1().hex() (from Okio) instead
+2124	Why >= Build.VERSION_CODES.M and not just >= 30 ?Also, should we instead use >= 23 ?
+2124	Let's go with 23 if you don't mind.
+2122	You could update LeakCanary.config at the beginning of the test to add a heap analysis listener (and replace config with the old version at the end of the test). You can then create a CountDownLatch before setting the listener. When the listener fires, count down. Then in the test before "onView" you can down a "latch.await" with 30 secs timeout (and don't forget to check the result is true)
+2122	Fascinating. What made you stop at a depth of 7?
+2122	Also you might want to mention the source, e.g. is this from https://stackoverflow.com/a/31028507/703646 ?In any case it'd be great to have a bit more clarifying comments directly there for why this is there.
+2122	Worth displaying a toast to surface the error?
+2122	That's great! Maybe "Could not import ${uri.lastPathSegment}, this is not an hprof file." ?
+2122	I do think we should reset it, yes, though I would do that at the end of the current test, and wrap the whole thing in a run / finally to make sure we reset it even on failures.
+2090	0 or x is equivalent to x
+2055	The proper link should be https://square.github.io/leakcanary/fundamentals/ not /docs/fundamentals.md
+2055	The issue template isn't a markdown file, the content isn't actually rendered but instead is displayed as default content for the issue description. That's why we're not using markdown for links, so here it should be: learn the fundamentals: https://square.github.io/leakcanary/fundamentals
+2044	I compared with https://github.com/square/okhttp/blob/master/.github/workflows/build.yml , let me know what you think:Should we really trigger snapshots deploy on all pushes? Seems like we should target master only, e.g.if: github.ref == 'refs/heads/master'runs-on: ubuntu-20.04 vs runs-on: ubuntu-latest ? Also, why are we using runs-on: macOS-latest for the checks job?what's the difference between actions/checkout@v2.3.4 and actions/checkout@v2 ? Does @v2 mean "latest minor in v2", in which case should we do that?Why write SONATYPE_NEXUS_USERNAME & SONATYPE_NEXUS_PASSWORD to ~/.gradle/gradle.properties ? env should be enough, no?./gradlew clean uploadArchives => ./gradlew uploadArchives (this should already be clean)
+2044	Thx! "GitHub drops a warning about it in your Actions logs if you use ubuntu-latest" vs "I've switched the workflow to ubuntu-latest" => I'm curious, why did you change it then? Sounds like you were saying it's best if we don't?I honestly don't have a ton of context so I was mostly asking questions :)
+2014	yeah ok this is cool. Replace the handler callback and delegate to it, which ensures that this stays compatible with any other code running the same hack.
+2014	We likely want a mutableMapOf<IBinder, WeakReference> to not end up being the cause of a service leak, and maybe even a WeakHashMap<IBinder, WeakReference> (ie weak key as well because idk if we should risk retaining the IBinder either)
+2012	Did you try without the cache first? In my experience, this cache is so slow and unreliable/inconsistent it's actually quicker and less flaky to just re-build everything.
+2012	I would rather inline these, since it makes this script more readable (don't have to go open another file), and it's just two lines anyway. You can use the | character to specify multiple lines, although both tasks could be specified in the same command.
+1984	I'm not sure we should return true as a default value here, instead we should probably block until the shared preferences are loaded. Which, granted, will mean IO / blocking on API 27 but heh. A simple way to do that is create a CountDownLatch(1), call await here and countDown where we initialize shared prefs. Also, I'm not sure lateinit is volatile, if not we need to make this volatile.
+1984	I'm not aware of the Kotlin compiler doing anything like that, let me know if you've seen otherwise.That beeing said, yes StrictMode.allowThreadDiskReads() might be the most straightforward fix here.
+1984	could this be a lazy instead? That way the strict mode change only happens once?
+1973	Nit: Kdoc might be useful here
+1973	Nit: please add a doc explaining all the reflection code around getting time
+1958	Yep, seems sensible to apply the Kotlin linter suggestion.
+1948	We probably shouldn't deprecate this because anyone using 1.3 still have to use this. Is there a way to deprecate only for Kotlin 1.4?
+1948	Generally we've shied away from dropping compatibility support unless there's a really good reason (ie it's blocking some other work). For example, when Android X happened and created a huge migration mess, we ended up removing the direct dependency on both support lib & android X so that we wouldn't have to pick one or force people to go through a painful migration until they were ready for it. Another example is Okio where we depend on a really old version so as not to force anyone to upgrade. Generally I don't want LeakCanary's adoption to be blocked because it's forcing someone to upgrade :) .
+1931	measureTimeMillis is based on System.currentTimeMillis() which isn't recommended for measuring durations (not monotonically increasing).
+1931	If we're introducing a new type we might as well make it a sealed class with an object such as "NoHeapDump" instead of null here
+1931	The HeapAnalyser doesn't really need to know about the heap duration, that's a lot of extra piping.Since the two implementations of the HeapAnalysis sealed class are data classes, we can easily clone them and set the heap dump duration directly here.
+1931	also, see prior comment, can you make this a sealed class with a NoHeapDump object?
+1931	Add a DUMP_DURATION_UNKNOWN = -1 constant, mention it here and then use it everywhere instead of -1
+1931	Formatting isn't right. Can you make sure you use Square's formatters: https://github.com/square/java-code-styles
+1931	One thing to test here is that leaks that were recorded prior to this update can still be displayed after this update
+1931	Technically we could actually provide the duration here (ie start of heap dump to exception)
+1893	We still should provide a custom error message. It's better to say that Browser not found than ActivityNotFoundException: ....
+1888	Here and below - you explicitly want to crash if these fields are not found, correct? Otherwise it can probably be ?.
+1882	readHprofRecords should probably return hprofStringCache, classNames and maxId
+1882	Should we really create a new record if the field name could not be deobfuscated and we have fieldName == deobfuscatedName ?
+1882	Might want to be a bit less aggressive if we stop creating new records for non deobfuscated fields (e.g. have createDeobfuscatedClassDumpRecord return the new max id)
+1882	Why are we passing around mutable maps here? I'm not seeing where we update them.
+1882	This should probably be moved out of HprofDeobfuscator and into DeobfuscateHprofCommand, ie HprofDeobfuscator should be passed a ProguardMapping. Then tests become simpler (no need to parse a file, you can pass in a fake ProguardMapping.
+1882	Use static imports for all assertThat
+1882	Can you separate this out in several tests? Class name mapping Member field mappingStatic field mapping Then can you add tests for edge cases (I know it works right now but should help with future changes): class name is also used as member field name class name is also used as static field name Two fields with different names in two distinct classes are obfuscated to the same field nameAny other edge case I forgot?
+1882	Other tests have helper code to make it easy to create hprofs in tests, see how HprofWriterHelper is used. Does that not work here?
+1881	Empty line needed before this line for consistency?
+1881	Can you also add description for parameter neverEnqueued 
+1881	Bail is too slang IMO. Replace with some technical equivalent? Skip?
+1881	Too long for a single sentence IMO. How about:If [objectId] has no dominator known yet but has already been added to visit, then we know we've been here for that object already. We did not add this object to the map of dominated instances so it can't be dominated any more, we can stop there.
+1878	This is a strange error message. TODO?
+1877	FieldValuesReader is internal so no new API published, all good.
+1877	How about position += identifierByteSize?
+1877	It wasn't a public API before, but it looks like now you're making it public?
+1877	How much "more CPU time" exactly is this? Really not great to expose this API with just longs, easy to make mistakes.
+1877	always put line related comments on the line before, never the end of a line, as those will eventually wrap and comment after the code.Remove DO NOT REMOVE!, avoid scary language that stops people from thinking. Explain instead:// Assigning to local variable to avoid repeated lookup and cast (HeapInstance.graph casts HeapInstance.hprofGraph to HeapGraph in is getter)val hprofGraph = graph
+1875	class should be internal, you don't want to pollute everyone's classpath
+1875	Rename both methods to to ? Then it's a matter of using the right import? Thoughts?
+1875	Why do we need to test this? Consider removing.
+1875	we use assertJ everywhere else in the repo, let's stick to that.
+1875	This test doesn't express what its testing, ie "verify add operation" doesn't tell me anything. Same for verifyRemoveOperation
+1875	 same as before, can you provide a better name?
+1875	This is the "arrange" part of the test. There shouldn't be any verification here, only set up. Asserts should stick to the last phase of a test.
+1875	Same comment as before: this is the "test" part, so there shouldn't be any assertion or verification in it.
+1875	the name of the test says "+=" but the test calls add directly?also I'm not sure what value exactly we get from testing this?
+1875	maybe "elements with equal hash can be added" ? the test name here says we're adding but doesn't outline the expected result
+1875	What is this testing exactly? Not obvious at all from test name and test content.
+1860	maybe javaLangObjectClass ? It's a class, not an object
+1860	Side note: we already have an LRU cache in front of operations that requires IO. However separately we also try to rely on the indexed objects data as much as possible to avoid as much IO as we can. What this PR does is skipping a ton of binary searches into the indexed objects when we look for the java.lang.Object class again and again (e.g. when going through class hierarchy for every class).We could also add a small LruCache at this layer at some point. We'd have to evaluate the cost / benefit of adding a hash lookup to every findObjectByIdOrNull to avoid a binary search for a subset.
+1838	Comment should ideally describe what the fix is.Here it looks like: every time an activity is destroyed, we get the activity chooser model for ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME and set its OnChooseActivityListener to null?Can you link to the code that's setting up this listener in the first place, creating the leak?
+1838	Maybe rename to SAMSUNG_CLIPBOARD_MANAGER ?
+1838	Is this fast? If not, should it be done from the background thread (and would that introduce additional risk?)
+1838	nit: avoid star imports.
+1823	nit: make it obvious that we're passing a null proguard mapping (ie add that arg)?
+1823	avoid comments at end of line they tend to wrap to next line when refactoring / formatting.
+1823	This doesn't always work. The obfuscation checker is based on the runtime, and the code that runs the analysis might not be the same as the code that was used for the hprof. This should check inside the hprof.
+1823	Maybe make the statement stronger (ie avoid "looks like") and start with what we're finding. Also keep in mind this code can also run in the CLI.
+1823	Not this method, only readField is.
+1823	Would stick to "Same as [readField] but throws if the field doesnt exist"
+1823	I dont think we want this as a param
+1823	Obfuscation shouldn't impact classes from the Android SDK. This isn't a bad idea but should likely be a different method that throws a different exception (which states that it looks like AOSP might have changed)
+1818	nit: avoid 3 letter variable names (e.g. str), use full nouns instead.Here, instead of using a var you can return the original vs the wrapped one.
+1818	Nit: keep an empty line between the two but remove <p> to be consistent with javadoc style elsewhere in the repo.
+1808	Nit: replace with expression body + no need to pass resources, since it can be accessed from the class instance.
+1808	Redundant String.format() call
+1808	I think these error messages can be more descriptive. Something like:Dumping heap disabled via LeakCanary.ConfigDebugger is attached and dumping heap during debugging is disabledI'm not great with descriptions though, @pyricau what do you think?
+1808	Nit: not by Application, more like by developer 😄 I think we can just drop this part and end sentence on in LeakCanary.Config
+1808	nit: missing period.
+1808	nit: those empty lines between when values are somewhat unexpected
+1806	nit: maybe rename to checkRunningInDebuggableBuild() ? We need a method name that will be clear to consumers when they get this error in their build
+1806	I think it would be better to add a corresponding section in the Code recipes and have the error message point to that page with an anchor to a detailed description with xml snippet to copy&paste. Source code of those docs is located in /leakcanary/docs/recipes.md
+1806	Nit: since we're putting emphasize on these words, I think it would be better to spell it out - do not recommend - instead of shortening.
+1802	private helper functions should be after the tests (code should read outside in)
+1800	This comma looks lost! Can you please put it next to curly on line 165?
+1786	Using words? What that means?
+1786	at all levels or of all levels? Does it refer to developer's level or to the levels of detecting a leak?
+1786	Also need to modify Kdoc in the LeakCanary.Config.Builder source
+1786	Also need to modify Kdoc in the AppWatcher.Config.Builder source
+1774	nit: insert space after Iterations:, avg => average, add ms after duration
+1774	Run the following commandyour => the
+1734	The existing config may already have been customized, so we shouldn't replace it with a brand new default config. try this instead:config = config.copy(enabled = true)
+1734	Haha, well I didn't have a special reason.You shouldn't have the problem of missing application if you change the order:  fun manualInstall(application: Application) {    InternalAppWatcher.install(application)    config = config.copy(enabled = InternalAppWatcher.isDebuggableBuild)  }I think this makes sense as I don't see why someone would go through the trouble of calling manualInstall but not want it enabled in dev builds.
+1732	Super nit: i.e. with dots seems to be the formal way of spelling it
+1732	Nit: replaceable with [ViewModelClearedWatcher::class.java] although, I don't feel like it adds to readability..
+1732	To prevent ambiguity with MVVM term I'd suggest using ViewModel term instead of view model here. That's what Google call them inside lifecycle-viewmodel javadocs as well
+1732	Nit: here and further view model -> ViewModel
+1732	You could use ViewModelStore#keys and catch the no method exception and then go back to the reflection. This way you ensure compatibility with the next versions of viewmodel. This is good for R8 too.I'm thinking if a proguard rule to keep the mMap would be appropriate...
+1715	Remove all javadoc and replace with @see, so that we don't have to update two places when we update javadoc.
+1715	add a comment (non javadoc) explaining this hack
+1715	why not name it the same as the property, ie dumpHeap, then this. dumpHeap = dumpHeap ?
+1715	Maybe update javadoc to mention this should be used in Java only.
+1715	nit: would have been size to have the exact same example as in kotlin
+1715	nit: would be nice to use the same example as the kotlin (below)
+1677	You should use the latest 1.x release. In that you'll see this is deprecated; replaced with getBuffer().
+1665	I think you want to start the emulator after downloading it.
+1658	This one confused me too when I encountered a leak in our demo app. Might worth adding more info, e.g. "Fragment received Fragment#onDestroyView() callback: fragment instance is kept, but its view will be destroyed. All references to the view should be cleared to prevent leaks." Basically, something that tells people that fragment is staying around for a while, but the view is not.
+1650	I don't know that this is necessary for if statements returning a value.
+1650	It's harder to make mistakes when returning values though? idk, I've grown used to single line val foo = if (a) "a" else "b"
+1650	What's that about?Would be nice if commit message + PR description outlined what the enabled rules are about.
+1633	I'd rather have us build a sealed class based API for all leak canary notifications. Until we have that, I would avoid adding more API surface that we'll have to deprecate. Instead, remove this and maybe make DefaultOnRetainInstanceListener and OnRetainInstanceListener private (or inline its behavior)
+1633	The default shouldn't be "empty", it should be showing notifications.
+1633	instant app is not a form factor. What will we do when instant apps run on watch or TV?
+1633	why is there still a leakcanary-android-sample-tv ?
+1633	See leakcanary.internal.AndroidHeapDumper#showToastToasting when no activity is resumed may lead to a crash.
+1633	yeaaaah but.. In recent Android versions you can no longer toast when the app is in background, hence the use of activity context and check for resume.
+1633	Passing the app context might be ok but I think you must be visible? And it crashes on some version of Android (that famous toast crash) but not anymore.Anyway leakcanary.internal.AndroidHeapDumper#showToast shows you how to do all that.
+1633	Log related code should execute within the log lambda
+1633	leakClass.name.replace(leakClass.simpleName, "LeakLauncherActivity")Isn't that leakClass.package.name + "LeakLauncherActivity" ?
+1633	How about only sending CountChanged when the count actually changed?
+1633	javadoc not up to date. Also, empty line.
+1633	Could this be a flavor of the example app instead?
+1633	Should be clear that pressing the button will trigger an activity recreation
+1633	Devs have no idea what toast we're trying to display. Not sure it's worth logging, but if we do we should be more specific.
+1633	Pressing back does not cause a leak, it changes the threshold and triggers the heap dump.We need to explain that either rotating or pressing the button will create 1 leak. That's it. Then we also need to explain that after 5 leaks the analysis will trigger.Or maybe we don't, this is a sample app that generally most people won't even see.
+1633	this should be heapAnalysis.applicationLeaks.size
+1622	In this case may be are separate word, so for camelCase it should go as mayBeLeakCause. It also better describes the nature of the variable - that something particular may be a leak cause vs there is maybe a leak cause
+1622	convert to expression body to make it consistent with other methods private fun elementIndex(position: Int) = position - 1
+1622	What a CPU time waster! const val SQRT_TWO = 1.41421356237f !jk 😄
+1611	Please move this line to be after androidx - it's (more-or-less) alphabetically sorted now 😄
+1589	nits: local variable for ProguardMappingReader and private constant for "leakCanaryProguardMapping.txt"
+1589	Different formatting length? Are you using Android Square?
+1589	formatting for this file should be 2 spaces.
+1589	Why is this an interpolatde string instead of code
+1589	why is this the group / where does this later show up?
+1589	Maybe users would like a name that reflect the fact that it is a gradle plugin.
+1589	I like it!Now, the difficult conversation: proguard is being replaced by R8. I have no idea how we'd support R8 here, but we'd probably want to build that in the same plugin?
+1589	leakcanary-android-minification-plugin looks good to me. It's a bit absconse but that's the proper name of the operation..
+1589	Are you sure the parent folder always exists ?If not, you might need to create the parent dir tree of the destination.
+1569	I'm a bit confused about indexes here, probably I'm understanding it wrong. Here's my thought process:Originally we created range as valueIndex until valueIndex + bytesPerValue, so endInclusive was set to range.endIncusive - range.start = valueIndex + bytesPerValue - valueIndex = bytesPerValueWith new implementation we pass rangeEndInclusive as (valueIndex + bytesPerValue) - 1 and use it as a replacement for endInclusive.But, bviously, (valueIndex + bytesPerValue) - 1 != bytesPerValue. Is it me misunderstanding the flow and IntRange here or is there a bug?
+1564	Nit: can convert to expression body instead of having a return
+1551	The name is was mirrored after Log.d, ie the logging level (d, e, i, ...) . What we log is different from what level we log it at, and here there's no difference in level so I would stick to "d". It's more of a helper logger to log the stacktrace
+1551	nit: split these in two distinct test, one for debug and one for error. General guideline is one assert per test.
+1543	Nitpick: putting parameters on separate lines will make it a bit easier to read; right now the alignment is inconsistent
+1542	Nit: use linked hash map instead to get consistent ordering at minimal cost (useful when debugging)
+1542	Consider having two types, or an interface and an implementation. HprofGraph only needs to know about a map of obfuscated names to deobfuscated names. It's unclear that all usages will need to work of off an input stream.
+1542	Exactly! You could either make ProguardMapping an interface and have e.g. InputStreamProguardMapping implementation, or keep ProguardMapping a simple class that holds the map and has the deobfuscate method, and then have a separate class that knows how to create a ProguardMapping from an InputStream.
+1542	would probably go with classId first.
+1542	This formatting change is surprising, are you using SquareAndroid?
+1542	Thanks! You might want to remove those spaces ;)
+1542	How about making this a ProguardMapping instead of a ProguardMappingReader? That way HprofHeapGraph doesn't have to know that the map comes from a file
+1542	Sorry I should have been more clear: I think we should push ProguardMappingReader to the outmost layer. I can't think of a good reason for HeapAnalyzer to know about where the mapping comes from. The general idea is to enable doing this even when we don't have a file
+1535	The previous log was bad, this makes it slightly worst :) . Context: the idea with these logs is that they're no-op when there's no logger, and there's no unnecessary string concatenation. Here the log was actually bad, it should have done something like if (SharkLog.logger != null) {} (or maybe SharkLog should have a util method) to avoid any object construction. "Watching $nameForLogging with key $key" involves string interpolation even when there is no logger.This is not a major impact, but more of a good practice.
+1535	It would be more efficient when logger is set, but less efficient when logger is not set.Maybe instead SharkLog's API should be changed to take an inline lambda that returns the formatted string:SharkLog.d {"Logging $value"}inline means no extra cost, you get the kotlin string templates, and if there's no logger then there's no cost.
+1535	Make d an inline function and then the lambda gets inlined
+1535	what's wrong with the spread operator btw?
+1535	Are you 100% that we don't need the spread operator here? String.format takes an object, and args is an object, so I'm worried it's going to run toString on the args array itself, hence the spread operator
+1535	Should be the same method yes. I've definitely had this kind of issues in java in the past so I'm worried :)

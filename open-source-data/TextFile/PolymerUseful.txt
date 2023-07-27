@@ -1,0 +1,148 @@
+5640	Setting of __limit here makes this hard to grok. Consider instead moving this to __updateLimit. If a test needs to manually modify __limit perhaps it can also modify the behavior of __updateLimit as needed.
+5632	Consider only storing if items changed and checking reuseChunkedInstances when rendering.
+5632	Consider refactoring render so that the tasks are:sort and filterupdate limit (chunking)perform render/updatecompletion
+5630	 MemberWhy is it ok to drop the passed in changedProps here? (The next section is only for hasPaths.)
+5630	The non-fast case stores __invalidProps on the dom-if. Why is that ok if this must be changed?
+5595	Given that the spec is now somewhat in question re: frozen array vs. mutation APIs, would it make sense to try and make this test as defensive as possible in case they end up changing it and need to deprecate the ability to assign an array? I don't know exactly what it'd be but maybe something likeconst testSheet = new ConstructableStylesheet();try { document.adoptedStylesheets = [testSheet]; } catch (e) { }supportsAdoptingStyleSheets = supportsAdoptingStyleSheets &&   document.adoptedStylesheets[0] === testSheet;(maybe made safe to allow having set some before)?If so, might also consider making this change to LitElement's detection.
+5591	Add comment about why this needs wrap (flushing)
+5587	Let's name these to reflect the nesting.
+5587	Let's rename these to reflect the nesting.
+5586	I think you need all these to avoid a diff:/** @type {TemplateInfo | undefined} */TemplateInfo.prototype.nextSibling;/** @type {TemplateInfo | undefined} */TemplateInfo.prototype.previousSibling;/** @type {TemplateInfo | undefined} */TemplateInfo.prototype.firstChild;/** @type {TemplateInfo | undefined} */TemplateInfo.prototype.parent;
+5577	placeholder attribute is removed when the binding is processed
+5577	When the template is stamped and the textarea.textContent binding is processed, no corresponding node is found because it was removed during parsing. An exception is generated when this binding is updated.
+5577	When legacyOptimizations is not used, the template is cloned before processing and this changes the above behavior. The cloned template also has a value property set to the placeholder and textContent. This prevents the removal of the textContent when the placeholder attribute is removed. Therefore the exception does not occur. There's an extra unnecessary binding.
+5577	Suggest refactoring to fixPlaceholder and apply the fix.
+5570	Normally we would never get here, since this is normally called from connectedCallback and that also has a gate. However Templatizer boots up trees of elements by forcing _enableUpgrade on them, even if they're not connected (since booting elements out of the tree has shown to be performance positive). Worth a comment.
+5570	Using this. __isUpgradeDisabled might read more clearly.
+5570	Need a wrap and test for removing disable-upgrade out of the tree.
+5570	This is a lot of duplicated code; would be ideal to see if just using the mixin in GenerateClassFromInfo affects perf, and if not factor it so it can be used.
+5570	Why is this change needed? It may be better in general, but it's unclear why it's required.OK, it's so that an is below this prototype cannot override _template below this prototype.
+5560	This is pretty complex. I think it needs factoring or at least some comments to make it clear what's happening.
+5560	Needs comments explaining how/why the method of sync'ing is different.
+5560	Consider if we want to avoid making this function for every property change.
+5560	If this template wasPreBound, can we just return early?It seems like you can set __templateInfo not based on instanceBinding?
+5560	Add comments about what is happening here. Specifically, if the templateInfo has a parent, it's moved to the lastChild. Why?
+5560	Let's add a comment about how it's important that the parent is not unlinked.
+5560	So, is this making the <dom-if> have a templateInfo pointing to this template's info? I think this is probably complex enough that seeding comments step-by-step here, might be good.
+5560	Add a note about why this is only done for dom-if?
+5560	Where is the parent originally set?
+5560	When can nodeInfo.noted be set?
+5560	I thought _parseTemplate memo-ized so why do we have to pass this in?
+5560	Fix typo useCemoveNestedTemplates => useRemoveNestedTemplates
+5560	How is this cached?Fix the caching by setting templateInfo.templatizeTemplateClass = klass
+5560	How is __squelchedRunEffects guaranteed to exist here?
+5540	Let's add a comment here explaining that cloning the attribute node like this allows attributes with invalid characters to be moved.
+5540	Doesn't the content have a name$ attribute also in this case? It seems like we should remove that. It also seems like we should remove the name attribute in the case above.
+5540	It'd be nice not to duplicate the fixup here with the same above.
+5537	Let's add a note about when this is needed: only when ShadyDOM is used and unpatched DOM APIs are used in third party code. This can happen in noPatch mode or when specialized APIs like ranges or tables are used to mutate DOM.
+5537	Let's remove this. Then we can handle cases like Ranges where the DOM is unpatched in ShadyDOM.
+5537	To match Polymer 1 behavior, we should use native querySelector: ShadyDOM.nativeMethods.querySelectorAll.call(node, ...)
+5530	Can you add a test please? Thanks.
+5520	Let's add a comment here or perhaps just in the doc for the function explaining what this does so it's clear why it's only related to hostProps.
+5508	Add a comment that part of the test is that this doesn't throw. Also assert that this runs.
+5504	Why not use an in check instead of treating undefined specially.
+5501	Comment on why why __dataPending is needed.
+5501	Can we use hasPaths to avoid calling pathMatchesTrigger?
+5501	Comment about why the info.dynamicFn branch is here.
+5501	Add comment about how this prevents computed properties from executing more than once per turn.
+5501	Why did this need to be added?
+5501	Did you consider instead capturing the argument values before computing dependencies and comparing those explicitly?
+5499	he expected behavior is FIFO so to match the way the array was processed previously, this shouldn't be deleted.
+5499	Let's add a test that checks flush order when debouncers are re-enqueued.
+5499	Add comment about what this does to flush ordering.
+5497	Add a comment about why this is necessary.
+5497	Add return false here since no extra work is needed after this.
+5497	add " and also triggers _flushProperties and _propagatePropertyChanges down the tree."
+5497	Add a note about how all property getters will return undefined by virtue of resetting __data
+5497	In 1.x notifications where handled after the "config." We could do this here by capturing __data before propagating and playing through those props first and then the notifying props.
+5497	Add a comment about why we're not using runComputedEffects here.
+5495	Was this change intentional? It causes an error @export is not supported on this expression.
+5495	But why do we need this at all? What's wrong wrong with getStyle() and the @export we already have?
+5494	Let's add some comments about these special cases.
+5489	Can you add some backstory in a comment about why this appears as such a special case?It's not a made-up Polymer.dom thing, but it also never needed a Shady DOM patch? Why was it on 1.x's Polymer.dom then?
+5480	license must be the last jsdoc tag in a comment, as it consumes all subsequent text
+5476	So we want to pull the live value here, but we fall back to the stored value in props for splices. Adding a specific check for splices would be best but might be a performance hit. What if we take the value in props only if it is not === undefined? This allows the live value to be undefined which it sometimes can be.
+5474	Let's consider also warning if a user tries to change readOnly or reflectToAttribute or notify.We should remove the doc line about "consider adding warnings" since we are doing that here.
+5474	Using dynamicFns here seems a bit abusive since there's no guarantee this is connected to observedAttributes. One alternative would be to override this in element-mixin and use this._properties.
+5472	Nit: idx can  be in the other string.
+5424	I think this would break our TS compilation. See recent PRs to tackle this.
+5418	Rather than putting this on window, shouldn't we put this in the Polymer.Settings object?
+5418	Can we not remove these assertions or are they regressions? Are they a breaking change for our users?
+5418	This also seems like a regression to me. Are we sure users will not run into any breaking changes?
+5418	Since these are all lifecycle-related, maybe __behaviorCallbacks would be better than something with "props" in it, since that's sort of overloaded with all the data stuff.
+5418	Consider adding info. from the base info to the list?
+5418	It seemed like a possible optimization to skip the mergeProperties step from the base info object into an empty object; it seems superfulous for the initial class -- but then I realized this was required for the computed to readOnly coersion and the shorthand type expansion. So that was not intuitive, maybe due to the naming? Suggest different name or at least a comment.
+5418	There's a bug here where the full flattened list of lifecycle callbacks is called once per call to GenerateClassFromInfo, which happens each time mixinBehaviors is called.Instead, store the list of callbacks in the closure for one set of behaviors associated with each call to GenerateClassFromInfo.
+5418	This is just what's in the closure, i.e. if (behaviors) {
+5418	Naming of these is confusing. Consider "memoized" --> "filtered"
+5359	Prefer unknown over {} as {} is non-nullable. T extends Array<unknown>
+5359	{}|null|undefined is good.You're right about any, I'd just like to avoid using it as much as possible.
+5359	LGTM. Just prefer using the unknown-like {}|null|undefined type
+5357	This lacks a return type. Please see the CI output for the full error. You can run npm run generate-types to locally run the same check.
+5340	I'd prefer to revert this internally instead, as it's already assigning to a const. This was due to a temporary hack we had.
+5339	Add comment briefly explaining the rules so it's clear that single argument observers are always called.
+5339	Suggest making the error use sentence casing and periods.
+5339	Seems like it would be more clear to loop over vals?
+5339	Shouldn't we also test inline template expressions that have multiple arguments?
+5320	This should be a check for Element to ensure the style property.
+5317	Although this change makes introspecting the version from a running page possible, it is fairly cumbersome:import('./need-to-know-path-to-polymer/polymer-element.js').then(module => console.log(module.version));And that only works if a build tool hasn't compiled modules into bundles or out altogether.I think it would be pretty useful to have e.g. a static getter on the ElementMixin return the version (in addition to a plain module export), so that it's more straightforward to introspect the version being used on a running page.e.g. from an element in the inspectorconsole.log($0.constructor.polymerElementVersion);or e.g. from the registry:console.log(customElements.get('my-app').polymerElementVersion);So perhaps the version can be exported from element-mixin.js instead of here, and returned from a new static get polymerElementVersion() { return version; } getter on the ElementMixin? It could also be re-exported from polymer-element.js for convenience.
+5309	Oh, do you mind removing these?
+5301	Add // eslint-disable-line no-unused-vars at the end
+5295	Add comment that this can happen when managed children and the dom-if are removed via innerHTML'ing a common parent
+5295	Add comment briefly to explain why this is important
+5295	remove before the || Note, should be able to take out the || this.prototype._template as this is only relevant if a legacy element is subclassing another element which is not supported.
+5295	Only call Polymer.DomModule.import if this.is has a value and remove this.is check in conditional below.
+5295	Add a comment that this means templatized elements are not allowed without a host element (aka in the main document scope).
+5295	Use window.uncaughtError if possible.
+5295	Remove && el.shadowRoot.querySelector('#injected') as it's enough to assert that the element does not have a shadowRoot when the template gets nulled due to 2x register.
+5295	Separate the creation of the trusted-element so an innerHTML error does not disrupt element creation.
+5295	Again, make element creation separate.
+5295	Again, only test that el.shadowRoot does not exist.
+5295	The "super" call should be last here
+5295	Add a test that tries to register the same module 3x.
+5295	Add a test that sets a template on a behavior.
+5295	The note inside this template says "should not be used" so it's confusing it's used here.Since the behavior should set _template on the prototype, why isn't that preferred over the dom-module?
+5266	If I understand correctly, we are throwing an error here to break out of the control flow, as code later executed would erroneously run? If that is correct, maybe add a comment to make this explicit?
+5266	This would break if a mixin was passed in to this function. Therefore, I think the mixin should be optional and the mixin should be conditionally applied to this mixin.
+5266	To make this more uniform, make this the same as line 239. E.g. el.two.callCount, 1
+5266	If we want this error to have a meanifulful name this pattern should be followed https://azimi.me/2015/09/23/high-custom-error-class-es6.html
+5266	can you drop this since it is empty?
+5266	This suite of tests has a lot of duplication I think we could do with some test helpers to significantly clean up the test implementation to make the code easier to maintain and easier to reason about.
+5230	Maybe add a link to MDN/standard to the list where this is specified?
+5217	Why are we dropping 14 and 16, but not 15?
+5217	Regarding Edge 14, 15, 16 and 17, remember that the Edge version is (still) tied to the Windows 10 version installed and that in a corporate/enterprise environment, it's not uncommon that windows will be stuck in time because of company policies (e.g. we saw in our dev team, 3 machines with 3 different Edge versions and we were unable to bypass corporate IT policies to update the version). Eventually, all versions will need to be supported or handled in some other way including in the documentation so developers will know what to expect.
+5200	Why are all these tests removed? The fromStyle ones seem to just be style module-related…
+5180	Please add reasoning.`this` is always in the instance in closure for some reason.
+5172	Can be just module.assetpath, as the condition already asserted for module
+5170	since dom-module isn't a mixin, why do we need to add the parameter? All the parameters should be optional from the implementation side, no?
+5153	Let's make this assert.equal(el.shadowRoot, null)
+5134	I'd add a note about why this version (2.x) is on npm and what it's support is:"Versions before 3.0 are also published to npm "as-is" and are generally unsupported. These packages are for advanced users who configure their own tooling to work around the differences between Bower and npm packages, like package folder layout."
+5125	Let's go ahead and just put this into PropertyEffects. It seems like it's only going to help and does no harm.
+5125	Let's add a comment in the code here explaining why we're doing this. The only way we see a capital letter here is if the attr has a capital letter in it per spec. In this case, to make sure this binding works, we go ahead and make the binding to the attribute.We should also add something simplified about this to the doc.
+5110	So, this.mutableData is never used in MutableData, only OptionalMutableData (MutableData doesn't have a switch and always calls mutablePropertyChange with its mutableData arg set to true).So it looks like this line is altogether unnecessary. The blame shows it being added to help closure understand property types, but it must have been made in error; I don't see the closure warning count change my removing it, so I'd suggest just updating the PR to remove it altogether.
+5097	Just a thought re: memory: should we be zeroing out __dataOld here, to so that the previous turn's worth of changed data can be gc'ed? It currently gets reset on first change in new turn here.
+5068	I imagine we probably need JSCompiler_renameProperty for properties, don't we?
+5059	Hm I actually think this was intentional as we do not reassign to parameters of a function. However, this is more readable. So let's add a first line: let actualFn = fn;. Then reassign actualFn inside the condition.
+5051	For simplicity, let's just check if arguments.length ==2
+5050	Let's remove or explain why we're not testing this.
+5050	Let's try adding Edge 16
+5048	This should be function() { return [...]; }
+5035	Let's add a comment saying that passing in a prop in props that has the same name as a bound host prop may shadow it. This is considered a user error (warn?). We should add this to the docs too.
+5034	Should be !NodeList<!Element> no?
+5023	Was this class intended to be committed in this PR? If so, we need some docs on what it actually does and how we can use it (assuming you used it to measure the performance of the changes in this PR).
+5003	LGTM, but can you also add the closure externs? Also add gulp generate-externs
+5000	Object is nullable by default, so don't need the ?.
+5000	Node and Event are nullable by default, so don't need the ?.
+5000	Should this be function(!Event):void?
+4997	Add@param {?string} old@param {?string} value
+4994	Where is this.__dataEnabled coming from? I do not see it referenced anywhere.
+4993	If the sibling was removed (e.g. due to dom-if going false) then the slot would never come back.May be better to replaceChild with a non-slot?
+4993	Looking at this again, it makes more sense to me. Echoing @kevinpschaaf comment regarding the sibling. Not sure how we can handle that. We somehow have to keep track of where we were in the tree and insert it there. Replacing with non-slot and hide that seems like a 👌 solution
+4971	I think this should be String(value) - that'll handle null, undefined, and matches the template literal spec, afaik
+4971	instanceof Element? Element has innerHTML I think.
+4971	Should this really be innerHTML? Seems like we want innerHTML for template for sure, but for other elements I'd think we'd want outerHTML. That might be a case for only supporting templates.
+4971	I think we should only support HTMLTemplateElement's innerHTML and String interpolation.
+4971	Justin convinced me we shouldn't do this; let's go with just HTMLTemplateElement's innerHTML or cast to string.
+4971	Actually, the String cast is unnecessary since you'll get the same behavior during concatenation. So it's really just value instanceof HTMLTemplateElement ? value.innerHTML : value;
+4971	I think we decided to bundle the html tag function with the entry points, so that in modules a user can do e.g. import {Element, html} from 'polymer-element.js'; as a convenience.So, let's remove the import here, and add it to the two main end-user entry points (polymer.html and polymer-element.html). In those, add Polymer.html = Polymer.html; so that modulizer adds exports for the html function from those.
+4964	Add test for #target:dir(rtl), since this is actually the correct selector for what people will typically want.Need to make sure users are writing :dir() as a compound selector, not a descendant selector. cc @arthurevans @sorvell @bicknellr @valdrinkoshi

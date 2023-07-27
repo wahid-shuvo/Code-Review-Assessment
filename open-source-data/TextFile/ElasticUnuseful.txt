@@ -1,0 +1,42 @@
+80617	Is this comment now redundant?
+80532	I initially thought we should filter these on ones where job allocation is enabled, then I saw we are taking advantage of the side-effect of not setting memory limits on the node unless it has the ml role.This seems possibly unsafe. It would be nice to filter by role here to be explicit and pass in the list of nodes.What do you think?
+80531	Saddened to lose the deployment stats API I had grown accustomed to it.Still LGTM@elastic/ml-ui this PR changes the format of the GET model stats response
+80524	I think one of the issues the Dockerhub folks had was with the fact we're using a multi-stage build. Can we eliminate this given all we're doing now in this stage is unpacking ES and adding tini?
+80493	I wonder if we should not just copy the list every time, interning it, rather than this optimization? The only thing we are saving is this array, but we still copy the list anyway so hardly seems worth the complexity added here.
+80493	I would prefer to omit this then. As mentioned above, this is not on the hot path. And if we want to optimize it further, it seems more intuitive to do so in the builder, since we could intern the strings in the list in putList and assume all lists are interned (and immutable) always (and likewise for keys).If follow-up work requires this we can re-add it, but I find this too much of half an optimization in the current state.
+80475	Nice idea, I think we can take it a step further and have just two instances per node? We should make clear that DISABLED refers to field data, not to the mapper as a whole.
+80462	Second version looks great! LGTM!
+80462	I just had one minor question for my own curiosity, does this work exactly the same for all JDK versions? Does it make sense for us to do this only for JDK17 where the warning is shown? I'm thinking more along the lines of 7.16 and the various supported JDK versions we run/test with.
+80450	LGTM! The toString changes are awesome.
+80450	A question about the original issue, does it make sense to backport this fix to 7.16 as well?
+80439	Can the wire type of the field be changed like this between versions?
+80406	Left 2 questions. Other than that this looks good to me.
+80406	I missed the fact that ClusterService#removeListener was already being invoked, so this comment is not relevant and can be resolved
+80406	Maybe also remove this listener if flushEnable is being set to true? (using ClusterService#removeListener)That way there is no need to to keep checking whether flush has been enabled after ilm policy / template has been added
+80389	I don't understand why the regex needs a . in place of a space. Can you explain?
+80378	These look great. I particularly like the use of "field pattern."
+80378	This looks good so far! I'd take the same approach you have.Tag + reuse is probably a good fit for the query + request body params, but I think it's overkill for the response. We should just link users to the existing search API response body docs and concisely point out any differences.
+80378	This looks great. I left some comments and suggestions, but feel free to disregard as wanted. Nothing is blocking, aside from a syntax error in the stored_fields def. Thanks!
+80378	Tried to reword this to avoid passive voice. Not a big deal if left as is tho.
+80378	These look great. I particularly like the use of "field pattern."
+80378	Oof. I can't believe this wasn't documented. Thanks for catching it.
+80374	Any particular reason these are fully qualified?
+80337	Could this exception be more specific? I wonder if this would be a place we could use the MapperParsingException that we previously had in the validation logic.
+80337	With this exception the caller gets the problematic mapping back, I'm not sure if that is the case after this change where the CompressedXContent ctor throws an IAE. Maybe it would be worth double checking that we're not loosing potentially useful information in the new places where the exceptions are thrown. Maybe we can try/catch and rethrow MapperParsingException in several places where we have the problematic mapping at hand.
+80337	Out of curiosity: does this operation involve decompressing the mapping source now? This probably would mean slightly more time spent here in the future, I guess that is negligable but would like to understand the tradeoffs if there are any.
+80337	Would it make sense and be possible to modify the test so we check the exception that is thrown earlier then? Or are there reasons why this is complicated, I haven't checked what that would mean.
+80337	Thanks for the answers to my questions, makes sense to me now.
+80306	Sorry for accidentally deleting this. I was deleting some of my own comments from a pending review and accidentally clicked the wrong one. 🤦
+80306	The link will help, but this feels a little cryptic to me. Should we mention the kNN search API directly?
+80306	may be better say, the maximum number of neighbour connections each node can have in the HNSW graph?
+80306	My interpretation was that it is an upper bound, in the sense that we don't allow to have more neighbours than m, and will prune the worst to have the number of neighbours always under m.
+80306	I didn't have a particular guideline or philosophy in mind. My thinking was that the HNSW info is only applicable if index is true, and that might be good to know before I create a mapping.However, I don't feel strongly about it. I'm good with leaving it here, particularly if we want to keep the intro to this section concise.
+80286	This approach looks good to me. As we discussed offline, it mirrors the approach some field types take where they introduce a "script function" like Function<SortedSetDocValues, ScriptDocValues<?>> to make the conversation behavior depend on the field type.
+80282	I wonder if the total time makes much sense. Especially when model_threads is > 1, it doesn't tell us much. On the other hand, it'd be useful to have stats on the avg_inference_time so maybe we can just collect stats for that?
+80282	Would it be useful to also have stats on number of pending requests? I'm not 100% sure
+80282	Note that we could provide min/max of the avg inference time across nodes. But I'm not sure that makes much sense. Total makes no sense at all. So, if we stick to only providing the avg inference time across nodes, should we rename this to average_inference_time_ms to match the field from the _stats API? Also, the value could be the actual value directly.
+80282	Ah, yes. All this time I didn't realise we used that accumulator for the counts.
+80282	we want all the stats for average, max, min. StatsAccumulator gives us that.
+80282	We might as well not use a StatsAccumulator here. I think it'd be clearer what's happening if we have local vars for the sum and the count. Not feeling strong about this, so change it only if you agree it'd be clearer.
+80267	Is this required? I thought all the extenders of this class already supplied this override, and this is an abstract class.
+80267	Well, thats crazy that the compiler demands an abstract class implement an interface...I wonder if this is because it doesn't know which is which?Oh well, thanks for adding the documentation!

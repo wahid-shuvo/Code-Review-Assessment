@@ -1,0 +1,256 @@
+708478707-2168-u	Add comments explaining what this is about, specifically calling out the device and use case
+640854933-2133-u	Thx! We should actually just remove this method alltogether and use `text.encodeUtf8().sha1().hex()` (from Okio) instead
+640854933-2124-u	Thx! We should actually just remove this method alltogether and use `text.encodeUtf8().sha1().hex()` (from Okio) instead
+631192895-2124-u	Let's go with 23 if you don't mind.
+630615552-2122-u	You could update LeakCanary.config at the beginning of the test to add a heap analysis listener (and replace config with the old version at the end of the test). You can then create a `CountDownLatch` before setting the listener. When the listener fires, count down. Then in the test before "onView" you can down a "latch.await" with 30 secs timeout (and don't forget to check the result is true)
+630563788-2122-u	Fascinating. What made you stop at a depth of 7?
+630567718-2122-u	Also you might want to mention the source, e.g. is this from https://stackoverflow.com/a/31028507/703646 ?    In any case it'd be great to have a bit more clarifying comments directly there for why this is there.
+630564575-2122-u	Worth displaying a toast to surface the error?
+630616993-2122-u	That's great! Maybe `"Could not import ${uri.lastPathSegment}, this is not an hprof file."` ?
+632857016-2122-u	I do think we should reset it, yes, though I would do that at the end of the current test, and wrap the whole thing in a run / finally to make sure we reset it even on failures.
+597892825-2090-u	`0 or x` is equivalent to `x`
+560458865-2055-u	The proper link should be `https://square.github.io/leakcanary/fundamentals/` not `/docs/fundamentals.md`
+560536592-2055-u	The issue template isn't a markdown file, the content isn't actually rendered but instead is displayed as default content for the issue description. That's why we're not using markdown for links, so here it should be: `learn the fundamentals: https://square.github.io/leakcanary/fundamentals`
+549879651-2044-u	Thx! \"GitHub drops a warning about it in your Actions logs if you use ubuntu-latest\" vs \"I've switched the workflow to ubuntu-latest\" => I'm curious, why did you change it then? Sounds like you were saying it's best if we don't?\r\n\r\nI honestly don't have a ton of context so I was mostly asking questions :)
+549879651-2044-u	Thx! "GitHub drops a warning about it in your Actions logs if you use ubuntu-latest" vs "I've switched the workflow to ubuntu-latest" => I'm curious, why did you change it then? Sounds like you were saying it's best if we don't?    I honestly don't have a ton of context so I was mostly asking questions :)    
+546391533-2014-u	yeah ok this is cool. Replace the handler callback and delegate to it, which ensures that this stays compatible with any other code running the same hack.
+546391152-2014-u	We likely want a mutableMapOf<IBinder, WeakReference<Service>> to not end up being the cause of a service leak, and maybe even a WeakHashMap<IBinder, WeakReference<Service>> (ie weak key as well because idk if we should risk retaining the IBinder either)
+539541759-2012-u	Did you try without the cache first? In my experience, this cache is so slow and unreliable/inconsistent it's actually quicker and less flaky to just re-build everything. 
+539546371-2012-u	I would rather inline these, since it makes this script more readable (don't have to go open another file), and it's just two lines anyway. You can use the `|` character to specify multiple lines, although both tasks could be specified in the same command.\r\n```suggestion\r\n          script: ./gradlew leakcanary-android-core:connectedCheck leakcanary-android-instrumentation:connectedCheck --stacktrace\r\n```
+515456194-1984-u	I'm not sure we should return true as a default value here, instead we should probably block until the shared preferences are loaded. Which, granted, will mean IO / blocking on API 27 but heh. A simple way to do that is create a CountDownLatch(1),  call await here and countDown where we initialize shared prefs. Also, I'm not sure lateinit is volatile, if not we need to make this volatile.
+516373792-1984-u	I'm not aware of the Kotlin compiler doing anything like that, let me know if you've seen otherwise.\r\n\r\n\r\nThat beeing said, yes `StrictMode.allowThreadDiskReads()` might be the most straightforward fix here.
+517669360-1984-u	could this be a lazy instead? That way the strict mode change only happens once?
+505579579-1973-u	Nit: Kdoc might be useful here
+505587895-1973-u	Nit: please add a doc explaining all the reflection code around getting time
+499726405-1958-u	Yep, seems sensible to apply the Kotlin linter suggestion.
+498386134-1948-u	We probably shouldn't deprecate this because anyone using 1.3 still have to use this. Is there a way to deprecate only for Kotlin 1.4?
+498397852-1948-u	Generally we've shied away from dropping compatibility support unless there's a really good reason (ie it's blocking some other work). For example, when Android X happened and created a huge migration mess, we ended up removing the direct dependency on both support lib & android X so that we wouldn't have to pick one or force people to go through a painful migration until they were ready for it. Another example is Okio where we depend on a really old version so as not to force anyone to upgrade. Generally I don't want LeakCanary's adoption to be blocked because it's forcing someone to upgrade :) .
+490402844-1931-u	measureTimeMillis  is based on System.currentTimeMillis() which isn't recommended for measuring durations (not monotonically increasing).
+490404648-1931-u	If we're introducing a new type we might as well make it a sealed class with an object such as "NoHeapDump" instead of null here 
+490406218-1931-u	The HeapAnalyser doesn't really need to know about the heap duration, that's a lot of extra piping.    Since the two implementations of the HeapAnalysis sealed class are data classes, we can easily clone them and set the heap dump duration directly here.
+490407474-1931-u	also, see prior comment, can you make this a sealed class with a `NoHeapDump` object?
+490411444-1931-u	Add a `DUMP_DURATION_UNKNOWN = -1` constant, mention it here and then use it everywhere instead of `-1`
+490412374-1931-u	Formatting isn't right. Can you make sure you use Square's formatters: https://github.com/square/java-code-styles
+490710876-1931-u	One thing to test here is that leaks that were recorded prior to this update can still be displayed after this update
+490711501-1931-u	Technically we could actually provide the duration here (ie start of heap dump to exception)
+457440728-1893-u	We still should provide a custom error message. It's better to say that `Browser not found` than `ActivityNotFoundException: ....`  
+456836766-1888-u	Here and below - you explicitly want to crash if these fields are not found, correct? Otherwise it can probably be `?.`
+447313059-1882-u	readHprofRecords should probably return hprofStringCache, classNames and maxId
+447316487-1882-u	Should we really create a new record if the field name could not be deobfuscated and we have `fieldName == deobfuscatedName` ?
+447317270-1882-u	Might want to be a bit less aggressive if we stop creating new records for non deobfuscated fields (e.g. have `createDeobfuscatedClassDumpRecord` return the new max id)
+447317643-1882-u	Why are we passing around mutable maps here? I'm not seeing where we update them.
+447726982-1882-u	This should probably be moved out of HprofDeobfuscator and into DeobfuscateHprofCommand, ie HprofDeobfuscator should be passed a ProguardMapping. Then tests become simpler (no need to parse a file, you can pass in a fake ProguardMapping.
+447727507-1882-u	Use static imports for all `assertThat`
+447731913-1882-u	Can you separate this out in several tests?\r\n\r\n1) Class name mapping\r\n2) Member field mapping\r\n3) Static field mapping\r\n\r\nThen can you add tests for edge cases (I know it works right now but should help with future changes):\r\n\r\n* class name is also used as member field name\r\n* class name is also used as static field name\r\n* Two fields with different names in two distinct classes are obfuscated to the same field name\r\n\r\nAny other edge case I forgot?
+447733129-1882-u	Other tests have helper code to make it easy to create hprofs in tests, see how HprofWriterHelper is used. Does that not work here?
+444540747-1881-u	Empty line needed before this line for consistency?
+444540996-1881-u	Can you also add description for parameter `neverEnqueued` ?
+444540412-1881-u	`Bail` is too slang IMO. Replace with some technical equivalent? `Skip`?
+445644586-1881-u	Too long for a single sentence IMO. How about:    If [objectId] has no dominator known yet but has already been added to visit, then we know we've been here for that object already. We did not add this object to the map of dominated instances so it can't be dominated any more, we can stop there.
+446706398-1878-u	This is a strange error message. TODO?
+443831690-1877-u	`FieldValuesReader` is internal so no new API published, all good.
+443832649-1877-u	How about `position += identifierByteSize`?
+443945841-1877-u	It wasn't a public API before, but it looks like now you're making it public?
+444355110-1877-u	How much "more CPU time" exactly is this? Really not great to expose this API with just longs, easy to make mistakes.
+444349512-1877-u	- always put line related comments on the line before, never the end of a line, as those will eventually wrap and comment *after* the code.\r\n- Remove `DO NOT REMOVE!`, avoid scary language that stops people from thinking. Explain instead:\r\n\r\n```\r\n// Assigning to local variable to avoid repeated lookup and cast (HeapInstance.graph casts HeapInstance.hprofGraph to HeapGraph in is getter)\r\nval hprofGraph = graph\r\n```
+443827910-1875-u	class should be internal, you don't want to pollute everyone's classpath
+443828404-1875-u	Rename both methods to `to` ? Then it's a matter of using the right import? Thoughts?
+479967692-1875-u	Why do we need to test this? Consider removing.
+479966051-1875-u	we use assertJ everywhere else in the repo, let's stick to that.
+479966545-1875-u	This test doesn't express what its testing, ie "verify add operation" doesn't tell me anything. Same for verifyRemoveOperation
+487416847-1875-u	@Armaxis same as before, can you provide a better name?
+479966896-1875-u	This is the "arrange" part of the test. There shouldn't be any verification here, only set up. Asserts should stick to the last phase of a test.
+487417051-1875-u	Same comment as before: this is the "test" part, so there shouldn't be any assertion or verification in it.
+488947889-1875-u	the name of the test says \"+=\" but the test calls add directly?
+488949386-1875-u	maybe \"elements with equal hash can be added\" ? the test name here says we're adding but doesn't outline the expected result.
+488952140-1875-u	What is this testing exactly? Not obvious at all from test name and test content.
+439662657-1860-u	Side note: we already have an LRU cache in front of operations that requires IO. However separately we also try to rely on the indexed objects data as much as possible to avoid as much IO as we can. What this PR does is skipping a ton of binary searches into the indexed objects when we look for the `java.lang.Object` class again and again (e.g. when going through class hierarchy for every class).\r\n\r\nWe could also add a small LruCache at this layer at some point. We'd have to evaluate the cost / benefit of adding a hash lookup to every `findObjectByIdOrNull` to avoid a binary search for a subset.
+439662657-1860-u	Side note: we already have an LRU cache in front of operations that requires IO. However separately we also try to rely on the indexed objects data as much as possible to avoid as much IO as we can. What this PR does is skipping a ton of binary searches into the indexed objects when we look for the `java.lang.Object` class again and again (e.g. when going through class hierarchy for every class).    We could also add a small LruCache at this layer at some point. We'd have to evaluate the cost / benefit of adding a hash lookup to every `findObjectByIdOrNull` to avoid a binary search for a subset.
+428077648-1838-u	Comment should ideally describe what the fix is.    Here it looks like: every time an activity is destroyed, we get the activity chooser model for ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME and set its OnChooseActivityListener to null?    Can you link to the code that's setting up this listener in the first place, creating the leak? 
+428079763-1838-u	Maybe rename to `SAMSUNG_CLIPBOARD_MANAGER` ?
+428082003-1838-u	Is this fast? If not, should it be done from the background thread (and would that introduce additional risk?)
+428243132-1838-u	nit: avoid star imports.
+420292397-1823-u	nit: make it obvious that we're passing a null proguard mapping (ie add that arg)? 
+420292678-1823-u	avoid comments at end of line they tend to wrap to next line when refactoring / formatting.
+420294092-1823-u	This doesn't always work. The obfuscation checker is based on the runtime, and the code that runs the analysis might not be the same as the code that was used for the hprof. This should check inside the hprof.
+420296200-1823-u	Maybe make the statement stronger (ie avoid \"looks like\") and start with what we're finding. Also keep in mind this code can also run in the CLI.\r\n\r\nSuggestion:\r\n\r\n> The heap dump contains obfuscated class names. The heap analysis is unable to proceed without a mapping file to deobfuscate class names. You can run LeakCanary on obfuscated builds by following the instructions at https://square.github.io/leakcanary/recipes/#using-leakcanary-with-obfuscated-apps
+420870209-1823-u	Not this method, only readField is.
+420870857-1823-u	Would stick to "Same as [readField] but throws if the field doesnt exist"
+420871925-1823-u	I dont think we want this as a param
+421859551-1823-u	Obfuscation shouldn't impact classes from the Android SDK. This isn't a bad idea but should likely be a different method that throws a different exception (which states that it looks like AOSP might have changed)
+426932840-1818-u	nit: avoid 3 letter variable names (e.g. str), use full nouns instead.     Here, instead of using a var you can return the original vs the wrapped one.
+426933361-1818-u	Nit: keep an empty line between the two but remove `<p>` to be consistent with javadoc style elsewhere in the repo.
+416230000-1808-u	Nit: replace with expression body + no need to pass `resources`, since it can be accessed from the class instance.\r\n```kotlin\r\nprivate fun getHeapDumpStatusMessage() =\r\n  when (HeapDumpPolicy.getHeapDumpStatus()) {\r\n  ...\r\n```
+416230180-1808-u	Redundant `String.format()` call
+416233147-1808-u	I think these error messages can be more descriptive. Something like:\r\n- Dumping heap disabled via LeakCanary.Config\r\n- Debugger is attached and dumping heap during debugging is disabled\r\n\r\nI'm not great with descriptions though, @pyricau what do you think?
+417021642-1808-u	Nit: not `by Application`, more like `by developer` 😄 I think we can just drop this part and end sentence on `in LeakCanary.Config`
+418350274-1808-u	nit: missing period.
+418350906-1808-u	nit: those empty lines between when values are somewhat unexpected
+416231795-1806-u	nit: maybe rename to `checkRunningInDebuggableBuild()` ? We need a method name that will be clear to consumers when they get this error in their build
+416239428-1806-u	I think it would be better to add a corresponding section in the [Code recipes](https://square.github.io/leakcanary/recipes/) and have the error message point to that page with an anchor to a detailed description with xml snippet to copy&paste. Source code of those docs is located in `/leakcanary/docs/recipes.md`
+417023606-1806-u	Nit: since we're putting emphasize on these words, I think it would be better to spell it out - **do not recommend** - instead of shortening.
+416240900-1802-u	private helper functions should be after the tests (code should read outside in)
+413484104-1800-u	This comma looks lost! Can you please  put it next to curly on line 165?
+397520444-1786-u	`Using words`? What that means?
+397524107-1786-u	`at all levels` or `of all levels`? Does it refer to developer's level or to the levels of detecting a leak?
+397524959-1786-u	Also need to modify Kdoc in the `LeakCanary.Config.Builder` source 
+397525023-1786-u	Also need to modify Kdoc in the `AppWatcher.Config.Builder` source 
+408323267-1774-u	nit: insert space after `Iterations:`, `avg` => `average`, add ` ms` after duration
+372131038-1734-u	The existing config may already have been customized, so we shouldn't replace it with a brand new default config. try this instead:    ```  config = config.copy(enabled = true)  ```
+580890912-1734-u	Haha, well I didn't have a special reason.    You shouldn't have the problem of missing application if you change the order:    ```    fun manualInstall(application: Application) {      InternalAppWatcher.install(application)      config = config.copy(enabled = InternalAppWatcher.isDebuggableBuild)    }  ```    I think this makes sense as I don't see why someone would go through the trouble of calling manualInstall but not want it enabled in dev builds.
+371041814-1732-u	Super nit: `i.e.` with dots seems to be the formal way of spelling it
+371042447-1732-u	Nit: replaceable with `[ViewModelClearedWatcher::class.java]` although, I don't feel like it adds to readability...
+371042662-1732-u	To prevent ambiguity with `MVVM` term I'd suggest using `ViewModel` term instead of `view model` here. That's what Google call them inside `lifecycle-viewmodel` javadocs as well
+371043696-1732-u	Nit: here and further `view model` -> `ViewModel`
+372220186-1732-u	You could use `ViewModelStore#keys` and catch the no method exception and then go back to the reflection. This way you ensure compatibility with the next versions of viewmodel. This is good for R8 too.     I'm thinking if a proguard rule to keep the mMap would be appropriate... 
+364921072-1715-u	Remove all javadoc and replace with `@see`, so that we don't have to update two places when we update javadoc.
+364921278-1715-u	add a comment (non javadoc) explaining this hack
+365935271-1715-u	why not name it the same as the property, ie dumpHeap, then `this. dumpHeap = dumpHeap` ?
+365936737-1715-u	Maybe update javadoc to mention this should be used in Java only.
+365973881-1715-u	nit: would have been size to have the exact same example as in kotlin
+365973981-1715-u	nit: would be nice to use the same example as the kotlin (below)
+358843728-1677-u	You should use the latest 1.x release. In that you'll see this is deprecated; replaced with getBuffer().
+355617202-1665-u	I think you want to start the emulator _after_ downloading it.
+353265618-1658-u	This one confused me too when I encountered a leak in our demo app. Might worth adding more info, e.g. "Fragment received Fragment#onDestroyView() callback: fragment instance is kept, but its view will be destroyed. All references to the view should be cleared to prevent leaks." Basically, something that tells people that fragment is staying around for a while, but the view is not.
+352264112-1650-u	I don't know that this is necessary for if statements returning a value.
+352997039-1650-u	It's harder to make mistakes when returning values though? idk, I've grown used to single line `val foo = if (a) "a" else "b"`
+352264141-1650-u	Would be nice if commit message + PR description outlined what the enabled rules are about.
+349833256-1633-u	I'd rather have us build a sealed class based API for all leak canary notifications. Until we have that, I would avoid adding more API surface that we'll have to deprecate. Instead, remove this and maybe make `DefaultOnRetainInstanceListener` and `OnRetainInstanceListener` private (or inline its behavior)
+349833529-1633-u	The default shouldn't be "empty", it should be showing notifications.
+349833695-1633-u	instant app is not a form factor. What will we do when instant apps run on watch or TV?
+362127769-1633-u	See leakcanary.internal.AndroidHeapDumper#showToast    Toasting when no activity is resumed may lead to a crash.
+363868033-1633-u	yeaaaah but.. In recent Android versions you can no longer toast when the app is in background, hence the use of activity context and check for resume. 
+364382229-1633-u	Passing the app context might be ok but I think you must be visible? And it crashes on some version of Android (that famous toast crash) but not anymore.    Anyway `leakcanary.internal.AndroidHeapDumper#showToast` shows you how to do all that.
+362127855-1633-u	Log related code should execute within the log lambda
+362127975-1633-u	`leakClass.name.replace(leakClass.simpleName, "LeakLauncherActivity")`     Isn't that `leakClass.package.name + "LeakLauncherActivity"` ?
+363867312-1633-u	How about only sending CountChanged when the count actually changed?
+362128370-1633-u	javadoc not up to date. Also, empty line.
+349834285-1633-u	Could this be a flavor of the example app instead?
+362128709-1633-u	Should be clear that pressing the button will trigger an activity recreation
+368159706-1633-u	Devs have no idea what toast we're trying to display. Not sure it's worth logging, but if we do we should be more specific.
+368161843-1633-u	Pressing back does not cause a leak, it changes the threshold and triggers the heap dump.\r\n\r\nWe need to explain that either rotating or pressing the button will create 1 leak. That's it. Then we also need to explain that after 5 leaks the analysis will trigger.\r\n\r\n...\r\n\r\nOr maybe we don't, this is a sample app that generally most people won't even see.
+368162055-1633-u	this should be `heapAnalysis.applicationLeaks.size`
+347116457-1622-u	In this case `may be` are separate word, so for camelCase it should go as `mayBeLeakCause`. It also better describes the nature of the variable - that **something particular may be a leak cause** vs **there is maybe a leak cause**
+347116752-1622-u	Nit: convert to expression body to make it consistent with other methods `private fun elementIndex(position: Int) = position - 1`
+347116788-1622-u	What a CPU time waster! `const val SQRT_TWO = 1.41421356237f` !jk 😄
+343837175-1611-u	Please move this line to be after `androidx` - it's (more-or-less) alphabetically sorted now 😄
+325403338-1589-u	nits: local variable for ProguardMappingReader and private constant for `"leakCanaryProguardMapping.txt"`
+325403523-1589-u	Different formatting length? Are you using Android Square?
+325403792-1589-u	formatting for this file should be 2 spaces.
+325404535-1589-u	Why is this an interpolatde string instead of code?
+325404669-1589-u	why is this the group / where does this later show up?
+326204127-1589-u	Maybe users would like a name that reflect the fact that it is a gradle plugin.
+328367764-1589-u	I like it!    Now, the difficult conversation: proguard is being replaced by R8. I have no idea how we'd support R8 here, but we'd probably want to build that in the same plugin?
+328448658-1589-u	`leakcanary-android-minification-plugin` looks good to me. It's a bit absconse but that's the proper name of the operation..
+326195395-1589-u	Are you sure the parent folder always exists ?   If not, you might need to create the parent dir tree of the destination.
+322430032-1569-u	I'm a bit confused about indexes here, probably I'm understanding it wrong. Here's my thought process:\r\n\r\nOriginally we created range as `valueIndex until valueIndex + bytesPerValue`, so `endInclusive` was set to `range.endIncusive - range.start = valueIndex + bytesPerValue - valueIndex = bytesPerValue`\r\n\r\nWith new implementation we pass `rangeEndInclusive` as `(valueIndex + bytesPerValue) - 1` and use it as a replacement for `endInclusive`. \r\n\r\nBut, obviously, `(valueIndex + bytesPerValue) - 1 != bytesPerValue`. Is it me misunderstanding the flow and `IntRange` here or is there a bug?
+321530009-1564-u	Nit: can convert to expression body instead of having a `return`
+317375883-1551-u	The name is was mirrored after Log.d, ie the logging level (d, e, i, ...) . What we log is different from what level we log it at, and here there's no difference in level so I would stick to "d". It's more of a helper logger to log the stacktrace
+317375972-1551-u	nit: split these in two distinct test, one for debug and one for error. General guideline is one assert per test.
+316804110-1543-u	Nitpick: putting parameters on separate lines will make it a bit easier to read; right now the alignment is inconsistent
+316858058-1542-u	Nit: use linked hash map instead to get consistent ordering at minimal cost (useful when debugging)
+316858774-1542-u	Consider having two types, or an interface and an implementation. HprofGraph only needs to know about a map of obfuscated names to deobfuscated names. It's unclear that all usages will need to work of off an input stream.
+317189553-1542-u	Exactly! You could either make ProguardMapping an interface and have e.g. `InputStreamProguardMapping` implementation, or keep `ProguardMapping` a simple class that holds the map and has the deobfuscate method, and then have a separate class that knows how to create a ProguardMapping from an InputStream.
+316862588-1542-u	would probably go with classId first.
+318249747-1542-u	This formatting change is surprising, are you using SquareAndroid?
+318533334-1542-u	Thanks! You might want to remove those spaces ;)
+318251724-1542-u	How about making this a ` ProguardMapping` instead of a `ProguardMappingReader`? That way HprofHeapGraph doesn't have to know that the map comes from a file
+318533088-1542-u	Sorry I should have been more clear: I think we should push ProguardMappingReader to the outmost layer. I can't think of a good reason for HeapAnalyzer to know about where the mapping comes from. The general idea is to enable doing this even when we don't have a file
+316835980-1535-u	The previous log was bad, this makes it slightly worst :) . Context: the idea with these logs is that they're no-op when there's no logger, and there's no unnecessary string concatenation. Here the log was actually bad, it should have done something like `if (SharkLog.logger != null) {}` (or maybe SharkLog should have a util method) to avoid any object construction. `"Watching $nameForLogging with key $key"` involves string interpolation even when there is no logger.    This is not a major impact, but more of a good practice.
+316856384-1535-u	It would be more efficient when logger is set, but less efficient when logger is not set.    Maybe instead SharkLog's API should be changed to take an inline lambda that returns the formatted string:    ```  SharkLog.d {  "Logging $value"  }  ```    inline means no extra cost, you get the kotlin string templates, and if there's no logger then there's no cost.
+316904140-1535-u	Make `d` an inline function and then the lambda gets inlined
+316836410-1535-u	what's wrong with the spread operator btw?
+316836864-1535-u	Are you 100% that we don't need the spread operator here? String.format takes an object, and args is an object, so I'm worried it's going to run toString on the args array itself, hence the spread operator
+316904409-1535-u	Should be the same method yes. I've definitely had this kind of issues in java in the past so I'm worried :)
+708479431-2168-nu	On the bad device, once you add that fix, do we have other messages where msg.obj is a IBinder and can we still do service death detection? If yes then this fix is great, if no then I wonder if we could detect this ahead of time and not set up the hook at all. Thoughts?
+708764050-2168-nu	I guess I just want to confirm you're still also seeing IBinder messages on that device.
+672559625-2133-nu	?? waiting for green build to merge
+861780325-2124-nu	Great to see there's a fix for this. Any chance that it's going to be released?
+869010277-2124-nu	It will definitely be released some day. I don't know if that'll happen while I'm on paternity leave.
+630615998-2122-nu	oooh I see. So that's because segments of the path contain periods because they're packages. Great. So there's no max but generally don't expect too many I guess.
+630565234-2122-nu	This is ok but based on the video there's a little amount of time where one might think they have to click on "import hprof" on that new screen, when in fact the hprof was already being imported. So now I'm wondering if we should add a virtual row for "pending analysis" on that screen (for this new feature but also any time we import).
+630617483-2122-nu	I'm not sure we'd want to update the DB as this is very much an "in progress" thing that's only true while the program is running, so we'd risk having out of date info after a restart.    We could probably file this as a follow up... but I'm thinking maybe an internal thing that keeps track of "are we running an analysis right now" and a way to subscribe to that.
+839207473-2122-nu	Thx, this is a great PR!
+597971420-2090-nu	Using Build.VERSION_CODES.R instead of "30" requires updating `compileSDK` from 29 to 30. This update caused other issues. So, it is better to do `compileSDK` update in a separate PR
+552092326-2044-nu	This change seems unrelated – why lower this number?
+552111578-2044-nu	Because I asked in the previous PR :) . The Travis CI ran on 16 so we shouldn't lose that. Though ideally we'd run on a few versions maybe.
+552112942-2044-nu	This isn't needed anymore, right?
+742705463-2014-nu	This is really cool! Is this hitting any API  grey list / black list?
+748591472-2014-nu	Thanks! Sorry for the slow review, this is really cool but I need time to dig into it
+539328883-2012-nu	Why are you cleaning before building? There shouldn't be nothing there.
+539545356-2012-nu	That line doesn't explain why the clean is there at all in travis, although it could be that travis was leaking files between builds, and this was the workaround. Shouldn't be needed here.
+742008322-2012-nu	I'd love to ditch TravisCI entirely and have something else for the snapshot deploy.
+742181960-2012-nu	Another PR sounds good!
+505576781-1973-nu	Shouldn't this go before `val result = condition.evaluate()` ?
+505578736-1973-nu	Suggestion: have you considered adding `sdk > 21`? On older Android phones it much be too much of a pressure to run analysis in background. Or, maybe, make it configurable?
+505585782-1973-nu	How safe is this `!!` here? E.g. emulators, custom hardware and firmware can potentially return `null` here?  
+505602514-1973-nu	This is how you delete the file after the heap dump analysis, right (assuming happy path and no errors)?
+505597067-1973-nu	As an alternative you can use the `measureTime`, but it's experimental, might be too risky for release
+499727718-1958-nu	yeaaaah that's... a very unfortunate piece of code :) . That thing adds font tags. You did the right thing.
+737438931-1948-nu	Thanks! Sorry it took so long to merge :)
+490723094-1931-nu	Thanks for testing! Sounds good.
+456920262-1893-nu	Wow, so you're using LeakCanary to catch leaks in the cars? We should start advertising this library as a good car plumbing solution!  
+446706329-1878-nu	This is confusing, why do we need to call this before invoking `moveReaderTo(reader.startPosition)` ?
+484081647-1878-nu	Note: `LongLongScatterMap` and `LongObjectScatterMap` potentially can improve memory usage here; depends on how many items are in the map, of course
+484081922-1878-nu	Just noting that you use `currentRecord` instead of `localCurrentRecord` here. Shouldn't matter, but you know this code better, might think of possible edge cases?
+479964733-1877-nu	Then that's the answer ;) . Favor expression over optimization unless you can prove the optimization is worth the loss in expression
+443830304-1875-nu	PathFinder is an internal class. You can change the signature of its methods and change everything else. Definitely shouldn't live here but in PathFinder if you think we should keep it, but I'm not sure why.
+478407222-1875-nu	Looking good but left some more feedback on the test.
+488947317-1875-nu	Is there really only a `contains` that takes a vararg? 
+488950242-1875-nu	Is there any world in which a change to LongScatterSet could break this behavior?
+488952950-1875-nu	What's "a lot" ? How does the test demonstrate that resizing occurred? Also, resizing is not an interesting part the API, it's an impl detail, what should we test instead?
+441829822-1865-nu	Is it unused? The flag seems to be a regular boolean
+429587235-1842-nu	This is brilliant! ? 
+428078938-1838-nu	did this happen, or is it to be safe?
+415431095-1838-nu	Looking great! I left a few comments to address. My only concern is with the fix for ActivityChooserModel, I'd like some pointers at the sources showing how it happens, because that fix is a bit more involved.
+685933890-1818-nu	Thanks for the great work and for following up, sorry I didn't merge any earlier!
+685933890-1818-nu	Thanks for the great work and for following up, sorry I didn't merge any earlier!
+426945588-1818-nu	The JDK `Stack` class should be avoided. ArrayList and ArrayDeque are good alternatives.
+636190692-1818-nu	Let me know when you want me to take another look ;)
+416233877-1808-nu	Does this need to live in the `leakcanary-android-core` module or could we move it and then make it internal?
+416233304-1808-nu	Can be converted to a Kotlin property
+416239579-1808-nu	Instead of surfacing just the current state, we should surface why we're in that state.
+402319851-1808-nu	Looks good to me! I'll let @pyricau decide whether it's ready to be merged!\r\nThanks again! 
+403950834-1808-nu	Looking good! I left a few nit comments. A screenshot would be nice too ;)
+416231296-1806-nu	Oh, that's interesting! Hadn't thought of this, makes sense to reenable.
+416219830-1806-nu	I'd definitely avoid adding a new public API for something not directly related.\r\n\r\nAt some point in the future (?) we're supposed to be able to share access to `internal` symbols across modules of the same project. Until that's available, two options: if there's internal state that *must* be shared, I rely on public methods under an \"internal\" package. Otherwise (ie, like here), I'd much rather duplicate the code.
+418767539-1806-nu	nit: this says both "production" and "release". We should ideally pick one, as changing vocabulary can be confusing. Probably release?
+418770614-1806-nu	Welp, I wanted to make a PR but I pushed to master instead. Oh well. \r\n\r\nhttps://github.com/square/leakcanary/commit/28d53788055bd219139585cdd89525ade25fd416 don't tell anyone
+622597852-1806-nu	Thanks!! I'll merge and follow up with the wording nit.
+414165326-1802-nu	As long as it's not in the LeakCanary exported deps, that's fine anyway.
+414166192-1802-nu	This sounds nicer because it tells us what's wrong
+416236218-1802-nu	The one already in place because `isEmpty()` will log the content of `missingInConfigBuilder` automatically. => you shouldn't log it in the error message.
+414165977-1802-nu	Should have another test for the opposite case, a field in the builder that's not in the config class. Less likely but maybe with deprecation.
+416241343-1802-nu	instead of subtract, how about asserting the two lists are equal? That way the framework tells us what's different. If there's a reason not to use equals, then the error message should include both lists
+622615303-1800-nu	@ckesc I'm hoping to release 2.3 sometimes next week. Ping me again if that's not the case!
+626025395-1800-nu	I'm writing the release notes :)
+397521452-1786-nu	Not sure, but maybe `suspected references`?
+408324285-1774-nu	nit: wondering if folder, buffer size and interval should be params with default values. Not necessary though
+373119263-1734-nu	ah, I hadn't thought of that, makes sense.
+580391560-1734-nu	One question: why did you first have `config.copy(enabled = InternalAppWatcher.isDebuggableBuild)` and then changed it to `config.copy(enabled = true)` ?
+365934913-1715-nu	Did you hide it by using the \"SinceKotlin(999)\" hack?\r\n\r\n> but then the LeakCanary.config.newBuilder() won't workWhat does \"won't work\" mean here?
+333278401-1677-nu	Force downgrading is not a safe operation and other libraries using Okio 2.x are liable to break. This library already depends on Kotlin so downgrading Okio provides no advantage. You're of course welcome to proceed with this since it doesn't affect much. I would push back on the user either way.
+358843728-1677-nu	Personally I’d build against either 1.x or 2.x, but not both. But this looks safe.
+358846820-1677-nu	Oh and in great irony the bug report is from a user on a version that precedes this one. That is, this bug can occur exclusively within 1.x releases. My recommendation is to decline this PR and tell your user to use the latest 1.x.
+352264074-1650-nu	What is this change about?
+352264188-1633-nu	Sorry, nope: if we're not adding something as public API, then we should not be adding it to Config. Sources of API classes are read by users of the library so we should aim to limit private code in it.
+364512050-1633-nu	welp the idea is to only keep the activity reference while the activity is resumed (and therefore won't crash when toasting) so that likely won't work
+362128197-1633-nu	wow, UiModeManager has been here since API lvl 8, first time I see it.
+363867640-1633-nu	Nice! Ok I was confused as to why it was added in both places. That way is even better :)
+577648925-1633-nu	@pyricau Seems this has been approved, when will it get merged?\r\nWas looking since we need to check TV application for memory leaks
+578262521-1633-nu	Damn, I did a merge instead of a squash, so all those 21 commits are now on master. Oh well. Next time, can you squash as you go ;) ?
+347116731-1622-nu	Nit: Currently, there are combinations of `when` and `if` in this method which make it a bit harder to follow, and also a lot of `if` conditions are inverted (`if (a != x) .. else ..`). \r\nI refactored it in a way so it mostly uses `when` + few more touch up; what do you think?
+314491758-1611-nu	Approving (a few changes still needed but overall looking good)
+552103368-1611-nu	I'm ok with waiting, would love to give you the opportunity to finish this.    Once this is ready we should probably use it  on a jetified project and make sure Gradle won't complain.
+558858055-1611-nu	I checked out the branch, deployed locally, added the support library only to a project then support library + jetifier and it's all been working, no issue.    I'm going to merge :)
+532417307-1589-nu	Once this land, will the plugin be automatically available as soon as we make the next release to maven central? Wondering if publishing a gradle plugin is as simple as publishing a jar, or if there's more work that needs to happen.
+326638059-1589-nu	I find it interesting to have a group, when listing tasks they are grouped. Maybe a more general group such as "memory monitoring" would provide more insights on what the tasks are doing.
+528427447-1559-nu	typeSize is an artifact of older code prior to creating PrimitiveType, so I would actually favor the latter (PrimitiveType). In both cases we're doing a map lookup so it's kind of equivalent.
+317375992-1551-nu	This test is testing that SharkLog.d passes the result of the callback to SharkLog.logger.d, right? 
+316862369-1542-nu	I was wondering if the mapping should happen when parsing instead? ie either passing proguardMapping to `Hprof.open` or `HprofReader.readHprofRecords`. This would provide the mapping capabilities even if you're not using the index. One issue though is that you can't tell if a string is a class name, a field name, or something else. So it probably wouldn't work?
+318249173-1542-nu	I'm curious about the distinct casing (dash for "analyze-process" vs underscore for "proguard_mapping"), is there a standard practice?
+522205084-1535-nu	Thanks!    How do I generate / override the baseline? Btw I hadn't realized we'd have so many things in the baseline, that's a lot a content committed :) 
+316832957-1535-nu	do we need empty files?
+316917131-1535-nu	with that we can get rid of the vararg and lose the `new Object[0]`
+524360847-1535-nu	I like the stats reports per module! Let's keep it.    Maybe we can make `./gradlew check` a commit hook?
+524396649-1535-nu	oh sorry yeah I actually should have said push hook :)
