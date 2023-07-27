@@ -1,0 +1,1098 @@
+What do you think of auditing a failure to stop?     `TransportStopDatafeedAction` already audits on stop success. I am just wondering if we should alert the user of a weird state.	0.0
+I think the `resolveRouting(...)` method can now also be removed from `IndexRequest` class? (looks this was the only usage).	0.0
+Why not add `DocWriteRequest.process()` too to avoid the `if` here?	0.0
+We should actually just replace this with `versions.getProperty('jna')` to avoid having this duplicated in two places.	0.0
+If we leverage `versions` in the reference build script instead we can ditch this comment since updating it here will update the build script as well.	0.0
+I think the `%` here is unnecessary, we can just check for >=, since we reset when submitting the batch?	0.0
+Can we also assert that no extra request is sent/received when `pendingDeletes.get() == 0`?	0.0
+Does this mean it will be set to the largest size that could be assigned in the cluster capped at 1024mb?	0.0
+I wondering if this should even be in user facing documentation at all.	-1.0
+Can we also assert that a key is interned? Could just check that the key on index1 is the same as on index2.	0.0
+I mainly found it illogical that we do not fully build the parameters for the constructor in the build method like we normally do. I would still prefer it the other way around, but can accept it residing here for now.    I am not sure I found a place where `getByPrefix` needs this, they all look like "get and throw away" style lookups, perhaps you have a specific case. Even if there are such cases, it seems unnecessary to go through the lists once more when all we need is interned keys in that case.	-1.0
+I think we can take this further, let's have two static final values here, `FIELD_DATA_ENABLED` and `FIELD_DATA_DISABLED`, with a static selector method that returns either one of them, and keep the constructor private so that we only ever use these two instances.	0.0
+Ah, you're quite right, it's an updateable setting.  Can we still rename `DISABLED` no `NO_FIELD_DATA` or something similar to make it clear that we're not disabling the whole mapper?	1.0
+Can we please log the timezone and the interval in the exception message if this happens? This way if we have missed a case that we are not aware of we'll at least be able to debug it. Perhaps a logger warning too?	0.0
+I wonder if we can make this constant a field that can be modified with the builder which defaults to 5000? That way we can write a unit test that ensures we correctly throw the exception in case the loop limit is reached.	0.0
+This is changing behaviour and it's unclear to me how we end up in this state. I'd be concerned that a customer is successfully getting a date now, where their application will effectively break after this change? Is there a way to reproduce this with a unit test? If not maybe we can take the approach to log an error/warning and retain the existing behaviour of returning a value?	-1.0
+The model definition part number or document ID from the search would be useful in this message for debugging.	0.0
+nit: `Set.of(requiredSourceFields)` can be lifted out of the for loop so it is created everytime	0.0
+What if there are > 100 definition docs? The summed sizes will never equal expected total.	0.0
+The reason for making this change is not clear to me. We expect the definition to be base64 encoded, Java UTF-16 characters require 2 bytes to store each base64 character whereas the raw bytes (given UFT-8 encoding) will use half that space. 	-1.0
+I think we can remove the `JsonNode ` usage here as well? And use `XContentMapValues `?	0.0
+Maybe instead of wrapping multiple if statements, maybe do this: ```java if (flushEnabled.get()) { return;}if (event.metadataChanged() == false) { return;// rest of the code```I think this is more readable.	0.0
+Why is databind being used here? I believe in mast of the rest integration test we use `XContentMapValues`, could that be used here as well?	0.0
+I think this short paragraph is sufficient. We do something similar in the [EQL async search API docs]( I wouldn't go through the hassle of tagging and including each response body field.We may want to include a short bulleted list detailing any differences. For example, `hits` means something different for kNN.	0.0
+I think asciidoc requires an empty line to render this correctly.```suggestion* In > queries to score```	0.0
+May be a better way to phrase it would be something like: "returns top K documents as found by k-nearest search".    	0.0
+I'd include the acronym whenever we spell out k-nearest neighbor. I also don't think we need `returns matching documents`, but it's fine if you want to keep it.```suggestionPerforms a k-nearest neighbor (kNN) search.```	1.0
+Not a huge deal, but I'd consider moving the last sentence into the `knn.field` param definition. It's sort of a requirement for that param.    I overlooked this in dense vector docs PR, but it may be good to note there that the `index` parameter isn't dynamic/updateable.	0.0
+May be we can add that `query_vector` must have the same dims as an indexed field it searches against. Although it is also kind of obvious, so not sure if it is worth to add. 	0.0
+We don't really describe the high-level process for gathering candidates from each shard and then collating the results. IIUC that and HSNW are the two main factors that can affect accuracy.Should we mention that in the API description or save it for the high-level guide?	0.0
+I agree with @jrodewig it would be nice to add more details here how this `num_candidates` works, for example: "{es}  collects from each shard  the top `num_candidates` results, and then merges collected from the shards results to get the top k results.  Increasing `num_candidates` tends to improve the accuracy of the final `k` results..."	1.0
+I'd specifically mention search API here as we have a number of search-related APIs now.```suggestionA kNN search response has the same structure as a>. However, certain sections take```	0.0
+ May be a better way to phrase it would be something like: "returns top K documents as found by k-nearest search".    	0.0
+`// TEST[setup:my_index]`, adding to @jrodewig, also looks like the index name is different.	0.0
+May be we can add that `query_vector` must have the same dims as an indexed field it searches against. Although it is also kind of obvious, so not sure if it is worth to add. 	0.0
+I agree with @jrodewig it would be nice to add more details here how this `num_candidates` works, for example: "{es}  collects from each shard  the top `num_candidates` results, and then merges collected from the shards results to get the top k results.  Increasing `num_candidates` tends to improve the accuracy of the final `k` results..."	1.0
+Is it something that we forbid explicitly ? I didn't test but it should work transparently since we use the search action internally.	0.0
+IMO we're protected by the experimental status. CCS works out of the box and there's nothing that prevents us from removing the support later on. I don't see why we would though so I am not sure we need the NOTE at the moment.	-1.0
+Certificates and keys are not printed to the terminal , only the password for elastic user and the enrolment token of Kibana 	0.0
+Let’s remove this section entirely. The reconfigure tool is meant to be used only for packaged installations. The use case doesn’t apply to archives.	0.0
+A word is missing here ? “is as a” reads strange	0.0
+Did you intend to uncomment `randomBoolean()`?	0.0
+Since these are exactly the same strings, it's difficult to tell whether the merging actually happened in the right order from this test. Could you change one of the formats?	0.0
+should dot_product -> cosine_similarity?	0.0
+This puts the valid values in a collapsible section that defaults to open. Also adds a matching asterisk for \"Required.\"```suggestion^*^ If `index` is `true`, this parameter is required.+.Valid values for `similarity`[%collapsible%open]====```	0.0
+I think we should update the other field types to remove the `[horizontal]` attribute and use formatting similar to the parameter definitions in our API docs.I left a few comments to:- Add collapsible sections for nested value/properties.- Add required and data type for each parameter.	0.0
+I think we should mention this in the `index_options` definition and remove the snippet here.	0.0
+Adds required and data type. We mark parameters required in some situations with an asterisk.```suggestion`similarity`::(Required^*^, string)The vector similarity metric to use in kNN search. Documents are ranked by```	0.0
+Adds a collapsible section + required and data type.```suggestionexpense of slower indexing speed. +.Properties of `index_options`[%collapsible%open]====`type`:::(Required, string)```	0.0
+I think this got lost or I forgot to suggest it, but this closes the collapsible section. This should fix the broken docs CI test.```suggestion====+```	0.0
+You can use `Map.of()` here	0.0
+Or maybe this should be a method on `NumericType`: `fielddataBuilder(String name)`?	0.0
+Can you add some javadocs to give an idea of what this is used for?	0.0
+Tiny comment, maybe better to supply a non-null `ScriptField` that throws `UnsupportedOperationException`?	0.0
+Is this always `BooleanDocValuesField::new`? In which case we can probably get away without having a field here?	0.0
+Maybe `getFieldDataBuilder` to distinguish it from the various other Builder classes we have floating around	0.0
+Sorry, I think I misspoke in my earlier comment. What I meant to say is that multiplying the `avg_inference_time` with the `inference_count` per node and then dividing that with the number of nodes won't give us a correct measurement. We'd need to divide with the sum of `inference_count`. So, if we want this stat we need to calculate it manually.	-1.0
+We don't need to introduce this new type check here.	0.0
+Its possible that `bert: {}` is provided, so `truncate` would be `null` and then throw an NPE when you call `.toString()`	0.0
+This part right here seems off. Perhaps accidentally committed? WIP that was meant to be removed?	-1.0
+Little wording/formatting nit -- maybe \"on headers [HeaderA, HeaderB, HeaderC]\"? What do you think?	0.0
+"Note that to avoid dividing by zero, a small epsilon value is added to the denominator."	0.0
+Is there a way to factor this code so as not to modify / nest the entire logic? Something like    ```  if show_trainable:     some_list.append(...)  ```    Basically you want to append to `positions`, `to_display`, `fields`. You should typically not modify more than a handful of lines to achieve it.	0.0
+Avoid putting -> Don't put (this is imperative)    Add parens: `preprocess_input()`	0.0
+Mention `Rescaling(1. / 255.)` since typically this is the only layer needed	0.0
+Is there any usage of negative number for this method (eg -1 for unknown shape). If all the intended use case for this method is for positive int, then let's just update this method instead. 	0.0
+kernel_size should always be positive. dilation_rate is always positive too. For stride, I think it should be positive and non-zero as well (0 mean the window doesn't even move?). Padding is not validated by this function (checked by normalize_padding() instead).    With that, I think let's just update the existing normalize_tuple with an positive number check instead.	0.0
+Please find all the negative values, rather than just the first one.	0.0
+Please check the content of the error message as well.	0.0
+Please change the cmp to validation_fn, and the function should return False for illegal inputs.    The lambda function above should also be changed to lambda x: x > 0 instead, which is more readable (not using negation).	0.0
+Now both the method signature and the caller are quite weird now.     Seems that there are only true use case, and majority of them are strict positive. I don't think there will be any new use case, eg different lambda. So let's just add a kwarg for allow_zero and default to False, which will allow the caller side to skip all the labmdas and msgs.	-1.0
+please update this accordingly.	0.0
+When user getting this error message, it is unclear to them what is the actual requirement for a valid param (eg it need to be positive or non-negative). The lambda approach makes it hard for showing the actual requirement.	0.0
+errr, this method has way too many param now.	0.0
+non-negative integer or integers into an integer tuple.	0.0
+Default to False. A ValueError will raised if zero is received and this param is False.	0.0
+err, shouldn't this just be [v for v in value_tuple if v >= 0]. Using list() filter() and lambda make this quite hard to read.	0.0
+Add space between >= and 0	0.0
+Please use assertRaisesRegex to check the error type and message at same time.	1.0
+Let's put a quote around the {req_msg}	0.0
+Please also verify that -1 is included in the error message.	0.0
+Since user only provide one -4 as the input, we probably should use set() rather than list for the unqualified_values in the code.	0.0
+To avoid spilling on the left side, use string concatenation like this:    ```  reference_str = ('Model: "model_2"'                   '_________________________________________________________________'                   ' Layer (type)                Output Shape              Param #   '                   ...  )  ```	0.0
+Please add one more space indent to match the indent above	0.0
+typo: `accurancy` => `accuracy`, `accurancy_1` => `accuracy_1`	0.0
+Could u add another model.eval below this line, and make sure the output are the same as the first model.eval()?    This will make sure we don't include the any result from model.test_on_batch().	0.0
+Presumably this should be    ```  if ((inputs.shape[2] is not None and sum(self.cropping[0]) >= inputs.shape[2]) or      (inputs.shape[3] is not None and sum(self.cropping[1]) >= inputs.shape[3]))):  ```	0.0
+"Argument `cropping`" (with backticks)     "of Cropping layer" is not necessary, the traceback will show the origin	0.0
+Missing a space here at the end. Also always prefer spaces at the end rather than at the beginning of each string.	0.0
+Sure. How about just remove the smaller/larger here since it is really depending the m_mul value here. "`m_mul` times initial learning rate" as the new learning rate seems reasonable to me as well.	1.0
+Likewise indent should be 4. You can shorten the line by using a f-string instead of `%`	0.0
+Agreed that it does not look very readable. Please go with the option you think works best.    To put a string across two lines, prefer doing    ```  st = ('first part'        'second part')  ```	1.0
+You should use `if isinstance(layer, Model) and layer.layers:`	0.0
+Always use lines shorter than 80 chars	0.0
+Make sure to respect style conventions, e.g. no spaces around `=`. Please use a style linter.	0.0
+prefer `or self.monitor == 'auc'` to avoid potential collisions	0.0
+Then use `endswith`. Otherwise unrelated metrics that have the substring "auc" will get caught.	0.0
+I would say '_acc' and '_auc' to further reduce chances of accidental name clash.	0.0
+There are various possible names for accuracy, including `acc` itself. But we could use `self.monitor.endswith('acc') or self.monitor.endswith('accuracy')`	0.0
+Add period at the end of the sentence	0.0
+"When `padding="same"` and `strides=1`, the output has the same size as the input."	0.0
+Use backticks around codde keywords	0.0
+This is the bazel test target name which can be different from the test file name. Please refer to the BUILD file for the corresponding test name.	0.0
+This is the BUILD package path, which is bazel specific. You can have a target like a:b_test, but the actual test python file lives in a/b/c_test.py	0.0
+IMO the whole thing does become a lot more readable as code blocks like this. But the output of the code ("4" here) should be moved to a comment, like `# Returns "4"`	1.0
+Let's mention that the CLA will pop up when you create a PR. You don't need to worry about it before you get started. In fact, let's move the CLA section to *after* the \"open a PR\" section.	0.0
+Keep lines short everywhere (but keep links on a single line).Remove the extra period at the end.	0.0
+I think we should only remove the cast for sparse_categorical_crossentropy(), since the label value could be large based on the dimension of the prediction. The rest of them like binary_crossentropy or categorical_crossentropy, the label value is either one_hot or just 0 and 1, which won't be affected when casting.Also since backend.sparse_categorical_crossentropy will cast the y_true to int64 anyway, removing the y_true cast here is correct.	0.0
+I think you should keep this cast here, since the y_true are expect to be either `{-1, +1}` or `{0, 1}` (i.e. a one-hot-encoded tensor). See the docstring.    We probably want to fix the example in the docstring since the y_true is given in the range of 0-3.	0.0
+The ValueError needs to be tested with a test that uses `assertRaisesRegex`	0.0
+`inputs.shape[1]` can be None. The check would need to use `tf.shape(inputs)`. In fact you probably want to use  why `sum`?	0.0
+I think this check would be better as    if inputs.shape[1] is not None and sum(self.cropping) >= inputs.shape[1]:    You could still construct a tensor with size 0 and shape (None, None) that would cause this to crash.	0.0
+This would read clearer with format strings, and we are trying to gravitate towards more uniform error messages in keras.f'`cropping` parameter of Cropping layer must be greater than the input shape. 'f'Recieved: inputs.shape={inputs.shape}, and cropping={self.cropping}'	0.0
+Application names should use camel case, e.g. `EfficientNetV2B0`	0.0
+This file should not be included in the PR. You can host in on GitHub or Colab as a way to share your workflow for creating the checkpoints.	0.0
+Moved `round_filters` and `round_repeats` outside model function.	0.0
+The signature of a public-facing Application should match the signature of every other application. Only include **kwargs for backwards compatibility with deprecated args; here there are none (since the application is new), so you should not need **kwargs.	0.0
+I'd recommend using closures for this type of Functional API block, so you can apply the block in a way that's stylistically consistent with layer calls, e.g.    ```  def Block0(...):     def apply(x):          ...          return x     return apply    x = Block0(...)(x)  ```	0.0
+This cannot default to `""`. Default to `None`.	0.0
+By default every time you'd apply this block you'd get the same layer names. But layer names should be unique.You can do:```... name=None):if name is None:    name = backend.get_uid(\"block0\")x = layers.Conv2D(..., name=name + \"_expand_conv\")```to make sure that you get unique names every time you apply the block.	0.0
+Oh sorry, I meant add the quotes along with the backticks here as well. It is just that github is grabbing my backticks and rendering them as markdown.A string literal should be surrounded by backticks and quoted. None should be surrounded by backticks and not quoted. So \\`'avg'\\`, \\`'max'\\` and \\`None\\`.Basically anything inside the backticks should be valid python you could pass for the argument in question.	-1.0
+When raising errors like this, try putting the value that caused the error in the error message. This would follow our standard format:    'The `weights` argument should be either '  '`None` (random initialization), `imagenet` '  '(pre-training on ImageNet), '  'or the path to the weights file to be loaded.'  f'Received: weights={weights}'	0.0
+Same here, add a Received: classes={classes}	0.0
+this comment makes it look like the input_tensor must be a Keras tensor, but that does not seem to be the case in the code below.	0.0
+what does this comment mean? is this a todo to investigate a warning?	0.0
+choose a quote delimiter for this file and stick to it (there's a good amount of both " and ')	0.0
+Use backticks around code keywords, e.g. `(attention_output, attention_scores)` and `attention_output`	0.0
+This factoring seems confusing. Consider using `get_batch_input_shape(batch_size, dim)` and calling it using `partial`	-1.0
+This is inaccurate: you can configure the depth, it doesn't have to be depth 1	-1.0
+This sentence is important and should be kept	0.0
+I really don't see how incrementing `self.wait` at the end of each epoch is the correct behavior.You have access to the epoch counter `epoch`, if you just want to skip the first epoch you can? E.g. if it's the first epoch, then set the best score / weights and continue.	0.0
+Let's use the names `serialize_as_bytecode` and `deserialize_from_bytecode` to be more explicit.	0.0
+This parameterization isn't useful here.	0.0
+Let's test all model types (Sequential, Functional, subclass). We have a parameterization for that. `@keras_parameterized.run_with_all_model_types`. See examples.	0.0
+Import `pickle_utils` and then access its members in the code	0.0
+The `:` should come before, `model:`	0.0
+would using `for layer in sorted(layers, key=lambda x: x.name):` work too in this case?	0.0
+In your case, you can use the `tmp_path` fixture, which will ensure temporary files are cleaned up, even in case of failure. Please take a look at this:       When using the fixture, you don't have to import it, nor to remove the directory afterwards, pytest takes care of it.	0.0
+Does that actually work with the Keras `compile`/`fit`/`evaluate` methods? If I recall correctly, there were changes made between tf.keras and external Keras (e.g. the `update_state` method returning a list).	0.0
+Related: please add a metric test that does, roughly, for every `M` among the object metrics:    ```  model = Sequential([Dense(2, input_shape=(3,)])  model.compile('rmsprop', metrics=[M()])  model.fit(x, y)  loss_val, metric_val = model.evaluate(x, y)  ```  No need to test correctness (which is tested separately).    Importantly this test does not need to exclude Theano and CNTK (so it should be in a separate file). Theano / CNTK should only be excluded specifically for MeanIoU.	0.0
+Avoid adding new symbols to the backend (since they aren't present in tf.keras) and instead do an inline import of tf after checking `K.backend()`.	0.0
+Please remove the `__init__` docstrings and move the `arguments` sections to the class-level docstring (applicable everywhere)	0.0
+These two lines can be made conditional on `threshold != 0.5`	0.0
+To avoid type issues, please use float, e.g. `3. / 4.` (test is failing with Python 2)	0.0
+Here rather than using __call__ (which we deliberately disable with non-TF backends), we should use a new internal method	0.0
+Yes, good catch. Keras tensors should be moved to the input list, and should be removed from kwargs.	1.0
+You shouldn't need to pop these args here. Rather, you should remove them from kwargs before calling the layer (which is fine since they are transferred to the input list)	-1.0
+`self.dtype = dtype or K.floatx()` is equivalent and simpler.	0.0
+Print statements not necessary.	0.0
+Fix indent; use 4 space indent.	0.0
+Use convention `# Arguments` --- start with `#`- no `:`This applies to all new docstrings.	0.0
+`.numpy()` would be TF-specific. Please remove print statement.	0.0
+These variables are symbolic tensors, not layer instances, so I think it would be misleading to name them "*_layer".	0.0
+You should put this series of checks into a utility function, because 1) you do it multiple times, 2) it would improve code readability.	0.0
+Imports should be done at the top of the file.	0.0
+Don't use \ for line breaks.    Also: the previous code snippet was a lot more readable than this, please don't change it.	0.0
+Please use standard formatting for the docstrings, e.g.    ```  # Arguments  ```	0.0
+This is not relevant to Keras (which does not accept tf.data.Dataset instances as inputs)	0.0
+Please skip the check if `int_shape` is None or `int_shape[0]` is None (same below).	0.0
+`dtype in str(var.dtype)` like in CNTK would seem like a better check. Dtypes in TF are weird, and both `float32_ref` and `float32` are possible values for the `name` attribute of a float32 variable.	0.0
+This could potentially return without crashing despite incorrect values for `start` or `size` (due to the use of `zip`). I would suggest adding a check that both `start` and `size` are tuples of the same length as `ndim(x)`.	0.0
+I'd say we can remove both warnings.	0.0
+Let's keep the signature `eye(size, ...)`But then let's accept either an int or a tuple:```pythonif isinstance(size, (list, tuple)):   n, m = sizeelse:   n, m = size, size```	0.0
+In order to avoid this `for` loop, I think it would be better to have the test for `logsumexp` be a separate function, with a parameterization decorator over axes and shapes.	0.0
+In modern TF you don't need this cast anymore (I've removed this pattern in the `tf-2` branch).	0.0
+Thank you for the PR, @tjochmann. Could you add `depth, ` here?	1.0
+Thank you for the PR, @abhaikollara. How about changing here as `range(1, num_classes + 1)`?	1.0
+Prefer importing `layers` then using e.g. `layers.Conv2D`	0.0
+Please standardize the docstrings formatting to be the same as other docstrings in the codebase.	0.0
+This looks like a breaking behavior change. Why does it need to default to True?	0.0
+This should be structured as an `if` block for better readability:```if ...:   output_masks = ...else:   output_masks = ...```You can simply specify a lack of mask by passing `None` (it doesn't have to be a list of None)	0.0
+Use `'` everywhere for consistency	0.0
+No types, our examples are meant to be compatible with Python 2.7	0.0
+Please use the standard docstring format in use elsewhere in the Keras repo	0.0
+These are functions defined inside a function, used once? They should just be regular utilities.	0.0
+Prefer `from keras import layers` then use `layers.Conv2D`, for every layer.	0.0
+You do not need to make these functions underscore-private, I would think	0.0
+You do not need to call `print`, the summary is printed automatically.	0.0
+Prefer `os.path.join` instead of `/`, everywhere (will work on Windows, and generally is cleaner)	0.0
+\"a\".concat(null, \"b\") would result in \"anullb\" and undefined as well \"aundefinedb\".So I would suggest to change this code to:```jsurl = location.origin.concat(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '', url);```	0.0
+I believe this should be removed.	0.0
+This is not the ideal solution.    Meteor.startup(() => {}) is better here imo	-1.0
+If this is happening is probably because in another place Accounts.emailTemplates is being assigned directly.The bug is not here.You need to do this in other places:```js    ...(Accounts.emailTemplates || {}),```	0.0
+I believe @renanccastro's idea was to make this optional. Maybe we could have a settings to disable it. But we need to think in which case people will want to disable it.@renanccastro ?	0.0
+Yes... my idea was to make this optional. Thinking again, we should prefer convention over configuration, and in this case I think the most common case is to use it automatically.  It also doesn't introduce major performance issues, so I think it's fine.	0.0
+We should avoid the word discussion here, too confusing.	-1.0
+Do you need to repeat "firefox"? I don't think so looking the others.	0.0
+You could get the property first and then return or proceed```suggestion    const settings = Meteor.settings?.packages?.['service-configuration'];    if (!settings) {      return;    }    // proceed```	0.0
+The key should be called `accounts-base` and not `accounts`.	0.0
+You could get the value first and then later test it instead of testing and later getting it.	0.0
+If we are already updating the version here, we should also bump the Typescript version in the tool and meteor-babel and go to 4.4.3 to keep the versioning schema that was started.	0.0
+Nice comment about the change, but that should have been just a comment here, no need to have it in the code itself.	1.0
+I'll need a bit of context on this removal.	0.0
+You can use here `forEach`, it has been added in `callback-hook@1.4.0` which is available on the release branch.	0.0
+I believe there is an extra .Accounts here.	0.0
+Should we use something from `accounts-password`?	0.0
+It's missing the selector	0.0
+where is `loginToken` defined?	0.0
+Should be v1.0.0 or will be releasing it as an experimental package for now?	0.0
+we should centralize this in a var like isWindows	0.0
+this is a constant (should be UPPER_CASE) and could be declared in the file scope.	0.0
+I never updated these instructions after adding the `meteor-installer` command. An easier way to do this might be to run `meteor-installer uninstall` and `meteor-installer install`.	0.0
+See my inline comment and also I believe it's missing a test for error handling. It would be nice to be sure the error is handled correctly when thrown from within an asynchronous function.	1.0
+if you want to deprecate this it would be nice a jsdoc here saying that.	1.0
+Please avoid else's using return statements.For example:```jsif (x) {  // doSomething();  return;}if (y) {  // doSomethingElse();  return;}// doLastCase();```	0.0
+This code should check if createIndex is available and if so it should use createIndex as well.	0.0
+As this is a public API we shouldn't have `_` before the name, I would go with `createIndex` 	0.0
+I believe it's important to mention that createIndex was added in 3. Otherwise people can think it's only going to work with Mongo 5.	0.0
+we need to remove posix from here, otherwise it's going to fail on Windows.	0.0
+We are avoiding `underscore`. This would be better```suggestionruntimeConfig.hooks.forEach(function (hook) {```	0.0
+I would suggest a single object param here so next changes would be easier without breaking changes due to the order.```suggestion    const meteorRuntimeConfig = hook({ arch, request, encodedCurrentConfig: boilerplate.baseData.meteorRuntimeConfig, updated: runtimeConfig.update[arch] });```	0.0
+I don't think this comment is necessary	-1.0
+We don't need single quotes here. And also not below.	0.0
+A comment would be nice, explaining what hooks will contain and also what update will contain.I would rename update to `isUpdatedByArch` or something similar	1.0
+`was informed` shouldn't this be `was provided`?	0.0
+As we are adding new code here we should use new patterns, like const here instead of var.    Also everywhere below this point.	0.0
+a function would be better here to isolate this part.    like: `getDetails(sequence)` so the try/catch would be within the function.	0.0
+I believe we don't need any let on this code. const + one new variable should be enough.	0.0
+import `readFileSync` and `chmodSync` in the same line?	0.0
+This should point to `meteor`, not your personal repo.	0.0
+Beware when using this. If, for instance, you do not include `email` when excluding the fields, you can have problems with functions like `forgotPassword` that will break because they won't have the required data available. It's recommend that you always keep the fields `_id`, `username`, and `email`.	0.0
+these 3 should be under `meteor-tool@2.3`	0.0
+Im not sure if meteor code style enforces the use of ";", but everywhere else is used. It might be better to keep using it in the new code.	-1.0
+Would be nice to have a bit more info here. This will show up in documentation, so it should include that by default it is false and that people should keep it that way for security purposes.	1.0
+Maybe string.includes()?	0.0
+I would change this to ```suggestion          if (!realpath) {              throw new Error(`Broken symbolic link encountered at ${path}`);          }          return isWithinProdPackage(realpath);```so we avoid if/else and also handle the problematic case first.	0.0
+also we need to update meteor-babel's TS to 4.0.5	0.0
+Shouldn't the locus here be `everywhere`?	0.0
+The indentation is causing random spaces in the message(Also, tinyest of nitpicks, but the other log messages start with a capital letter, I think it improves readability)![Screen Shot 2020-10-06 at 15 39 28](	0.0
+The `R` in React should be capitalized as it is a name of a package/technology.	0.0
+you could write this as:    ...(showDetails ? packageToPrint : {})	0.0
+I believe you need to change this as well```suggestionimport { useQuery } from '@apollo/client';```	0.0
+Nice addition, thanks. I'm requesting a change in the format 😉	1.0
+I would prefer to use the MongoDB standard here, using a map with fieldName: 1 to select fields.	0.0
+we don't need this, the API should expect the field projection in the format MongoDB expects so we don't need to convert and we also can support other cases, like restricting fields.	0.0
+You could add `|| {}` in the end so you know you always have the settings object.	0.0
+I think it would make sense to keep the keys in `packages` consistent with the package names. In this case: `packages["dynamic-import"]` instead of `packages.dynamicImport`. This would make it even more clear that the settings belong to the `dynamic-import` package and might encourage third-party package authors to follow the same pattern, e.g., `packages["some-organization:package-name"]`.	0.0
+If you apply the feedback above you don't need these conditions.	0.0
+We are using a custom build of MongoDB on Linux, so this won't work until we release a build for 4.2.7 here: 	0.0
+I believe you just need to adjust the npm version	0.0
+`(without MINE)` is not needed.    While at it why not add this to reset password, etc. ?	0.0
+I think all Meteor specific settings should be under a specific Meteor key, something like Galaxy has  `"galaxy.meteor.com"` for its env variables. So I'm thinking `Meteor.settings.meteor.mongoOptions`. We can then leverage `Meteor.settings.meteor` object later for anything else.  UPDATE: Read your last general comment, agree with that!	0.0
+`var` here, `const` down bellow. What version of ES are we using in this file?	0.0
+Is Underscore really needed here? Wouldn't```jsoptions.hasOwnProperty('arrayFilters')```be enough?	0.0
+Unfortunately, you can't use ES6 imports for weak-linked packages. If you wouldn't have the mongo-decimal package installed, this will throw since it can't find the imported package.    The way to work with weak-linked packages is by using the Meteor's package system:  `const Decimal = Package['mongo-decimal']?.Decimal`    But then the instanceOf will throw since you would be checking against undefined.    So either you will have to check first that Decimal isn't undefined, or, since it's only for instanceof checks, you could do something like:  `const Decimal = Package['mongo-decimal']?.Decimal || class DecimalStub {}`	0.0
+This minimal implementation is pretty useless here, since the instanceof checks will never be true for this class.	-1.0
+For clarity: The reason I proposed a DecimalStub{} class was just to have some kind of object that doesn't throw an error when we do instanceof, but which would never be true. If someone wants to have decimal support, they should add the mongo-decimal package.	0.0
+This would need a major version bump, since the API is not compatible	0.0
+Since this is basically the only user of the xmlbuilder package in Meteor I wonder why we don't load the npm package directly. @benjamn @filipenevola : Can you shine some light on this?	0.0
+The node_modules of the dependency kit are defined in: `./scripts/dev-bundle-tool-package.js`    If you change these, you should also change the dev bundle version in `./meteor` .    The consequence is that the tests here will fail, since the bundle first needs to be published.    However, there might still be a reason I'm not aware of this xmlbuilder was loaded from an isopackage instead of NPM. So maybe it's better to wait for feedback from @benjamn if this is the right approach.	0.0
+I am 100% in favor of adding `xmlbuilder2` to the dev bundle, rather than loading it into the command-line tools codebase from a Meteor package. The implementation of that package is just one line, after all:  ```  XmlBuilder = Npm.require('xmlbuilder');  ```  Maybe we can also move `meteor/packages/xmlbuilder` into `meteor/packages/non-core` while we're at it, since that package is definitely not used by any core packages (including `meteor-tool`) now?	0.0
+I should have mentioned that the dev bundle version doesn't follow semver. Basically we keep the first numbers for the node version (so that should stay 12.16.1) and then just increase the last number for other changes that need a new dev bundle, so `12.16.1.4` is ok.	0.0
+This looks like a good fix, the new data makes it clearer what is going on.	1.0
+Maybe rename to `get_descr_from_cast_or_value`?  But not sure.	0.0
+(I am tempted to overindent the arguments, but it is probably just me who does that...)	0.0
+If these imports are unused they can be removed. The only imports that matter in the array_api are the ones in `__init__.py`.	0.0
+Maybe   ```  When both ``x1`` and ``x2`` are of an integer type, equivalent to `numpy.true_divide`  ```	0.0
+I wonder if `shutil.rmtree(output_dir, ignore_errors=True)` might be a bit more idiomatic? Avoid catching a generic `Exception`, take advantage of an API that was designed with the failure case (directory doesn't exist, etc.) in mind?	0.0
+Additionally, I think you can show that `b.flags["WRITEABLE"]` is True before this line if you think it makes sense. 	0.0
+The refguide check (and subsequently the build) is failing because it expects this:    ```  >>> b  array([3, 2, 3])  ```	0.0
+The LGTM warning is a bit nitpicky in my opinion, but the proposed change looks fine.	0.0
+The typo fixes look good, can you remove the .replit file this added? Thanks	1.0
+`atleast` is a function name, so it should not be corrected. More precisely, it turns up as `atleast_(1d|2d|3d)`	0.0
+Can you add the NumPy version in the message?  Just for completeness sake (could just be a parantheses at the end, I guess, like `(warning added in NumPy 1.22)`.  I know that most older warnings don't have it, but it is nice, I think.	0.0
+```suggestion        \"\"\")```I don't see why this dedent should be necessary?But otherwise, I am happy if this just goes in.	1.0
+This part, which I assume leads to the doc change need, is confusing me slightly.  Anyway, I am happy with this, and OK with just putting this in as a step in the right direction in any case.  Are Pearu or Melissa following these f2py issues?	0.0
+This is a bit odd, having one blank line between methods is preferred.	0.0
+The doucumented `nagfor` option is `-unsharedrts`, not `-unsharedf95`.	0.0
+Should the other reference links be changed to include the page number?	0.0
+Most of the references have a page number, just not in the link. The argument for making the fix now is that it will otherwise slip into the background and get lost.	0.0
+It seems weird to assign `.r` to `clongdouble`? Unless you also add the `.r` on the right hand side?  The `+sizeof(npy_clongdouble)` seems just wrong?  (Would be nice to have a test that fails, but I know that is pushing it, probably...)	0.0
+I suspect `clang-tidy` might be a problem. Why not run `clang-format -i ` ? It gives me better results than I see here.	0.0
+I'm guessing this is a typo in the spec, since the spec never mentions None other than by the use of `Optional`. 	0.0
+I'd actually suggest including a label for the f2py main documentation page and referencing it here: ```suggestionThe interface definition file (.pyf) is how you can fine-tune the interfacebetween Python and Fortran. There is decent documentation for f2py at:ref:`f2py`. There is also more information on using f2py (including how to useit to wrap C codes) at the `\"Interfacing With Other Languages\" heading of theSciPy Cookbook.< adding `.. _f2py:` to the top of `doc/source/f2py/index.rst`	0.0
+Hmm. Don't know of one for sure, but it looks like line continuation works inside the quotes  ```  >>> """  ... Hello \  ... World  ... """  'Hello World'  ```  The problem might be the indentation of the next line cannot be aligned with the opening "(", but that might not matter.	0.0
+Not critical for this PR, but `Device` is currently defined as an alias for `Any`. Based on how it's used throughout the API implementation you should be able to narrow it down to a string-literal.``` diff- Device = typing.Any+ Device = typing.Literal[\"cpu\"]```	0.0
+```suggestion```Thanks, looks good, except that key is already being decref'd by the fail cleanup.	1.0
+I think we should, yes. As a safeguard against forgetfulness I would recommend placing a note though:``` diff- delimitor=...,+ # NOTE: deprecated+ # delimitor=...,  ```	0.0
+It should be commented. `delimitor` is a (now-deprecated) alias for `delimiter`, a deprecation that we'd want to be treating as if it were completed in the stub file.	0.0
+I suppose considering how exotic this function is, we can likely get away with changing it.  But it will have to be a proper deprecation then: give a deprecation warning (with a test), so that we can officially remove it in two versions.> in the style of numpy.deprecate()?You can probably ignore that...  Just give a Deprecation warning, and end on a note about the current version of NumPy (1.22).  (You can search the code for `DEPRECATED` or `DeprecationWarning`, for examples I guess).	0.0
+Might as well add the `, *,` to make this keyword only.	0.0
+See  for a suggestion.The usual approach with annotations and deprecations is to pretend that the deprecation has already been completed, _i.e._ as if the `delimitor` parameters has been removed in this particular case.	0.0
+Unless you are tired of updating... we have to start somewhere to use the better versions for these things (`assert_deprecated` doesn't apply, this is a different file.)	0.0
+I don't think this quite works.  Suppose I used `fromtextfile("a.txt", ",")`.  Then I will get a warning.  It is a real pain to do this completely correctly (I think it requires moving to *args, and **kwargs and then a lot of manual parsing.  You might simple add to the warning string when delimiter is not None that end users can use the keyword argument delimitor=value to silence the warning, since you don't know if they really misspelled it or not.	-1.0
+The only problem I see is if the user passes `delimitor=None`.  The solution to which is using `np._NoValue` rather than None?  I assume we have tests that would fail if `fromtextfile("a.txt", ",")` gave a spurious warning?	-1.0
+Personally, I would prefer spelling the "is" out.  Formal written out text should not normally use `'`?  The usable surprised me, but seems like generally the more typical spelling.	-1.0
+This shouldn't be needed, since with statements are in 2.7	0.0
+Feel free to tweak the wording to whatever you think drives the point home, I wasn't able to make this as a suggestion on github.	0.0
+This fix is wrong.  The work is not vacuum. It is essentially v_accum.	-1.0
+Please restore all vaccum to vaccum, or possibly change to v_accum.	0.0
+I'm always weary of correcting variable names even if there is a typo, just my 2 cents here.	0.0
+I think you removed this line by accident	0.0
+Maybe "as well as the ``build_ext`` and  ``build_clib`` commands that are also ..."	0.0
+Commas around "or simply contiguous arrays".    "refer to data stored rowwise"	0.0
+"F2PY automatically generates as few ..., e.g., "	0.0
+Replace "So" by "In such cases"	0.0
+Replace "emitted" by "written"	0.0
+Replace "printed" by "written"	0.0
+Maybe a definition list?	0.0
+```suggestion```Do we even need this?  If it isn't there, presumably the `get_path` doesn't use it?	0.0
+By the looks of the array-subclass tests are also missing from the `nanmedian` test suite.  Might it be an idea to add this new test there as well?	0.0
+Thanks for checking that. If `out` isn't used it would be best to remove it and document the assumptions about how the function should be used.	1.0
+The `ids` look to be in reverse order here and below.	0.0
+I have a feeling that Universal Functions is a \"proper name\" and should be capitalized, but I'd defer to a native English speaker to confirm... 	0.0
+Similarly, I think Trac is a proper name and should be capitalized.	0.0
+Any reason to remove this date?	0.0
+I am mixed on this, Roadmap is usually capitalized everywhere I look... I don't have strong feelings either way but not sure about the sentence case rule here.	0.0
+I can't review the technical details, so I'll leave that for others to look at. The only question I have is if the `core/include/numpy/multiarray_api.txt` file also needs to be updated to include the \"docstring\" for `PyArray_CopyObject`- I'm not sure what is the function of that file.	0.0
+LGTM, couple of nits. I assume the main fix here is for the case of non-array objects being returned.	0.0
+You should remove this line too	0.0
+```suggestion    Union[int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64]```is identical but more readable.	0.0
+Could you add a space after the colon for all of these?  Just to increase the chance that the user has it in there.	0.0
+I think markdown renders here?```suggestion    description: Output from `import sys, numpy; print(numpy.__version__, sys.version)````	0.0
+I would be happy to move forward with this and iterate more when we feel something else should be done.SciPy has a bit of additional text:```Thank you for taking the time to file a bug report.Before continuing, please check the issue tracker for existing issues and the development documentation. Your issue could be already fixed on the development version```Adding something like this seems good to me.  I might personally write something in the direction of: Thank you... Before creating a new issue, please make sure to take a few minutes to...But, we can do all of that in a followup, below two small nitpicks.	1.0
+Breaking the line here renders this break in the final form:![Screen Shot 2021-09-17 at 10 16 10 AM]( believe if you use the character `>` instead of `|` at the `value: ` line, the line break in the source file is not respected when rendering, which should fix this issue. Can you try this out?	0.0
+We'll let the compiler to validate --> We'll let the compiler validate    Minor comment modification	0.0
+Could you merge the check in lines 667-671 into this loop so we iterate once over `arrayList`	0.0
+Couldn't this be written more compactly without the loop as `assert_almost_equal(y, y_r)`? What am I missing?    Edit: same thing in the following changes in this file	0.0
+Thanks, I was paying attention to this aspect, as zip will stop on the shortest iteration. But also `x[i], y[i]` would have raised `IndexError` before if they were different lengths.	1.0
+Does this need a `if len(res) != len(desired): raise ...` or is it guarenteed that they will be equal length in all the tests?	0.0
+I don't think this is correct. There's both the squaring and addition operations to consider: doesn't the addition require 101**2 operations?In any case, my two cents is that this could benefit from less detail as it's easy to lose the forest through the trees here. I'd advocate for chopping out the text from `Here,`: IMO the best way to provide more detail would be to add a reference to the [2011 NumPy paper]( which has an excellent detailed example of broadcasting with \"sparse\" arrays.Just my two cents though - leaving the detail is also fine, but we should double check to make sure the numbers are correct.	0.0
+Oops - I only meant that the text about performance should be removed, not the example. I think the clearest way to demonstrate what the `sparse` kwarg does is to show it:```python>>> xx, yy = np.meshgrid(x, y)>>> xx.shape, yy.shape((101, 101), (101, 101))>>> xs, ys = np.meshgrid(x, y, sparse=True)>>> xs.shape, ys.shape((1, 101), (101, 1))>>> zs = np.sin(xs**2 + ys**2) / (xs**2 + ys**2)>>> np.array_equal(z, zs, equal_nan=True)True>>> zs.shape(101, 101)```Also, it seems that `sparse` keeps getting replaced with `spare` in the pushes.	0.0
+Is this run at all? Please look at the other tests to see how this should be done. The test function should start with `def test_ ...` and the only parameter in your case should be `self`. You can make sure your test is run by checking that your test name appears in the output of```python runtests.py -t numpy/core/tests/test_casting_unittests.py -vv ```	0.0
+@yashasvimisra2798 this tes tis missing an `res.astype(np.float16)` to actually exercise the casting code, could you maybe make small PR to add that?	0.0
+This is a mistake. If you add a space before the function, it will changes the complete functioning of variable, Remove the spacing.	-1.0
+print(",".join("1234"))  print(", ".join("1234"))    Test both the codes, they will give different outputs. We need to add spaces where there is no change in the output.	0.0
+Could you also add support for the new `\"1.21\"` legacy-option in the [arrayprint.pyi]( stub file?All you'd have to do is a bit of copy pasting with the following pattern:``` diff- Optional[Literal[False, \"1.13\"]]+ Optional[Literal[False, \"1.13\", \"1.21\"]]```	0.0
+The fact that the semantics match those of `ContextVar`s does not sound like an implementation detail; only the fact it contains a `PyCapsule` is. Perhaps something more like:```suggestion``PyDataMem_Handler`` thread safety and lifetime================================================The active handler is stored in the current :py:class:`~contextvars.Context`via a :py:class:`~contextvars.ContextVar`. This ensures it can be configured bothper-thread and per-async-coroutine.There is currently no lifetime management of ``PyDataMem_Handler``.The user of `PyDataMem_SetHandler` must ensure that the argument remains alivefor as long as any objects allocated with it, and while it is the active handler.In practice, this means the handler must be immortal.As an implementation detail, currently this ``ContextVar`` contains a ``PyCapsule``object storing a pointer to a ``PyDataMem_Handler``.	0.0
+Shouldn't we just fix our call to free to be consistent here?	0.0
+```suggestion```This info is quite dated - I think it can safely be discarded	0.0
+I actually don't think this is correct - I tested this by randomly injecting an fft test into a document and running the `refguide_check` on it and didn't get any failures. Please double-check me, but I think this should be removed.	-1.0
+IMO it's so niche that it's not worth mentioning here --- maybe adding a blurb to the f2py docs would be better.	0.0
+Actually, this is not even necessary as the documentation for f2py follows a different pattern and does not rely on importing f2py anywhere, so feel free to just remove the note.	0.0
+Minor improvement: we should use intersphinx for these links.	0.0
+It probably makes sense to keep the old behavior```suggestion                                        co_filename='')```unless there's a reason not to.	0.0
+(Not sure what old behavior you're referring to, but making the string more specific sounds good.)	0.0
+Is it the case that the input to `_CONVERTERS` is always a `str` and never `bytes`? If so, can you add a comment to `_getconv` saying that the converters are for parsing data from `str`	0.0
+Can you explain this change to an `elif`?	0.0
+I think using `itemgetter` is overkill here, especially as its forcing you to go through a slice which is slower - perhaps better as:```suggestion        # performance optimization - do not iterate `usecols` on every row if not needed        if len(usecols) > 1:            usecols_getter = lambda obj: [obj[c] for c in usecols]        else:            usecols_getter = lambda obj, c=usecols[0]: [obj[c]]```	0.0
+`itemgetter` is implemented in Python as far as I can tell, so I can't see why it would be faster.	0.0
+It would be easier to parse this code if this was moved up into the `read_data` function that is the only place it is used. It could then be handled with the usual if statements.    I must say this function is a mess, I salute you for wading through it.	1.0
+I would use ordinary `if` statements to define `usecols_getter` rather than a lengthy right hand side. It would be easier to read and parse.	0.0
+This logic is not the same as what it used to be when the file is empty; previously it set `ncols` to `len(usecols)`, but now it sets it to zero.	0.0
+Can you use an approach more like #19618 here? That way, the logic inside this helper becomes simpler, and as a bonus you only have to do the `if` statement once per file rather than once per line.	0.0
+Can you  add a note here that where possible the returned converter should be equality-comparable to enable optimizations?	0.0
+I think you may as well extract this `lambda` and the other two in this this function as `_boolconv`, `_complexconv`, and `_intconv`; right now your optimization in this PR doesn't work for these types.	0.0
+At this point you could inline the lambdas into the table without causing any issues.	0.0
+While not required by variable scoping, perhaps it would be more readable if `decode` were passed in as an argument to `read_data`. Or would that slow things down?	0.0
+Do you think we can eliminate the use of `decode_line` on lines in the file entirely? Either by detecting whether the file is text right at the beginning:```python# are we going to break on some janky file-like object that doesn't play ball?needs_decode = not isinstance(fh, io.TextIOBase)```or pulling off the first line much earlier:```pythonfor first_line in fh:    needs_decode = isinstance(first_line, bytes)    fh = itertools.chain([first_line], fh)    breakelse:    needs_decode = False```	0.0
+The only reason I raise it is that this refactor leads to the `latin1` encoding cropping up in multiple places.> This should be possible, but makes things a bit more complicated because then you also need (in the later case where you need to pull lines out to know the type) to handle the possibility that the generator is empty, and then emit the empty-file warning in that case.I don't think you do - you can still defer emitting the that warning until you try and count the columns of the file; you can always retry to iterate an empty iterator.	0.0
+I don't think you need this, the `((b) != (b) && (a) ==(a)))` part is for dealing with nans, which isn't a problem with integer types like `npy_datetime` and `npy_timedelta`.	0.0
+What if both `a` and `b` are NaT? I note that sort order is not necessarily the same as comparison, which is one of the reasons only `LT`  is used for sorting.	0.0
+I'd just put this on the previous line and avoid the lint complaint. TBH, I'm not sure why it is complaining :)	1.0
+If these are lifted from internal helpers inside `_loadtxt`, we should prefix their names with `_loadtxt`I think it's probably worth a comment explaining _why_ these are lifted to the top level, and the refcounting / performance problems that putting them inside `loadtxt` caused.	0.0
+Please delete it, its just unnecessary garbage code now, it is not like it has any immediate use (or probably even any use at all).	-1.0
+It might be good to add a comment here to explain why the nested try's & ifs.	1.0
+I think it would be clearer with this if outside the try	0.0
+Well this line was stupid!	-1.0
+I'd maybe capitalize as `NPY_DT_CALL_discover_descr_from_pyobject` to make the commonality of these macros even clearer. Or `NPY_DT_METH_discover...`, etc. (or `C_METH`?)	0.0
+Should this also be a macro? `NPY_DT_common_instance(common_dtype, result, curr)`?	0.0
+I think this belongs at the end of the section, which would order these functions alphabetically and also make the helper function used after registering the user-defined dtype come after all the registering functions. Also may be worth changing the heading from `New data types` to `User-defined data types`. 	0.0
+I think we should leave this as a hanging reference to remind us to document this function. Unfortunately it is not even documented in the [public header file]( where it is declared, and I don't see any example use of it in tests.	0.0
+If you really want to expose a new macro, it should be in a separate PR, not in a documentation PR.	0.0
+```suggestion        exc_type: None | Type[BaseException],        exc_value: None | BaseException,        traceback: None | TracebackType,```Style nit: the PEP 604 pipe operator generally looks cleaner compared to `Union`/`Optional`.	0.0
+Yup, the `|` syntax has been supported for annotations (not type aliases) since the [mypy 0.800 release](	0.0
+```suggestion    def __getitem__(self, index: SupportsIndex | slice) -> Any: ...    def __setitem__(self, index: SupportsIndex | slice, value: Any) -> None: ...    def __delitem__(self, key: SupportsIndex | slice) -> None: ...```The `__item__` dunders can also take `slice` objects or any object implementing the `__index__` methods (not just `int`).	0.0
+Setting of `__limit` here makes this hard to grok. Consider instead moving this to `__updateLimit`. If a test needs to manually modify `__limit` perhaps it can also modify the behavior of `__updateLimit` as needed.	0.0
+Consider only storing if items changed and checking `reuseChunkedInstances` when rendering.	0.0
+Consider refactoring `render` so that the tasks are:* sort and filter* update limit (chunking)* perform render/update* completion	0.0
+Why is it ok to drop the passed in `changedProps` here? (The next section is only for `hasPaths`.	0.0
+The non-fast case stores `__invalidProps` on the dom-if. Why is that ok if this must be changed?	0.0
+Given that the spec is now somewhat in question re: frozen array vs. mutation APIs, would it make sense to try and make this test as defensive as possible in case they end up changing it and need to deprecate the ability to assign an array?  I don't know exactly what it'd be but maybe something like ```jsconst testSheet = new ConstructableStylesheet();try { document.adoptedStylesheets = [testSheet]; } catch (e) { }supportsAdoptingStyleSheets = supportsAdoptingStyleSheets &&   document.adoptedStylesheets[0] === testSheet;```(maybe made safe to allow having set some before)?If so, might also consider making this change to LitElement's detection.	0.0
+Add comment about why this needs wrap (flushing)	0.0
+Let's name these to reflect the nesting.	0.0
+Let's rename these to reflect the nesting.	0.0
+I think you need all these to avoid a diff:```js/** @type {TemplateInfo | undefined} */TemplateInfo.prototype.nextSibling;/** @type {TemplateInfo | undefined} */TemplateInfo.prototype.previousSibling;/** @type {TemplateInfo | undefined} */TemplateInfo.prototype.firstChild;/** @type {TemplateInfo | undefined} */TemplateInfo.prototype.parent;```	0.0
+`placeholder` attribute is removed when the binding is processed	nan
+When the template is stamped and the `textarea.textContent` binding is processed, no corresponding node is found because it was removed during parsing. An exception is generated when this binding is updated.	0.0
+When `legacyOptimizations` is not used, the template is cloned before processing and this changes the above behavior. The cloned template also has a `value` property set to the `placeholder` and `textContent`. This prevents the removal of the `textContent` when the `placeholder` attribute is removed. Therefore the exception does not occur. There's an extra unnecessary binding.	0.0
+Suggest refactoring to `fixPlaceholder` and apply the fix.	0.0
+Normally we would never get here, since this is normally called from `connectedCallback` and that also has a gate. However `Templatizer` boots up trees of elements by forcing `_enableUpgrade` on them, even if they're not connected (since booting elements out of the tree has shown to be performance positive). Worth a comment.	0.0
+Using `this. __isUpgradeDisabled` might read more clearly.	0.0
+Need a `wrap` and test for removing `disable-upgrade` out of the tree.	0.0
+This is a lot of duplicated code; would be ideal to see if just using the mixin in `GenerateClassFromInfo` affects perf, and if not factor it so it can be used.	0.0
+This is pretty complex. I think it needs factoring or at least some comments to make it clear what's happening.	-1.0
+Needs comments explaining how/why the method of sync'ing is different.	0.0
+Consider if we want to avoid making this function for every property change.	0.0
+If this template `wasPreBound`, can we just return early?     It seems like you can set `__templateInfo` not based on `instanceBinding`?	0.0
+Add comments about what is happening here. Specifically, if the `templateInfo` has a parent, it's moved to the `lastChild`. Why?	0.0
+Let's add a comment about how it's important that the parent is not unlinked.	0.0
+So, is this making the `` have a `templateInfo` pointing to this template's info? I think this is probably complex enough that seeding comments step-by-step here, might be good.	0.0
+Add a note about why this is only done for `dom-if`?	0.0
+Where is the `parent` originally set?	0.0
+When can `nodeInfo.noted` be set?	0.0
+I thought `_parseTemplate` memo-ized so why do we have to pass this in?	0.0
+Fix typo `useCemoveNestedTemplates` => `useRemoveNestedTemplates`	0.0
+Fix the caching by setting `templateInfo.templatizeTemplateClass = klass`	0.0
+How is `__squelchedRunEffects` guaranteed to exist here?	0.0
+Let's add a comment here explaining that cloning the attribute node like this allows attributes with invalid characters to be moved.	0.0
+Doesn't the content have a `name$` attribute also in this case? It seems like we should remove that. It also seems like we should remove the `name` attribute in the case above.	0.0
+It'd be nice not to duplicate the fixup here with the same above.	1.0
+Let's add a note about when this is needed: only when ShadyDOM is used and unpatched DOM APIs are used in third party code. This can happen in noPatch mode or when specialized APIs like ranges or tables are used to mutate DOM.	0.0
+Let's remove this. Then we can handle cases like Ranges where the DOM is unpatched in ShadyDOM.	0.0
+To match Polymer 1 behavior, we should use native querySelector: `ShadyDOM.nativeMethods.querySelectorAll.call(node, ...)`	0.0
+Can you add a test please? Thanks.	1.0
+Let's add a comment here or perhaps just in the doc for the function explaining what this does so it's clear why it's only related to `hostProps`.	0.0
+Add a comment that part of the test is that this doesn't throw. Also assert that this runs.	0.0
+Why not use an `in` check instead of treating `undefined` specially.	0.0
+Comment on why why `__dataPending` is needed.	0.0
+Can we use `hasPaths` to avoid calling `pathMatchesTrigger`?	0.0
+Comment about why the `info.dynamicFn` branch is here.	0.0
+Add comment about how this prevents computed properties from executing more than once per turn.	0.0
+Why did this need to be added?	0.0
+Did you consider instead capturing the argument values before computing dependencies and comparing those explicitly?	0.0
+Add comment about what this does to flush ordering.	0.0
+Let's add a test that checks flush order when debouncers are re-enqueued.	0.0
+Add comment about what this does to flush ordering.	0.0
+Add a comment about why this is necessary.	0.0
+Add `return false` here since no extra work is needed after this.	0.0
+add  " and also triggers `_flushProperties` and `_propagatePropertyChanges` down the tree."	0.0
+Add a note about how  all property getters will return undefined by virtue of resetting `__data`	0.0
+In 1.x notifications where handled after the "config." We could do this here by capturing `__data` before propagating and playing through those props first and then the notifying props.	0.0
+Add a comment about why we're not using `runComputedEffects` here.	0.0
+Was this change intentional? It causes an error `@export is not supported on this expression.`	0.0
+But why do we need this at all? What's wrong wrong with `getStyle()` and the `@export` we already have?	0.0
+Let's add some comments about these special cases.	0.0
+Can you add some backstory in a comment about why this appears as such a special case?    It's not a made-up `Polymer.dom` thing, but it also never needed a Shady DOM patch?  Why was it on 1.x's `Polymer.dom` then?	0.0
+`@license` must be the last jsdoc tag in a comment, as it consumes all subsequent text	0.0
+So we want to pull the live value here, but we fall back to the stored value in `props` for `splices`. Adding a specific check for `splices` would be best but might be a performance hit. What if we take the value in `props` only if it is not `=== undefined`? This allows the live value to be undefined which it sometimes can be.	0.0
+Let's consider also warning if a user tries to change `readOnly` or `reflectToAttribute` or `notify`.We should remove the [doc line]( about \"consider adding warnings\" since we are doing that here.	0.0
+Using `dynamicFns` here seems a bit abusive since there's no guarantee this is connected to `observedAttributes`. One alternative would be to override this in `element-mixin` and use `this._properties`.	-1.0
+Nit: `idx` can be in the other string.	0.0
+I think this would break our TS compilation. See recent PRs to tackle this.	0.0
+Rather than putting this on `window`, shouldn't we put this in the `Polymer.Settings` object?	0.0
+Can we not remove these assertions or are they regressions? Are they a breaking change for our users?	0.0
+This also seems like a regression to me. Are we sure users will not run into any breaking changes?	0.0
+Since these are all lifecycle-related, maybe `__behaviorCallbacks` would be better than something with "props" in it, since that's sort of overloaded with all the data stuff.	0.0
+Consider adding info. from the base info to the list?	0.0
+It seemed like a possible optimization to skip the `mergeProperties` step from the base info object into an empty object; it seems superfulous for the initial class -- but then I realized this was required for the `computed` to `readOnly` coersion and the shorthand type expansion.  So that was not intuitive, maybe due to the naming?  Suggest different name or at least a comment.	0.0
+There's a bug here where the full flattened list of lifecycle callbacks is called once per call to `GenerateClassFromInfo`, which happens each time `mixinBehaviors` is called.    Instead, store the list of callbacks in the closure for one set of behaviors associated with each call to `GenerateClassFromInfo`.	0.0
+This is just what's in the closure, i.e.  `if (behaviors) {`	0.0
+Naming of these is confusing.  Consider "memoized" --> "filtered"	0.0
+Prefer `unknown` over `{}` as `{}` is non-nullable. `T extends Array`	0.0
+{}|null|undefined is good.    You're right about `any`, I'd just like to avoid using it as much as possible.	0.0
+LGTM. Just prefer using the unknown-like `{}|null|undefined` type	0.0
+This lacks a return type. Please see the CI output for the full error. You can run `npm run generate-types` to locally run the same check.	0.0
+I'd prefer to revert this internally instead, as it's already assigning to a const. This was due to a temporary hack we had.	0.0
+Add comment briefly explaining the rules so it's clear that single argument observers are always called.	0.0
+Suggest making the error use sentence casing and periods.	0.0
+Seems like it would be more clear to loop over `vals`?	0.0
+Shouldn't we also test inline template expressions that have multiple arguments?	0.0
+This should be a check for `Element` to ensure the style property.	0.0
+Although this change makes introspecting the version from a running page possible, it is fairly cumbersome:```jsimport('polymer-element.js').then(module => console.log(module.version));```And that only works if a build tool hasn't compiled modules into bundles or out altogether.I think it would be pretty useful to have e.g. a static getter on the `ElementMixin` return the version (in addition to a plain module export), so that it's more straightforward to introspect the version being used on a running from an element in the inspector```jsconsole.log($0.constructor.polymerElementVersion);```nor e.g. from the registry: ```jsconsole.log(customElements.get('my-app').polymerElementVersion);```So perhaps the version can be exported from `element-mixin.js` instead of here, and returned from a new `static get polymerElementVersion() { return version; }` getter on the `ElementMixin`?  It could also be re-exported from `polymer-element.js` for convenience.	0.0
+Oh, do you mind removing these?	0.0
+Add `// eslint-disable-line no-unused-vars` at the end	0.0
+Add comment that this can happen when managed children and the dom-if are removed via innerHTML'ing a common parent.	0.0
+Add comment briefly to explain why this is important.	0.0
+Note, should be able to take out the `|| this.prototype._template` as this is only relevant if a legacy element is subclassing another element which is not supported.	0.0
+Only call `Polymer.DomModule.import` if `this.is` has a value and remove `this.is` check in conditional below.	0.0
+Add a comment that this means templatized elements are not allowed without a host element (aka in the main document scope).	0.0
+Use `window.uncaughtError` if possible.	0.0
+Remove `&& el.shadowRoot.querySelector('#injected')` as it's enough to assert that the element does not have a shadowRoot when the template gets nulled due to 2x register.	0.0
+Separate the creation of the `trusted-element` so an innerHTML error does not disrupt element creation.	0.0
+Again, make element creation separate.	0.0
+Again, only test that `el.shadowRoot` does not exist.	0.0
+The "super" call should be last here	0.0
+Add a test that tries to register the same module 3x.	0.0
+Add a test that sets a template on a behavior.	0.0
+The note inside this template says "should not be used" so it's confusing it's used here.    Since the behavior should set `_template` on the prototype, why isn't that preferred over the `dom-module`?	0.0
+If I understand correctly, we are throwing an error here to break out of the control flow, as code later executed would erroneously run? If that is correct, maybe add a comment to make this explicit?	0.0
+This would break if a mixin was passed in to this function. Therefore, I think the mixin should be optional and the mixin should be conditionally applied to this mixin.	0.0
+To make this more uniform, make this the same as line 239. E.g. `el.two.callCount, 1`	0.0
+If we want this error to have a meanifulful name this pattern should be followed	0.0
+can you drop this since it is empty?	0.0
+This suite of tests has a lot of duplication I think we could do with some test helpers to significantly clean up the test implementation to make the code easier to maintain and easier to reason about.	0.0
+Maybe add a link to MDN/standard to the list where this is specified?	0.0
+Why are we dropping 14 and 16, but not 15?	0.0
+Regarding Edge 14, 15, 16 and 17, remember that the Edge version is (still) tied to the Windows 10 version installed and that in a corporate/enterprise environment, it's not uncommon that windows will be stuck in time because of company policies (e.g. we saw in our dev team, 3 machines with 3 different Edge versions and we were unable to bypass corporate IT policies to update the version).  Eventually, all versions will need to be supported or handled in some other way including in the documentation so developers will know what to expect. 	0.0
+Why are all these tests removed?  The `fromStyle` ones seem to just be style module-related...	0.0
+Please add reasoning.\\`this\\` is always in the instance in closure for some reason.	0.0
+Can be just `module.assetpath`, as the condition already asserted for `module`	0.0
+since dom-module isn't a mixin, why do we need to add the parameter? All the parameters should be optional from the implementation side, no?	0.0
+Let's make this `assert.equal(el.shadowRoot, null)`	0.0
+I'd add a note about why _this_ version (2.x) is on npm and what it's support is:\"Versions before 3.0 are also published to npm \"as-is\" and are generally unsupported. These packages are for advanced users who configure their own tooling to work around the differences between Bower and npm packages, like package folder layout.	0.0
+Let's go ahead and just put this into `PropertyEffects`. It seems like it's only going to help and does no harm.	0.0
+Let's add a comment in the code here explaining why we're doing this. The only way we see a capital letter here is if the attr has a capital letter in it per spec. In this case, to make sure this binding works, we go ahead and make the binding to the attribute.    We should also add something simplified about this to the doc.	0.0
+So, `this.mutableData` is never used in `MutableData`, only `OptionalMutableData` (`MutableData` doesn't have a switch and always calls `mutablePropertyChange` with its `mutableData` arg set to `true`).    So it looks like this line is altogether unnecessary.  The blame shows it being added to help closure understand property types, but it must have been made in error; I don't see the closure warning count change my removing it, so I'd suggest just updating the PR to remove it altogether.	0.0
+Just a thought re: memory: should we be zeroing out `__dataOld` here, to so that the previous turn's worth of changed data can be gc'ed?  It currently gets reset on first change in new turn [here](	0.0
+I imagine we probably need `JSCompiler_renameProperty` for `properties`, don't we?	0.0
+Hm I actually think this was intentional as we do not reassign to parameters of a function. However, this is more readable. So let's add a first line: `let actualFn = fn;`. Then reassign `actualFn` inside the condition.	0.0
+For simplicity, let's just check if `arguments.length ==2`	0.0
+Let's remove or explain why we're not testing this.	0.0
+Let's try adding Edge 16	0.0
+This should be `function() { return [...]; }`	0.0
+Let's add a comment saying that passing in a prop in `props` that has the same name as a bound host prop may shadow it. This is considered a user error (warn?). We should add this to the docs too.	0.0
+Should be `!NodeList` no?	0.0
+@sorvell Was this class intended to be committed in this PR? If so, we need some docs on what it actually does and how we can use it (assuming you used it to measure the performance of the changes in this PR).	0.0
+LGTM, but can you also add the closure externs?	1.0
+`Object` is nullable by default, so don't need the `?`.	0.0
+`Node` and `Event` are nullable by default, so don't need the `?`.	0.0
+Should this be `function(!Event):void`?	0.0
+Add  `@param {?string} old`  `@param {?string} value`	0.0
+Where is `this.__dataEnabled` coming from? I do not see it referenced anywhere.	0.0
+If the sibling was removed (e.g. due to `dom-if` going false) then the slot would never come back.May be better to replaceChild with a non-slot?	0.0
+Looking at this again, it makes more sense to me. Echoing @kevinpschaaf comment regarding the sibling. Not sure how we can handle that. We somehow have to keep track of where we were in the tree and insert it there. Replacing with non-slot and hide that seems like a 👌 solution	0.0
+I think this should be `String(value)` - that'll handle `null`, `undefined`, and matches the template literal spec, afaik	0.0
+`instanceof Element`? `Element` has `innerHTML` I think.	0.0
+Should this really be `innerHTML`? Seems like we want `innerHTML` for template for sure, but for other elements I'd think we'd want `outerHTML`. That might be a case for _only_ supporting templates.	0.0
+I think we should only support `HTMLTemplateElement`'s `innerHTML` and String interpolation.	0.0
+Justin convinced me we shouldn't do this; let's go with just HTMLTemplateElement's innerHTML or cast to string.	0.0
+Actually, the String cast is unnecessary since you'll get the same behavior during concatenation.  So it's really just `value instanceof HTMLTemplateElement ? value.innerHTML : value;`	0.0
+I think we decided to bundle the `html` tag function with the entry points, so that in modules a user can do e.g. `import {Element, html} from 'polymer-element.js';` as a convenience.    So, let's remove the import here, and add it to the two main end-user entry points (`polymer.html` and `polymer-element.html`).  In those, add `Polymer.html = Polymer.html;` so that modulizer adds exports for the `html` function from those.	0.0
+Add test for `#target:dir(rtl)`, since this is actually the correct selector for what people will typically want.    Need to make sure users are writing `:dir()` as a compound selector, not a descendant selector.  cc @arthurevans @sorvell @bicknellr @valdrinkoshi 	0.0
+Add comments explaining what this is about, specifically calling out the device and use case	0.0
+Thx! We should actually just remove this method alltogether and use `text.encodeUtf8().sha1().hex()` (from Okio) instead	1.0
+Thx! We should actually just remove this method alltogether and use `text.encodeUtf8().sha1().hex()` (from Okio) instead	1.0
+Let's go with 23 if you don't mind.	0.0
+You could update LeakCanary.config at the beginning of the test to add a heap analysis listener (and replace config with the old version at the end of the test). You can then create a `CountDownLatch` before setting the listener. When the listener fires, count down. Then in the test before "onView" you can down a "latch.await" with 30 secs timeout (and don't forget to check the result is true)	0.0
+Fascinating. What made you stop at a depth of 7?	1.0
+Also you might want to mention the source, e.g. is this from  ?    In any case it'd be great to have a bit more clarifying comments directly there for why this is there.	1.0
+Worth displaying a toast to surface the error?	0.0
+That's great! Maybe `"Could not import ${uri.lastPathSegment}, this is not an hprof file."` ?	1.0
+I do think we should reset it, yes, though I would do that at the end of the current test, and wrap the whole thing in a run / finally to make sure we reset it even on failures.	0.0
+`0 or x` is equivalent to `x`	0.0
+The proper link should be ` not `/docs/fundamentals.md`	0.0
+The issue template isn't a markdown file, the content isn't actually rendered but instead is displayed as default content for the issue description. That's why we're not using markdown for links, so here it should be: `learn the fundamentals: 	0.0
+Thx! \"GitHub drops a warning about it in your Actions logs if you use ubuntu-latest\" vs \"I've switched the workflow to ubuntu-latest\" => I'm curious, why did you change it then? Sounds like you were saying it's best if we don't?I honestly don't have a ton of context so I was mostly asking questions :)	1.0
+Thx! "GitHub drops a warning about it in your Actions logs if you use ubuntu-latest" vs "I've switched the workflow to ubuntu-latest" => I'm curious, why did you change it then? Sounds like you were saying it's best if we don't?    I honestly don't have a ton of context so I was mostly asking questions :)    	1.0
+yeah ok this is cool. Replace the handler callback and delegate to it, which ensures that this stays compatible with any other code running the same hack.	1.0
+We likely want a mutableMapOf> to not end up being the cause of a service leak, and maybe even a WeakHashMap> (ie weak key as well because idk if we should risk retaining the IBinder either)	0.0
+Did you try without the cache first? In my experience, this cache is so slow and unreliable/inconsistent it's actually quicker and less flaky to just re-build everything. 	0.0
+I would rather inline these, since it makes this script more readable (don't have to go open another file), and it's just two lines anyway. You can use the `|` character to specify multiple lines, although both tasks could be specified in the same command.```suggestion          script: ./gradlew leakcanary-android-core:connectedCheck leakcanary-android-instrumentation:connectedCheck --stacktrace```	0.0
+I'm not sure we should return true as a default value here, instead we should probably block until the shared preferences are loaded. Which, granted, will mean IO / blocking on API 27 but heh. A simple way to do that is create a CountDownLatch(1),  call await here and countDown where we initialize shared prefs. Also, I'm not sure lateinit is volatile, if not we need to make this volatile.	0.0
+I'm not aware of the Kotlin compiler doing anything like that, let me know if you've seen otherwise.That beeing said, yes `StrictMode.allowThreadDiskReads()` might be the most straightforward fix here.	0.0
+could this be a lazy instead? That way the strict mode change only happens once?	0.0
+Nit: Kdoc might be useful here	0.0
+Nit: please add a doc explaining all the reflection code around getting time	0.0
+Yep, seems sensible to apply the Kotlin linter suggestion.	0.0
+We probably shouldn't deprecate this because anyone using 1.3 still have to use this. Is there a way to deprecate only for Kotlin 1.4?	0.0
+Generally we've shied away from dropping compatibility support unless there's a really good reason (ie it's blocking some other work). For example, when Android X happened and created a huge migration mess, we ended up removing the direct dependency on both support lib & android X so that we wouldn't have to pick one or force people to go through a painful migration until they were ready for it. Another example is Okio where we depend on a really old version so as not to force anyone to upgrade. Generally I don't want LeakCanary's adoption to be blocked because it's forcing someone to upgrade :) .	1.0
+measureTimeMillis  is based on System.currentTimeMillis() which isn't recommended for measuring durations (not monotonically increasing).	0.0
+If we're introducing a new type we might as well make it a sealed class with an object such as "NoHeapDump" instead of null here 	0.0
+The HeapAnalyser doesn't really need to know about the heap duration, that's a lot of extra piping.    Since the two implementations of the HeapAnalysis sealed class are data classes, we can easily clone them and set the heap dump duration directly here.	0.0
+also, see prior comment, can you make this a sealed class with a `NoHeapDump` object?	0.0
+Add a `DUMP_DURATION_UNKNOWN = -1` constant, mention it here and then use it everywhere instead of `-1`	0.0
+Formatting isn't right. Can you make sure you use Square's formatters:	-1.0
+One thing to test here is that leaks that were recorded prior to this update can still be displayed after this update	0.0
+Technically we could actually provide the duration here (ie start of heap dump to exception)	0.0
+We still should provide a custom error message. It's better to say that `Browser not found` than `ActivityNotFoundException: ....`	0.0
+Here and below - you explicitly want to crash if these fields are not found, correct? Otherwise it can probably be `?.`	0.0
+readHprofRecords should probably return hprofStringCache, classNames and maxId	0.0
+Should we really create a new record if the field name could not be deobfuscated and we have `fieldName == deobfuscatedName` ?	0.0
+Might want to be a bit less aggressive if we stop creating new records for non deobfuscated fields (e.g. have `createDeobfuscatedClassDumpRecord` return the new max id)	-1.0
+Why are we passing around mutable maps here? I'm not seeing where we update them.	0.0
+This should probably be moved out of HprofDeobfuscator and into DeobfuscateHprofCommand, ie HprofDeobfuscator should be passed a ProguardMapping. Then tests become simpler (no need to parse a file, you can pass in a fake ProguardMapping.	0.0
+Use static imports for all `assertThat`	0.0
+Can you separate this out in several tests?1) Class name mapping2) Member field mapping3) Static field mappingThen can you add tests for edge cases (I know it works right now but should help with future changes):* class name is also used as member field name* class name is also used as static field name* Two fields with different names in two distinct classes are obfuscated to the same field nameAny other edge case I forgot?	0.0
+Other tests have helper code to make it easy to create hprofs in tests, see how HprofWriterHelper is used. Does that not work here?	0.0
+Empty line needed before this line for consistency?	0.0
+Can you also add description for parameter `neverEnqueued` ?	0.0
+`Bail` is too slang IMO. Replace with some technical equivalent? `Skip`?	0.0
+Too long for a single sentence IMO. How about:    If [objectId] has no dominator known yet but has already been added to visit, then we know we've been here for that object already. We did not add this object to the map of dominated instances so it can't be dominated any more, we can stop there.	0.0
+This is a strange error message. TODO?	-1.0
+`FieldValuesReader` is internal so no new API published, all good.	1.0
+How about `position += identifierByteSize`?	0.0
+It wasn't a public API before, but it looks like now you're making it public?	0.0
+How much "more CPU time" exactly is this? Really not great to expose this API with just longs, easy to make mistakes.	0.0
+- always put line related comments on the line before, never the end of a line, as those will eventually wrap and comment *after* the code.- Remove `DO NOT REMOVE!`, avoid scary language that stops people from thinking. Explain instead:```// Assigning to local variable to avoid repeated lookup and cast (HeapInstance.graph casts HeapInstance.hprofGraph to HeapGraph in is getter)val hprofGraph = graph```	0.0
+class should be internal, you don't want to pollute everyone's classpath	0.0
+Rename both methods to `to` ? Then it's a matter of using the right import? Thoughts?	0.0
+Why do we need to test this? Consider removing.	0.0
+we use assertJ everywhere else in the repo, let's stick to that.	0.0
+This test doesn't express what its testing, ie "verify add operation" doesn't tell me anything. Same for verifyRemoveOperation	0.0
+@Armaxis same as before, can you provide a better name?	0.0
+This is the "arrange" part of the test. There shouldn't be any verification here, only set up. Asserts should stick to the last phase of a test.	0.0
+Same comment as before: this is the "test" part, so there shouldn't be any assertion or verification in it.	0.0
+the name of the test says \"+=\" but the test calls add directly?	0.0
+maybe \"elements with equal hash can be added\" ? the test name here says we're adding but doesn't outline the expected result.	0.0
+What is this testing exactly? Not obvious at all from test name and test content.	0.0
+Side note: we already have an LRU cache in front of operations that requires IO. However separately we also try to rely on the indexed objects data as much as possible to avoid as much IO as we can. What this PR does is skipping a ton of binary searches into the indexed objects when we look for the `java.lang.Object` class again and again (e.g. when going through class hierarchy for every class).We could also add a small LruCache at this layer at some point. We'd have to evaluate the cost / benefit of adding a hash lookup to every `findObjectByIdOrNull` to avoid a binary search for a subset.	0.0
+Side note: we already have an LRU cache in front of operations that requires IO. However separately we also try to rely on the indexed objects data as much as possible to avoid as much IO as we can. What this PR does is skipping a ton of binary searches into the indexed objects when we look for the `java.lang.Object` class again and again (e.g. when going through class hierarchy for every class).    We could also add a small LruCache at this layer at some point. We'd have to evaluate the cost / benefit of adding a hash lookup to every `findObjectByIdOrNull` to avoid a binary search for a subset.	0.0
+Comment should ideally describe what the fix is.    Here it looks like: every time an activity is destroyed, we get the activity chooser model for ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME and set its OnChooseActivityListener to null?    Can you link to the code that's setting up this listener in the first place, creating the leak? 	0.0
+Maybe rename to `SAMSUNG_CLIPBOARD_MANAGER` ?	0.0
+Is this fast? If not, should it be done from the background thread (and would that introduce additional risk?)	0.0
+nit: avoid star imports.	0.0
+nit: make it obvious that we're passing a null proguard mapping (ie add that arg)?	0.0
+avoid comments at end of line they tend to wrap to next line when refactoring / formatting.	0.0
+This doesn't always work. The obfuscation checker is based on the runtime, and the code that runs the analysis might not be the same as the code that was used for the hprof. This should check inside the hprof.	0.0
+Maybe make the statement stronger (ie avoid \"looks like\") and start with what we're finding. Also keep in mind this code can also run in the CLI.Suggestion:> The heap dump contains obfuscated class names. The heap analysis is unable to proceed without a mapping file to deobfuscate class names. You can run LeakCanary on obfuscated builds by following the instructions at 	0.0
+Not this method, only readField is.	0.0
+Would stick to "Same as [readField] but throws if the field doesnt exist"	0.0
+I dont think we want this as a param	0.0
+Obfuscation shouldn't impact classes from the Android SDK. This isn't a bad idea but should likely be a different method that throws a different exception (which states that it looks like AOSP might have changed)	0.0
+nit: avoid 3 letter variable names (e.g. str), use full nouns instead.     Here, instead of using a var you can return the original vs the wrapped one.	0.0
+Nit: keep an empty line between the two but remove `` to be consistent with javadoc style elsewhere in the repo.	0.0
+Nit: replace with expression body + no need to pass `resources`, since it can be accessed from the class instance.```kotlinprivate fun getHeapDumpStatusMessage() =  when (HeapDumpPolicy.getHeapDumpStatus()) {  ...```	0.0
+Redundant `String.format()` call	0.0
+I think these error messages can be more descriptive. Something like:- Dumping heap disabled via LeakCanary.Config- Debugger is attached and dumping heap during debugging is disabledI'm not great with descriptions though, @pyricau what do you think?	0.0
+Nit: not `by Application`, more like `by developer` 😄 I think we can just drop this part and end sentence on `in LeakCanary.Config`	1.0
+nit: missing period.	0.0
+nit: those empty lines between when values are somewhat unexpected	0.0
+nit: maybe rename to `checkRunningInDebuggableBuild()` ? We need a method name that will be clear to consumers when they get this error in their build	0.0
+I think it would be better to add a corresponding section in the [Code recipes]( and have the error message point to that page with an anchor to a detailed description with xml snippet to copy&paste. Source code of those docs is located in `/leakcanary/docs/recipes.md`	0.0
+Nit: since we're putting emphasize on these words, I think it would be better to spell it out - **do not recommend** - instead of shortening.	0.0
+private helper functions should be after the tests (code should read outside in)	0.0
+This comma looks lost! Can you please  put it next to curly on line 165?	0.0
+`Using words`? What that means?	0.0
+`at all levels` or `of all levels`? Does it refer to developer's level or to the levels of detecting a leak?	0.0
+Also need to modify Kdoc in the `LeakCanary.Config.Builder` source	0.0
+Also need to modify Kdoc in the `AppWatcher.Config.Builder` source	0.0
+nit: insert space after `Iterations:`, `avg` => `average`, add ` ms` after duration	0.0
+The existing config may already have been customized, so we shouldn't replace it with a brand new default config. try this instead:    ```  config = config.copy(enabled = true)  ```	0.0
+Haha, well I didn't have a special reason.    You shouldn't have the problem of missing application if you change the order:    ```    fun manualInstall(application: Application) {      InternalAppWatcher.install(application)      config = config.copy(enabled = InternalAppWatcher.isDebuggableBuild)    }  ```    I think this makes sense as I don't see why someone would go through the trouble of calling manualInstall but not want it enabled in dev builds.	1.0
+Super nit: `i.e.` with dots seems to be the formal way of spelling it	0.0
+Nit: replaceable with `[ViewModelClearedWatcher::class.java]` although, I don't feel like it adds to readability...	-1.0
+To prevent ambiguity with `MVVM` term I'd suggest using `ViewModel` term instead of `view model` here. That's what Google call them inside `lifecycle-viewmodel` javadocs as well	0.0
+Nit: here and further `view model` -> `ViewModel`	0.0
+You could use `ViewModelStore#keys` and catch the no method exception and then go back to the reflection. This way you ensure compatibility with the next versions of viewmodel. This is good for R8 too.     I'm thinking if a proguard rule to keep the mMap would be appropriate...	1.0
+Remove all javadoc and replace with `@see`, so that we don't have to update two places when we update javadoc.	0.0
+add a comment (non javadoc) explaining this hack	0.0
+why not name it the same as the property, ie dumpHeap, then `this. dumpHeap = dumpHeap` ?	0.0
+Maybe update javadoc to mention this should be used in Java only.	0.0
+nit: would have been size to have the exact same example as in kotlin	0.0
+nit: would be nice to use the same example as the kotlin (below)	0.0
+You should use the latest 1.x release. In that you'll see this is deprecated; replaced with getBuffer().	0.0
+I think you want to start the emulator _after_ downloading it.	0.0
+This one confused me too when I encountered a leak in our demo app. Might worth adding more info, e.g. "Fragment received Fragment#onDestroyView() callback: fragment instance is kept, but its view will be destroyed. All references to the view should be cleared to prevent leaks." Basically, something that tells people that fragment is staying around for a while, but the view is not.	0.0
+I don't know that this is necessary for if statements returning a value.	0.0
+It's harder to make mistakes when returning values though? idk, I've grown used to single line `val foo = if (a) "a" else "b"`	0.0
+Would be nice if commit message + PR description outlined what the enabled rules are about.	0.0
+I'd rather have us build a sealed class based API for all leak canary notifications. Until we have that, I would avoid adding more API surface that we'll have to deprecate. Instead, remove this and maybe make `DefaultOnRetainInstanceListener` and `OnRetainInstanceListener` private (or inline its behavior)	0.0
+The default shouldn't be "empty", it should be showing notifications.	0.0
+instant app is not a form factor. What will we do when instant apps run on watch or TV?	0.0
+See leakcanary.internal.AndroidHeapDumper#showToast    Toasting when no activity is resumed may lead to a crash.	0.0
+yeaaaah but.. In recent Android versions you can no longer toast when the app is in background, hence the use of activity context and check for resume. 	0.0
+Passing the app context might be ok but I think you must be visible? And it crashes on some version of Android (that famous toast crash) but not anymore.    Anyway `leakcanary.internal.AndroidHeapDumper#showToast` shows you how to do all that.	0.0
+Log related code should execute within the log lambda	0.0
+`leakClass.name.replace(leakClass.simpleName, "LeakLauncherActivity")`     Isn't that `leakClass.package.name + "LeakLauncherActivity"` ?	0.0
+How about only sending CountChanged when the count actually changed?	0.0
+javadoc not up to date. Also, empty line.	0.0
+Could this be a flavor of the example app instead?	0.0
+Should be clear that pressing the button will trigger an activity recreation	0.0
+Devs have no idea what toast we're trying to display. Not sure it's worth logging, but if we do we should be more specific.	0.0
+Pressing back does not cause a leak, it changes the threshold and triggers the heap dump.We need to explain that either rotating or pressing the button will create 1 leak. That's it. Then we also need to explain that after 5 leaks the analysis will trigger....Or maybe we don't, this is a sample app that generally most people won't even see.	0.0
+this should be `heapAnalysis.applicationLeaks.size`	0.0
+In this case `may be` are separate word, so for camelCase it should go as `mayBeLeakCause`. It also better describes the nature of the variable - that **something particular may be a leak cause** vs **there is maybe a leak cause**	0.0
+Nit: convert to expression body to make it consistent with other methods `private fun elementIndex(position: Int) = position - 1`	0.0
+What a CPU time waster! `const val SQRT_TWO = 1.41421356237f` !jk 😄	1.0
+Please move this line to be after `androidx` - it's (more-or-less) alphabetically sorted now 😄	1.0
+nits: local variable for ProguardMappingReader and private constant for `"leakCanaryProguardMapping.txt"`	0.0
+Different formatting length? Are you using Android Square?	0.0
+formatting for this file should be 2 spaces.	0.0
+Why is this an interpolatde string instead of code?	0.0
+why is this the group / where does this later show up?	0.0
+Maybe users would like a name that reflect the fact that it is a gradle plugin.	0.0
+I like it!    Now, the difficult conversation: proguard is being replaced by R8. I have no idea how we'd support R8 here, but we'd probably want to build that in the same plugin?	1.0
+`leakcanary-android-minification-plugin` looks good to me. It's a bit absconse but that's the proper name of the operation..	0.0
+Are you sure the parent folder always exists ?   If not, you might need to create the parent dir tree of the destination.	0.0
+I'm a bit confused about indexes here, probably I'm understanding it wrong. Here's my thought process:Originally we created range as `valueIndex until valueIndex + bytesPerValue`, so `endInclusive` was set to `range.endIncusive - range.start = valueIndex + bytesPerValue - valueIndex = bytesPerValue`With new implementation we pass `rangeEndInclusive` as `(valueIndex + bytesPerValue) - 1` and use it as a replacement for `endInclusive`. But, obviously, `(valueIndex + bytesPerValue) - 1 != bytesPerValue`. Is it me misunderstanding the flow and `IntRange` here or is there a bug?	0.0
+Nit: can convert to expression body instead of having a `return`	0.0
+The name is was mirrored after Log.d, ie the logging level (d, e, i, ...) . What we log is different from what level we log it at, and here there's no difference in level so I would stick to "d". It's more of a helper logger to log the stacktrace	0.0
+nit: split these in two distinct test, one for debug and one for error. General guideline is one assert per test.	0.0
+Nitpick: putting parameters on separate lines will make it a bit easier to read; right now the alignment is inconsistent	0.0
+Nit: use linked hash map instead to get consistent ordering at minimal cost (useful when debugging)	0.0
+Consider having two types, or an interface and an implementation. HprofGraph only needs to know about a map of obfuscated names to deobfuscated names. It's unclear that all usages will need to work of off an input stream.	0.0
+Exactly! You could either make ProguardMapping an interface and have e.g. `InputStreamProguardMapping` implementation, or keep `ProguardMapping` a simple class that holds the map and has the deobfuscate method, and then have a separate class that knows how to create a ProguardMapping from an InputStream.	0.0
+would probably go with classId first.	0.0
+This formatting change is surprising, are you using SquareAndroid?	0.0
+Thanks! You might want to remove those spaces ;)	1.0
+How about making this a ` ProguardMapping` instead of a `ProguardMappingReader`? That way HprofHeapGraph doesn't have to know that the map comes from a file	0.0
+Sorry I should have been more clear: I think we should push ProguardMappingReader to the outmost layer. I can't think of a good reason for HeapAnalyzer to know about where the mapping comes from. The general idea is to enable doing this even when we don't have a file	-1.0
+The previous log was bad, this makes it slightly worst :) . Context: the idea with these logs is that they're no-op when there's no logger, and there's no unnecessary string concatenation. Here the log was actually bad, it should have done something like `if (SharkLog.logger != null) {}` (or maybe SharkLog should have a util method) to avoid any object construction. `"Watching $nameForLogging with key $key"` involves string interpolation even when there is no logger.    This is not a major impact, but more of a good practice.	-1.0
+It would be more efficient when logger is set, but less efficient when logger is not set.    Maybe instead SharkLog's API should be changed to take an inline lambda that returns the formatted string:    ```  SharkLog.d {  "Logging $value"  }  ```    inline means no extra cost, you get the kotlin string templates, and if there's no logger then there's no cost.	0.0
+Make `d` an inline function and then the lambda gets inlined	0.0
+what's wrong with the spread operator btw?	0.0
+Are you 100% that we don't need the spread operator here? String.format takes an object, and args is an object, so I'm worried it's going to run toString on the args array itself, hence the spread operator	0.0
+Is this comment now redundant?	0.0
+I initially thought we should filter these on ones where job allocation is enabled, then I saw we are taking advantage of the side-effect of not setting memory limits on the node unless it has the `ml` role.     This seems possibly unsafe. It would be nice to filter by role here to be explicit and pass in the list of nodes.What do you think?	0.0
+Saddened to lose the deployment stats API I had grown accustomed to it.Still LGTM@elastic/ml-ui this PR changes the format of the GET model stats response"	0.0
+I think one of the issues the Dockerhub folks had was with the fact we're using a multi-stage build. Can we eliminate this given all we're doing now in this stage is unpacking ES and adding tini?	0.0
+I wonder if we should not just copy the list every time, interning it, rather than this optimization? The only thing we are saving is this array, but we still copy the list anyway so hardly seems worth the complexity added here.	0.0
+I would prefer to omit this then. As mentioned above, this is not on the hot path. And if we want to optimize it further, it seems more intuitive to do so in the builder, since we could intern the strings in the list in `putList` and assume all lists are interned (and immutable) always (and likewise for keys).If follow-up work requires this we can re-add it, but I find this too much of half an optimization in the current state.	0.0
+I think we can take this further, let's have two static final values here, `FIELD_DATA_ENABLED` and `FIELD_DATA_DISABLED`, with a static selector method that returns either one of them, and keep the constructor private so that we only ever use these two instances.	0.0
+Second version looks great! LGTM!	1.0
+I just had one minor question for my own curiosity, does this work exactly the same for all JDK versions? Does it make sense for us to do this only for JDK17 where the warning is shown? I'm thinking more along the lines of 7.16 and the various supported JDK versions we run/test with.	0.0
+LGTM! The toString changes are awesome.	1.0
+A question about the original issue, does it make sense to backport this fix to 7.16 as well?	0.0
+Can the wire type of the field be changed like this between versions?	0.0
+Left 2 questions. Other than that this looks good to me.	1.0
+Maybe also remove this listener if flushEnable is being set to true? (using `ClusterService#removeListener`) That way there is no need to to keep checking whether flush has been enabled after ilm policy / template has been added.	0.0
+I missed the fact that `ClusterService#removeListener` was already being invoked, so this comment is not relevant and can be resolved	0.0
+I don't understand why the regex needs a `.` in place of a space. Can you explain?	0.0
+These look great. I particularly like the use of "field pattern."	1.0
+This looks good so far! I'd take the same approach you have.Tag + reuse is probably a good fit for the query + request body params, but I think it's overkill for the response. We should just link users to the existing search API response body docs and concisely point out any differences.	1.0
+This looks great. I left some comments and suggestions, but feel free to disregard as wanted. Nothing is blocking, aside from a syntax error in the stored_fields def. Thanks!	1.0
+Tried to reword this to avoid passive voice. Not a big deal if left as is tho.```suggestion* The > measures```	0.0
+These look great. I particularly like the use of "field pattern."	1.0
+Oof. I can't believe this wasn't documented. Thanks for catching it.	1.0
+Any particular reason these are fully qualified?	0.0
+Could this exception be more specific? I wonder if this would be a place we could use the MapperParsingException that we previously had in the validation logic.	0.0
+With this exception the caller gets the problematic mapping back, I'm not sure if that is the case after this change where the CompressedXContent ctor throws an IAE. Maybe it would be worth double checking that we're not loosing potentially useful information in the new places where the exceptions are thrown. Maybe we can try/catch and rethrow MapperParsingException in several places where we have the problematic mapping at hand.	0.0
+Out of curiosity: does this operation involve decompressing the mapping source now? This probably would mean slightly more time spent here in the future, I guess that is negligable but would like to understand the tradeoffs if there are any.	0.0
+Would it make sense and be possible to modify the test so we check the exception that is thrown earlier then? Or are there reasons why this is complicated, I haven't checked what that would mean.	0.0
+Thanks for the answers to my questions, makes sense to me now.	1.0
+Sorry for accidentally deleting this. I was deleting some of my own comments from a pending review and accidentally clicked the wrong one. 🤦	-1.0
+The link will help, but this feels a little cryptic to me. Should we mention the kNN search API directly?	0.0
+may be better say, the maximum number of neighbour connections each node can have in the HNSW graph?	0.0
+My interpretation was that it is an upper bound, in the sense that we don't allow to have more neighbours than `m`, and will prune the worst to have the number of neighbours always under `m`.   	0.0
+I didn't have a particular guideline or philosophy in mind. My thinking was that the HNSW info is only applicable if `index` is `true`, and that might be good to know before I create a mapping.    However, I don't feel strongly about it. I'm good with leaving it here, particularly if we want to keep the intro to this section concise.	0.0
+This approach looks good to me. As we discussed offline, it mirrors the approach some field types take where they introduce a  "script function" like `Function>` to make the conversation behavior depend on the field type.	1.0
+I wonder if the total time makes much sense. Especially when `model_threads` is > 1, it doesn't tell us much. On the other hand, it'd be useful to have stats on the `avg_inference_time` so maybe we can just collect stats for that?	0.0
+Would it be useful to also have stats on number of pending requests? I'm not 100% sure.	0.0
+Note that we could provide min/max of the avg inference time across nodes. But I'm not sure that makes much sense. Total makes no sense at all. So, if we stick to only providing the avg inference time across nodes, should we rename this to `average_inference_time_ms` to match the field from the _stats API? Also, the value could be the actual value directly.	0.0
+Ah, yes. All this time I didn't realise we used that accumulator for the counts. :+1:	1.0
+we want all the stats for average, max, min. StatsAccumulator gives us that.	0.0
+We might as well not use a `StatsAccumulator` here. I think it'd be clearer what's happening if we have local vars for the sum and the count. Not feeling strong about this, so change it only if you agree it'd be clearer.	0.0
+Is this required? I thought all the extenders of this class already supplied this override, and this is an abstract class.	0.0
+Well, thats crazy that the compiler demands an abstract class implement an interface...I wonder if this is because it doesn't know which is which?    Oh well, thanks for adding the documentation!	1.0
+You verified that the output is the same? I wasn't sure	0.0
+"Once the PR is approved, you should create" (no need to update keras.io until we're actually publishing the new model)	0.0
+In addition this, should we also ask them to provide regular unit test to sanity check their application code?	0.0
+I see. Not necessarily asking for one here, but I was curious that if there's no unit test in place I wonder how people make sure their code runs.	0.0
+Out of curiosity, what breaks when such function is not provided?	0.0
+@mattdangerw How is the term **...widely used model** defined? Is it based on only the number of citations of the model used in well-reputed conferences/journals? In that case, I think the conf/journal publisher should be realized also. 20 citations from random journals/publishers would be easy to find these days.	0.0
+Thanks for the PR! Please add a simple test for the fixes. It could be an integration test checking the output of the summary for a given model.	1.0
+Thanks for sending this PR. I assume this is an minimal repro for the issue and not intended for merge, is it?	1.0
+Is this line expected here?	0.0
+Thanks for the fix. Overall it looks good. We need to make sure train_on_batch doesn't have any side effects left.	1.0
+I think this is probably needed as well, otherwise the follow up model.eval() will accumulate the metric result from this train/test_on_batch.	0.0
+There are still 8 failing tests, e.g.keras/layers:convolutional_test	0.0
+Thanks for the PR. Please share an example showing the results of the change on the summary display.	1.0
+Looks good, the boxes are a nice touch! Please add a unit test and fix the code style.	1.0
+Hence why we should use `endswith`. To ignore any prefix.	0.0
+my point was to use `endswith('_acc')` rather than `endswith('acc')`	0.0
+These tests won't run automatically if the PR author is not in the contributor group. The reviewer need to apply a label with "kokoro force-run" to trigger the build.	0.0
+I still think the --test_filter should work for bazel. let me have a try.	0.0
+If `test_filter` doesn't work, then an alternative method to commenting things out is to globally rename the tests to add some prefix like 'NORUN_' to the method name.	0.0
+Will this slow down the test execution? (potentially cause test to timeout as well)	0.0
+LGTM. Note that such changes should only be done in other files if we're in a similar situation where we have inconsistent formatting or where we just have very long code comments in the examples.	1.0
+Not sure if there is any item need to be configured for the container, eg python version etc. will it use the docker container file we provided?	0.0
+Strong agree with this. It's good to provide people with an easy way to use their favorite development tools, but we should not prescribe one specific workflow.	1.0
+I think that's a good plan, but let's hold off for a day, about to discuss this with @fchollet later	1.0
+OK this is in! (with a typo fix for received and a couple linter fixes)Thanks for patience. Please go ahead and address the same for `Cropping2D` and `Cropping3D` if you have time, that would be very helpful!	1.0
+Thanks for adding it. Overall looks good to me!	1.0
+Do we really need all these models? Why not just the Bs (like for v1)?	0.0
+@fchollet isn't it ok to keep all variants of the v2 model? In v1, it's included almost all. Also, in v2, the variants of `s`, `m`, `l` and `xl` have much higher top-1 accuracy compare to the rest (`bs`).	0.0
+if you follow @fchollet's note to add a rescaling layer to the model, this note can be removed.	0.0
+Also, while landing we will upload the weights to our own bucket. Is  the current link for the weights?    Thanks!	1.0
+@fchollet Is there any plan to make a patch release containing this fix?	0.0
+Hello @harupy, the next release is estimated to be a while from now. Would `pip install keras-nightly` work if you'd like the latest change to be picked up?	0.0
+Will this work across all systems?	0.0
+Correction: this object is actually replicated in `keras/utils/object_identity.py`.	0.0
+Yes, I think it would be straightforward. We'd have to do it for `ObjectIdentityDictionary`, `_ObjectIdentityWrapper`, `ObjectIdentitySet`. Some have weakrefs so it will require a little bit of thinking but still very straightforward.Changes would have to be replicated in the TF versions of these objects in a separate PR (for consistency)	0.0
+Hi @gabrieldemarmiesse , I added the modifications to the `test_mean_iou`	0.0
+I believe that we have too much problems with this tests for what it's worth. Can you disable it? We'll enable it again later once we find a fix.```suggestion@pytest.mark.skipif(True, reason='It is a flaky test, see #13477 for more context.')```You can also remove the flaky decorator and import.	0.0
+Is this strictly necessary? I thought internally we were only calling metrics from `compile` which is already a symbolic scope.  This will prevent calling a metric in eager mode if TF 2.	0.0
+The attribute `_call_result` will always be present on a scalar tensor that's the output of a metric, right?Do we have any graph nodes that are descendants of scalar metric results? Are are these tensors terminal nodes in all cases?	0.0
+This is a nice improvement over the previous version. But the main problem is that the submodels with multiple input and/or outputs are incorrectly represented when their first and last nodes are retained.     Proper way would be to keep track of the inputs and outputs of each wrapper/submodel in these dictionaries.	1.0
+Thanks a lot! Could you also send a PR to apply the same fix in tf.keras?	1.0
+Excellent, thank you!	1.0
+Do you have plans to investigate the weird behavior of `in_top_k` in CNTK?	0.0
+The bug you encountered is a bug appearing only in keras 2.2.4. The version from master can run this script without any issues.	0.0
+@farizrahman4u could this be related to tour recent modifications of batch dot?	0.0
+The changes look reasonable, thank you.	1.0
+Ok, sounds good. Please add a unit test for this.	1.0
+The example script works fine at this time. I do not understand the purpose of the changes in this PR.	1.0
+Ok, sounds reasonable! Thanks for the update.	1.0
+These 2 functions probably don't need to be nested in this function, and can live outside	0.0
+I just reviewed the accounts-passwordless part. See my feedback, I don't think your fixes are necessary.	0.0
+I'll review accounts-ui onde the passwordless part is finished.It should be in a different PR btw.	0.0
+The changes look good, it would be important to ask feedback on Slack in Forums for people who uses this package in production, as maybe this could break something and this is a critical flow for apps.	1.0
+What are the other changes in this PR? I was able to find one but as we have many format changes I'm not sure if there aren't others.	0.0
+LGTM we just need to double check everything after merging to devel as there are different flows for different branches.Also, all the checks should be passing before we merge.	1.0
+This is a breaking change, no?	0.0
+I don't think you know that but we have prettier configured in the root project.We should format with prettier every new code section.We don't format everything because it was going to cause a huge diff but new code sections should follow the new prettier format 😉	1.0
+I don't think I fully understand the question and the comment as well. Could you clarify what needs to be defined here?	0.0
+Looks like `tools/tests/cordova-builds.js` will need some review as well.	0.0
+are you sure this works for cordova? I saw this code and it might seem we are defaulting to legacy always on cordova.	0.0
+Yes that is correct this is not Cordova, for various reasons we end up hosting a webview inside of our app that points to our Meteor app. It is for sure a weird edge case that is not too common, but this change definitely matches reality more since the WKWebview is completely a modern browser.	0.0
+If it's not targeting Cordova, that's fine!	0.0
+I did end up noticing that some ipads use the user agent that resolves to appleMail. So I ended up defining its minimum version too, but it is not an alias to these other ones since its version is like 600+    Not sure what the right thing to do in the meteor repro is, but i just added added a minimumBrowserVersion call in my code to make sure it is marked as modern.	0.0
+Mostly issues with comments. Also missing history entry. `accounts-base` and `accounts-password` will require patch release. If I understood the code correctly we could split changes to those two packages up into a separate PR and release that pretty much immediately.	0.0
+Just use `3600000` no need to perform calculations for something so basic that doesn't change.	0.0
+Big numbers usually are represented like this so it's easier to understand, you can see many places like this in our codebase and in general as well.	0.0
+Yes, I know. But I think that could be solved by a comment and no need to process math when it isn't needed. Just a suggestion.	0.0
+I think the name of the const provides all the info for readability that is needed. :man_shrugging:	0.0
+It's working fine on MacOS as well.	0.0
+It seems this message is sometimes printed on top of a progress bar:![image](	0.0
+I'm curious why we are using the native tar instead of 7zip here.	0.0
+When using npm installer on Linux an error appears:```LOCALAPPDATA env var is not set```I thought this env was only for Windows users...	0.0
+The issue with babel-parser is fixed in this PR, I just tested it. Thank you!	1.0
+Was this just breaking tests and not actual code?	0.0
+Hi, these changes are affecting the app load on iOS and Android, at least in the simulator/emulator the app is not loading.After the splash screen I just get a blank screen. Running with Meteor 2.3.2 it works fine.	0.0
+I think we should start using Logging package for log output.	0.0
+@brucejo75 thanks for the extensive description! It is not something I have personally a use case for, but I'll take a look at it after 2.3.1 release. Right now considering this for inclusion in 2.4.	1.0
+@brucejo75 to be clear, my long feedback here was just to provide more background on how I'm solving this problem in a different way.Your changes are going in a good direction, you can proceed with this PR, please provide the changes that I asked in the code review.	0.0
+Thanks for the updates. I just rerun it on CircleCI now.	1.0
+@filipenevola belated thanks for sorting that out. For some reason, when I tested with our MySQL-based publications, they  worked in async mode without the bind().	1.0
+I think it would be better to use `Console.success` here to make it clear that the process has finished.	0.0
+We are using error, but let's shelve this for a bigger overview then.	0.0
+@vlasky Better to keep it separate so that it is easier to review and hence quicker to merge unless you want it to supersede this PR.	0.0
+Looks good to me. Can you also create a PR for the documentation?	1.0
+Such a change will make **all** publications async, which I think is not desired. The solution would be to either use `Promise.await` (but that relies on fibers), or use an optionally-asynchronous `then` (like the one I made [here]( but without the `callIfAsync` option).The type signature of such a `then` function is:```tsfunction then(value: Promise, fn: (value: T) => U): Promise;function then(value: T, fn: (value: T) => U): U;```	0.0
+This removal causes conflicts with `mrt:soundcloud`	0.0
+Absolutely agree -- was just leaving a note here as more of an FYI. I've created a patched version in my packages folder that uses `OAuth.launchLogin` instead.	0.0
+@mikekibz59 Making a good progress on this! I think we will be able to merge this soon!	1.0
+@mikekibz59 I think it is fine in this branch if it makes things better. I would say go ahead and we will then review once you are done.	1.0
+Shouldn't the code to determine the message follow here, or am I missing something here?	0.0
+Thanks @tchiers, as your changes are in the meteor tool they will be available in the next version of Meteor.	1.0
+Great work!How can I help in getting this production ready?	1.0
+Is it a downgrade @costinelmarin? if we don't have a strong reason to downgrade, we probably should not.	0.0
+why wasn't it working? maybe we have another solution.	0.0
+Excellent solution, thanks Filipe! In my tests this solves my issue without breaking the original issue.I'm approving because the only comments are about the logs	1.0
+This is great, just a small suggestion to avoid repetition.	1.0
+You can use `Console.noWrap` to not wrap the text:	0.0
+Hi @StorytellerCZ I support this idea.Are you using this in a package already? It would be useful to already have a working example here in this PR	0.0
+I'm waiting the docs PR to review everything together.	0.0
+Hi @StorytellerCZ I would like to see the docs PR so I can test your changes, ok?I also want to be sure that this deprecated flag is available on Troposphere db so we can expose it on Atmosphere 😉	1.0
+I'm adding these fields to troposphere database as well.	0.0
+I'm ok moving forward with this version but we have many different ways to integrate with Apollo, in my projects I don't use like this. But I'm ok with this approach.I'm still torn between examples or more skeletons, this case seems to be more a example than a skeleton as you are selecting React already as the view layer. For Cordova, as I'm making a lot of choices as well, I'm going with example  do you think?	0.0
+We had a lot of handling added in our app to manage that race condition that the other fields are not yet available for the UI to check. Thanks for this, @menelike.	1.0
+LGTM, I just suggested a small adjustment and also we need a PR against the docs documenting these options, ok? Link the Docs PR here as well.	1.0
+You can use optional chaining, it’s built in feature for meteor	0.0
+Do note that this also means you should not use const & let etc.	0.0
+Since Meteor supports browsers that don't support const & let and this package's code doesn't get transpiled. You should stick to var.	0.0
+This works like a charm. After 2 years, I can finally remove my `dynamic-import` monkeypatch. Thanks @leonardoventurini !	1.0
+MongoDB 4.4 is in the release candidate stage at the moment, so maybe we should wait until 4.4 is released	0.0
+Ok, that makes sense. However, I currently don't have access to a computer that is fast enough to build MongoDB in a reasonable amount of time. 😄 @filipenevola Does Meteor have a build farm or Linux VM that we can use to build MongoDB?	1.0
+hi @klaussner we could add a job to our Jenkins 😉 I'm trying first locally but it is failing here ```error pulling image configuration: Get  Service Unavailable```do you know if that is a temporary problem with docker registry or if we need to update something here?	1.0
+Looks like a temporary problem. If I run the container locally, it starts compiling.	0.0
+The MongoDB update I was already going to include on 1.10.3 so let's include these updates as well.	0.0
+I'm going to run the tests on 1.10.3 branch	0.0
+@wreiske thank you, we are using your version already 😉	1.0
+What about using the `logging` facility instead of standard console log?	0.0
+This looks good to me.The synchronous write/rename is part of the initial work done when there's a cache miss, which gets amortized over time by all the future cache hits—as long as the cache is doing its job. Unless compilation times for cold-cache builds get noticeably worse because of this change, I'm fine with using the sync versions here.	1.0
+might be because `options` might be `null` and underscore is able to handle that?	0.0
+🤔 you're right... awesome PR btw, can't wait to use `arrayFilters` without  relying on `rawCollection()`, it's a bit awkward to bypass Meteor collection when using `redis-oplog`	1.0
+@BrianMulhall Just run```git submodule update --init --recursive```and you should get the right `packages/non-core/blaze` code. Shouldn't be related to these changes in any way.	0.0
+@BrianMulhall On second thought, I'm happy to jump in and wrap up these last few things, if you like. You've done all the interesting work already, and what's left is mostly just process stuff.	1.0
+Ok, assuming the tests pass, this looks good to me!	1.0
+The tests do indeed seem to be duplicated exactly starting at L1037. Nice catch!	1.0
+Strange, I cannot find this rendered in the docs preview. [numpy.divide]( is actually the docstring for [true_divide]( If we don't fix this in this PR, we should open a new issue about the confusion.	-1.0
+Thanks @DimitriPapadopoulos. Let's leave the aliasing of `np.divide` and `np.true_divide` for a future PR.	1.0
+I think we can delete this whole docstring, and refactor the `true_divide` docstring to acknowledge it is an alias to np.divide since `np.divide is np.true_divide` returns `True`	0.0
+Ideally you should rebase and squash toa single commit so that this unnecessary file doesn't enter the repo as an object.	0.0
+This looks great, thanks @BvB93. It's also more than style changes only, the PEP 585 and `.py` -> `.pyi` changes are useful.	1.0
+Thanks Bas, if no-one else has any concerns, lets put this in!  (I suppose we should probably ping the mailing list very briefly about this, but I feel it is just a formality.)	1.0
+This looks good to me, thanks!  I am happy with deprecating bools as well, since the new behaviour would mirror indexing.(Just in case someone wonders:  The casting can lead to integer overflows during the cast in theory, this is something we have to live with right now unfortunately, we do the same in indexing.	1.0
+OK, I think we may have to switch hat over to a same-kind casting (possibly with a time exception).  But it is what indexing currently uses, so I think it is fine.  (This would not allow custom user integer DTypes.)	0.0
+All NumPy integers should pass fine?  The main problem is that bools and datetimes may also.  If same-kind casting doesn't do the trick, we could also consider adding an abstract `Indexer` DType that users have to register or implement promotion with.	0.0
+But you are right, an abstract IndexingDType may be a good way to add some useful formalism and better generalization.	1.0
+Thanks @dimpase. This looks reasonable, if it fixes the SciPy issue we should just go ahead and merge it. It cannot break anything else.	1.0
+Thanks, when no cast is necessary, it could even just assign.  Otherwise yeah, using real and imag explicitly would be much nicer, but doesn't need to be done here.	1.0
+Hmm, I thought single line statements like this would get brackets. Might need to check .clang-format.	0.0
+Google style allows this if there is no `else` or `else if` in the conditional.	0.0
+Although I'm happy to live with this. It is perhaps easier to live with a few inflexible rules than try to remember a bunch of exceptions.	1.0
+Actually prefer this a bit, but will defer to the formatter  in this case.	0.0
+Definitely an improvement in readability. `clang-format` doesn't quite match the NumPy style sheet yet, and may not ever get there, but it does help a lot. I think the big question at this point is when to use it. I'd be happy to put this in, but others may disagree.	0.0
+I ran```$ clang-format -i  numpy/f2py/src/fortranobject.c$ clang-format --versionclang-format version 12.0.1 (Fedora 12.0.1-1.fc34)```And it looked pretty good. Is `.clang-format` in your branch?	0.0
+Let's get this in, it is a reasonable cleanup and doesn't break anything. Thanks @HaoZeke .	1.0
+Well, if Aaron thinks this is good, lets get it in. Thanks Bas!	1.0
+This looks good to me.	1.0
+The dtypes in the annotation were defined just as the names, like `int8`, not a complex expression like `np.dtype(np.int8)`. Are type checkers really not able to work even with basic names? Any function that has Dtype should basically only pass a type check if it uses the exact same name from this namespace, like `dtype=int8`. 	0.0
+Got it - I was worried that removing the `none` would mean that the code-block would fall back to highlighting the block as if it were Python. I think this *is* the default behavior, though fortunately that doesn't matter for these blocks since everything is all caps :).Thanks for the follow-up, LGTM then!	1.0
+Please don't, we have used this trick for similar things already, it is nice and simple, and I am not aware of a (reasonable) failure mode.	0.0
+I am happy with this changes right now.  Unless anyone has more comments or thinks we just should do this (or feels this is not fringe enough to skip announcing to the mailing list, just comment).It probably should get a very brief release note for completeness sake though, those are files in `doc/release/upcoming_changes` with the PR number in the name (there is a README).One last note: It is possible to pass the argument by position as a work-around for anyone who must support multiple versions.	1.0
+ British dictionaries tend to mention only _usable_.\"The United States and Great Britain are two countries separated by a common language\" -- GBS :)	0.0
+Aside from the `its` (and the `us(e)able`), all of these seem like clear typos so lets put this in.  Thanks.	1.0
+I've updated the readme to make it slightly more obvious that we have to keep them compatible with python 2.	0.0
+Should we open an issue to fix this? Not sure if this gets exposed to the users at all.	0.0
+Ooopst :/!  I missed that this ended up being changed.  Could you make a PR to revert this?    EDIT: I am not 100% sure if we cannot get away with changing it, but we can discuss on the reverse PR.	-1.0
+I'm not sure what you mean by "not exported". `numpy.ma.mrecords` is "public API" I think (although I suspect an extremely unused part of it).	0.0
+For the future reference, fixing typos in NEPs is OK IMHO. 	0.0
+Thanks @DimitriPapadopoulos and everyone going through the changes! LGTM, and I am happy to change those variable typos.	1.0
+Maybe     "This command compiles and wraps ``fib1.f`` (``-c``)  to create the extension module ``fib1.so`` (``-m``)  in the current directory.  A list of command line options can be seen by executing ``python -m numpy.f2py``."	0.0
+The meaning or "routine" is unclear here. Maybe "subroutine" or some such?	0.0
+OK, let's leave that for another PR.	0.0
+There is a lot of work here. Sorry to spam the comments, but Github isn't ideal for copy editing.	-1.0
+Thanks!  Looks right to me.  And since this only affects developers anyway, lets put it in.	1.0
+Let's give it a shot. Sounds like we will want it in Python >= 3.9 in any case. Thanks Bas.	1.0
+LGTM apart from the `ids`.	1.0
+Merging this, any remaining items can be solved in a follow-up. Thanks @sayantikabanik !	1.0
+I'd suggest merging this once content seems ready, and using Doxygen-Breathe in a follow-up PR to not mix content and tooling changes.	0.0
+These are un-indented on purpose so that the macros can be linked to from elsewhere	0.0
+This seems like a good opportunity to use the new [doxygen-breathe infrastructure]( to pull the comments out of the source files and render them in the rst files	0.0
+ using Doxygen-Breathe in a follow-up PR to not mix content and tooling changes.FWIW the tooling changes have already been merged, so the proposal is to use this as a test-case for the C autodocumentation workflow. @Mukulikaa has expressed interest (or at least willingness) to give this a try and provide feedback on how the process goes. @rgommers brings up a good point though - if you get stuck don't feel the need to keep pushing on the autodocumenting \"experiment\", that shouldn't be a blocker for the content itself. 	0.0
+`np.typecodes['AllFloat'][1:]` would remove `'e'`, but is not quite as robust.	0.0
+A comment on why this is correct would be helpful.	0.0
+Thanks Bas.    The circleci failure may be ignored, it would be fixed by a rebase.  It might be worth testing some of these function with 0-D arrays, but that is for another PR. 	1.0
+Ah OK, I did not realize we already have this logic in other places.	-1.0
+I can't see it making a difference in the big picture.  There might be a small difference in clarity, but with one liners that is debatable ...	0.0
+That PR is wrong in multiple ways	-1.0
+~~I'm curious; how are you testing this? I tried to set this up in another repo, and couldn't come up with anything beyond clobbering `main` on my fork.~~ edit: I should read your description more carefully.	-1.0
+All of these end up on a single line without spaces when I go to your fork.  Or is that an older version?	0.0
+OK, still getting it on one line, but I am willing to blame it on buggy github + browser variations if it looks right to for you, thanks.  I think we still should remove the `python` from the first line.    (Additional nit, we can delay)  I now see that we do write `python myproblem.py`, I think we should maybe write: can be copy-pasted into the python interpreter or run as.  Just noting this because I remember 2-3 occasions were I was wondering why users bothered to provide actual scripts for 10 line snippets, and this might be it ;).	0.0
+Are these values arbitrary?	0.0
+Should there be a warning here?	0.0
+This looks fantastic! I will recheck the issues to see if this fixes more than the one referenced here; but this is a huge step forward.	1.0
+I don't see anywhere in numpy or scipy that uses this function. Can we deprecate it?	0.0
+The changes here look like a nice cleanup	1.0
+This looks better now	1.0
+OK, I had a deeper look. Only one of these looks out of place, the rest are either improvements or "doesn't matter". Some of the code can be cleaned up further.	0.0
+This looks good now, just two small nits that if broken now they were broken before too.	1.0
+Personally I'm -1 on this change. This is an example of a very common use-case that demonstrates how these two fundamental packages (numpy and matplotlib) are used together. It'd be a shame to lose that, and I don't really think the 4 extra lines for matplotlib make the example difficult to follow.If you feel strongly about removing it, I'd recommend opening a separate PR for it.	-1.0
+We did talk about running a linter through all the code at some point. Maybe we can do that in a subsequent PR	0.0
+Nice, browsing the options a bit, would `ContinuationIndentWidth: 8` be closer to current usage?	1.0
+Our includes are terrible :(  (and I am happy to admit, that I am not making it better).  There is some maze where include order matters due to INTERNAL BUILD and maybe other things.  Or where files just work because they include a header that incidentally includes something they need...It would be extremely nice to clean it up a bit, I feel I am missing some best practices/intuition, though.	-1.0
+As far as I can tell this include is not moved, it is new to the file.	0.0
+FYI I don't recall how I came up with that original file, but presumably I did it myself since I felt comfortable releasing it the first time someone asked, so if that licensing question is still active you have my blessing (not sure if it even qualifies for copyright anyway). 	0.0
+Thanks @tylerjereddy, I think I like this approach and the removal of negative time factors (in principle ideal or not, both seem like the practical choice to me).For me, this PR can go in, if anyone would prefer e.g. a release note, please make a comment.  Otherwise, we should just merge it soon.	1.0
+This looks great to me, but I don't know how easy it will be to get this working in our build system.	1.0
+No, but I think I've seen build/distribution-issue-based resistance to switching to c++ before, and am merely expecting someone else to bring those up again. I don't know the details I'm afraid.	0.0
+Okay thanks. I think there are likely to be some fiddly details, but given that `numpy.distutils` supports C++ just fine and it works for SciPy, I would not expect any really fundamental problems.	1.0
+Why is this a template, instead of just```cppnpy_half _NPY_MAX(npy_half a, npy_half b, floating_point_tag const &)```This would remove the need to have per-dtype tag types.	0.0
+We discussed that in one of the triage meetings and decided modern C++ was acceptable, @seiko2plus wanted it.	0.0
+In the recent developer meeting, we decided to put this in as an experimental enhancement, without actually pushing to migrate the templated code to c++ templates for the 1.22 release. That way we can see if the infrastructure is solid before progressing.	0.0
+@shubham11941140, the whole point in this PR is that @anntzer _wants_ to change the output	0.0
+We discussed this briefly and I think we can move ahead with this.	0.0
+Thanks @anntzer lets give this a shot!  If anyone stumbles on it or has concerns please make a note/open an issue.	1.0
+I think we should drop LGTM. Was there a PR that was improved due to its output over the past year or so?	0.0
+Hi @charris, thanks for the ping. Yes, let me see if I can get a member of the Python team to get back to you on this.	1.0
+Adding the caveat seems right to me, lets get this in.  If anyone has comments we can fix it up. Thanks!  (I will assume the circle CI is just a hiccup.)	1.0
+```suggestion        python-version: [3.7, 3.8, 3.9, 3.10.0-rc.1]```Was dropping 3.8 here intentional?	0.0
+I think I remember a while being spent on this in person at BIDS, but we might not have been aware of `__code__.replace` at the time (or maybe it didn't exist?)	0.0
+Is there documentation anywhere for `code.replace`? It looks like it's new in 3.8, which would explain why we didn't use it before.	0.0
+We discussed it briefly today, and since there is a good chance we will drop 3.7, and the traceback does not look like a disaster without replacement either, the `hasattr` solution seems like a good solution for now.	1.0
+Hmm, took the liberty to apply the suggestion and remove the draft mark.  Had to change the indentation to make the linter happy, not perfect, but OK.    Also rebased now, since CI was failing.  Hopefully, it is ready with those small fixups.	0.0
+Could you run `python -X importtime -c \"import numpy\"` before and after this PR? I think the change simplifies code anyway, but it would be nice to know if this helps import time as well.	0.0
+I assume this loop is not slower by a relevant factor than the chained `if`s?	0.0
+Maybe worth adding a comment about expected input being already decoded?	0.0
+LGTM, just one nit, but could be merged without that.	1.0
+It seems CI is acting up. Maybe close/open this in a few hours to see if that clears the problem	0.0
+Doesn't this conflict with some of your other PRs? Do you have a preference for merge order?	0.0
+Thanks @asmeurer . This ~probably~ maybe could be tested using an object array containing time* types, something like```In [20]: a = array([timedelta64('NaT'), timedelta64(0)], dtype=object)          In [21]: a.sort() ```But that is hard to check without merging this.	0.0
+This LGTM - do you think it'd be worth to convert my previous comments into two tests? If you have no objection I'd be happy to push that up.	1.0
+Bit of a shaky review here, but to me the change to `flags` is definitely an improvement, while for the `slots` the case is a little less clear, since it combines such disparate items. My overall sense, though, is to just get this in and keep going - you may well find another adjustment would be good, but I think that is OK.	0.0
+Ah, clearly you were thinking about these as a separate entity as well...	0.0
+OK, that makes sense. Regardless, with the macros it becomes an implementation detail, which is nice.	1.0
+Something is weird with `PyArray_MultiIter_SIZE`. I don't understand why it [is documented]( but never defined. Did it get removed in a refactor?	0.0
+Then we would need to redo that example that uses it. Perhaps leave it out of this PR for now> to add `PyArray_FinalizeFunc` ...Yes, but what should that documentation be?	0.0
+Heh, nice re-use from `__array_finalize__`	1.0
+Heh, nice re-use from `__array_finalize__`	1.0
+In any case, the added tests look good to me.	1.0
+Why was this moved?	0.0
+Did you consider chunking the update work and making this behavior non-optional?	0.0
+Think it's more readable to put the positive case first.	0.0
+sorry, this is the only case, ignore.	-1.0
+Is this just `styling-scoped.html`, with the flag turned on and `@apply` removed?	0.0
+It looks like the templateInfo can be its own parent, which is weird. Can we avoid this by just changing `applyTemplateInfo` to set `parent` directly instead of `_parentTemplateInfo`?	0.0
+The unconditional `@implements {Polymer_DirMixin}` annotation _should_ be fine here?	0.0
+Does this need to be on the instance and could we remove it if not?	0.0
+Bookmark: it seems like we could potentially not create accessors for these and instead mark them as having accessors so `setPendingProperty` is used and then we wouldn't have to remove the value here.	0.0
+We're calling `_showHideChildren` here when it previously was not called (`if == false` and `restamp == true`), is that intentional? Seems like it means implementations have to check if there is an instance?	0.0
+What happens to the previous version of this if this happens more than 1x?	0.0
+This appears to be identical in both subclasses. Can it just be implemented here?	0.0
+Does this implementation really need to be in the subclasses? It's almost identical.	0.0
+Is it safer to set this first?	0.0
+I am okay for this. Let's see what the others say before merging.	0.0
+What does `hasPaths` have to do with this?	0.0
+All of our internal users have `--generate_exports` enabled. We're also advocating for it to become enabled by default. So I think that's our preferred solution. Any reason you don't want to turn on the flag?	0.0
+All of our internal users have `--generate_exports` enabled. We're also advocating for it to become enabled by default. So I think that's our preferred solution. Any reason you don't want to turn on the flag?	0.0
+LGTM once the `@suppress` lines are moved above the` @licenense`s	1.0
+Not sure why this changed... revert? (And don't forget to remove the trailing semicolon for lint)	-1.0
+Decided not to change since this was fine in closure.	0.0
+Order of operations is confusing, is this always guaranteed to coerce to a `[]`?    Maybe change last expression to a ternary?	0.0
+I see. That's really hard to typecheck!	0.0
+Why B|V and not just V?	0.0
+What do you think about putting these types in an importable file? Or, are these types importable? I guess they're using `export` so they shouldn't be global by default. How would  you  get these types, as a Polymer user?	0.0
+This SFTM, but I would like to have @aomarks take a look. Especially given the widespread usage of TypeScript internally in Google, it might encover some unforseen issues.	0.0
+Looks good, running some tests will ping when done.	1.0
+Can we just check the arguments here and avoid the need to try catch the error? Then you don't even need to expose `_marshalArgs`.	0.0
+Why not just put `LegacyDataMixin` on top of the user class?	0.0
+Did you consider altering this method to get the info needed to present a good error? I'm concerned that since the intension is to warn, but the code throws here, we're depending on catching that where it's called.	0.0
+Ok, disregard that. It's clear that we need to abort the effect of marshaling the arguments and throwing let's us do this.	0.0
+Why is this changed needed?	0.0
+Isn't it incorrect to do this if `this._template` is explicitly `null`?	0.0
+LGTM Can we maybe include the new types already since you issued a new update on the generator?	1.0
+Ensure this acts as expected when using the custom elements polyfill.	0.0
+Also the tests appear to fail on IE11, likely related to how it handles exceptions. And the latest version of shadydom appears to be now failing some of our tests. We have to look into these regressions separately.	0.0
+what is a bag? perhaps restate as a \"hash\" or key value collection of ...	0.0
+any reason why we are _ prefixing this prototype value?	0.0
+Once you're ready, let's make sure to merge this into `master` also.	0.0
+Done that, thanks. Lets see if that fixes the issue.	1.0
+So, follow up: With this fix, does any falsy value work, as originally documented, or does it have to be `null`?	0.0
+I think we can close  with this by explaining Polymer 2 on NPM is not supported?	0.0
+I get a 404 in `index.html` trying to load `components/iron-component-page/iron-component-page.html` when I try these instructions.    `iron-component-page` is not listed in `bower.json` anymore, which `index.html` relies on... is there some magic in `polymer serve` that is supposed to make that available, or do we just need to add it to `bower.json` `devDependencies`?	0.0
+This is good info.	1.0
+Is this the sort of fix that we could get a 2.4.1 release out of? Possibly soon?	0.0
+Just one little nit and then looks good.	1.0
+We generally keep it in one file if it concerns one feature. I think it is okay for now to keep it like this, to not overflow the tests directory.	0.0
+Implementation and test look good. We have to fix #5050 first and then we can merge this one	1.0
+Awesome fix, @MajorBreakfast and @michalsukupcak.  Thanks for the contribution.	1.0
+@azakus Is this PR mergeable with just the smoke test or would you like some unit tests for this one as well?	0.0
+It looks like `foo` will match in `a-foo`	0.0
+Hm, the glitch website itself does not seem to load in IE11 🤔	0.0
+Oh nvm. I can do "show live" and then open that link in IE11. Maybe worth mentioning in the guide as well?	0.0
+Hm it is seems to be working for me. It might have been a time bug in the matrix?	0.0
+We talked about this in our meeting. I am okay with this change, given that the `unsafeHTML` function will be provided soon too.P.S. build fails because you need to update the TypeScript types (this sadly also takes into account docs)	0.0
+It was an attempt to write less code, since both types can return their string value via `innerHTML`; fair that it's a bit short-cutty.	0.0
+Please process the feedback of  and then this is good to be merged :smile:	1.0
+Nice! Seems like a good simple way to do it.	1.0
+I wonder why we had these `@function` annotations... @justinfagnani do you know if these are important?	0.0
+Seems like a bug in polymer-analyzer.	0.0
+Not sure why it was annotated that way. I wonder if it had to do with the container being a namespace. It'd be good to run these annotation-changing PRs through doc generation.	0.0
+Oh, I guess those `@function` annotations were important!	0.0
+Is there a way to type this in Closure to simulate TypeScript overrides? Something like: `@type {(function(Node=):!DomApi)|(function(Event=):!EventApi)}`	0.0
+We are getting closer and closer to the correct types, nice!	1.0
+I think this can be just `:void`	0.0
+On the bad device, once you add that fix, do we have other messages where msg.obj is a IBinder and can we still do service death detection? If yes then this fix is great, if no then I wonder if we could detect this ahead of time and not set up the hook at all. Thoughts?	0.0
+I guess I just want to confirm you're still also seeing IBinder messages on that device.	0.0
+?? waiting for green build to merge	0.0
+Great to see there's a fix for this. Any chance that it's going to be released?	0.0
+It will definitely be released some day. I don't know if that'll happen while I'm on paternity leave.	0.0
+oooh I see. So that's because segments of the path contain periods because they're packages. Great. So there's no max but generally don't expect too many I guess.	1.0
+This is ok but based on the video there's a little amount of time where one might think they have to click on "import hprof" on that new screen, when in fact the hprof was already being imported. So now I'm wondering if we should add a virtual row for "pending analysis" on that screen (for this new feature but also any time we import).	0.0
+I'm not sure we'd want to update the DB as this is very much an "in progress" thing that's only true while the program is running, so we'd risk having out of date info after a restart.    We could probably file this as a follow up... but I'm thinking maybe an internal thing that keeps track of "are we running an analysis right now" and a way to subscribe to that.	0.0
+Thx, this is a great PR!	1.0
+Using Build.VERSION_CODES.R instead of "30" requires updating `compileSDK` from 29 to 30. This update caused other issues. So, it is better to do `compileSDK` update in a separate PR	0.0
+This change seems unrelated – why lower this number?	0.0
+Because I asked in the previous PR :) . The Travis CI ran on 16 so we shouldn't lose that. Though ideally we'd run on a few versions maybe.	1.0
+This isn't needed anymore, right?	0.0
+This is really cool! Is this hitting any API  grey list / black list?	1.0
+Why are you cleaning before building? There shouldn't be nothing there.	0.0
+That line doesn't explain why the clean is there at all in travis, although it could be that travis was leaking files between builds, and this was the workaround. Shouldn't be needed here.	0.0
+I'd love to ditch TravisCI entirely and have something else for the snapshot deploy.	0.0
+Another PR sounds good!	1.0
+Shouldn't this go before `val result = condition.evaluate()` ?	0.0
+Suggestion: have you considered adding `sdk > 21`? On older Android phones it much be too much of a pressure to run analysis in background. Or, maybe, make it configurable?	0.0
+How safe is this `!!` here? E.g. emulators, custom hardware and firmware can potentially return `null` here?  	0.0
+This is how you delete the file after the heap dump analysis, right (assuming happy path and no errors)?	0.0
+As an alternative you can use the `measureTime`, but it's experimental, might be too risky for release	0.0
+yeaaaah that's... a very unfortunate piece of code :) . That thing adds font tags. You did the right thing.	-1.0
+Thanks for testing! Sounds good.	1.0
+Wow, so you're using LeakCanary to catch leaks in the cars? We should start advertising this library as a good car plumbing solution!  	1.0
+This is confusing, why do we need to call this before invoking `moveReaderTo(reader.startPosition)` ?	-1.0
+Note: `LongLongScatterMap` and `LongObjectScatterMap` potentially can improve memory usage here; depends on how many items are in the map, of course	0.0
+Just noting that you use `currentRecord` instead of `localCurrentRecord` here. Shouldn't matter, but you know this code better, might think of possible edge cases?	0.0
+Then that's the answer ;) . Favor expression over optimization unless you can prove the optimization is worth the loss in expression	1.0
+PathFinder is an internal class. You can change the signature of its methods and change everything else. Definitely shouldn't live here but in PathFinder if you think we should keep it, but I'm not sure why.	0.0
+Looking good but left some more feedback on the test.	1.0
+Is there really only a `contains` that takes a vararg?	0.0
+Is there any world in which a change to LongScatterSet could break this behavior?	0.0
+What's "a lot" ? How does the test demonstrate that resizing occurred? Also, resizing is not an interesting part the API, it's an impl detail, what should we test instead?	0.0
+Is it unused? The flag seems to be a regular boolean	0.0
+This is brilliant! ?	1.0
+did this happen, or is it to be safe?	0.0
+Looking great! I left a few comments to address. My only concern is with the fix for ActivityChooserModel, I'd like some pointers at the sources showing how it happens, because that fix is a bit more involved.	1.0
+Thanks for the great work and for following up, sorry I didn't merge any earlier!	1.0
+Thanks for the great work and for following up, sorry I didn't merge any earlier!	1.0
+The JDK `Stack` class should be avoided. ArrayList and ArrayDeque are good alternatives.	0.0
+Let me know when you want me to take another look ;)	1.0
+Does this need to live in the `leakcanary-android-core` module or could we move it and then make it internal?	0.0
+Can be converted to a Kotlin property	0.0
+Instead of surfacing just the current state, we should surface why we're in that state.	0.0
+Looks good to me! I'll let @pyricau decide whether it's ready to be merged!Thanks again!	1.0
+Looking good! I left a few nit comments. A screenshot would be nice too ;)	1.0
+Oh, that's interesting! Hadn't thought of this, makes sense to reenable.	1.0
+I'd definitely avoid adding a new public API for something not directly related.At some point in the future (?) we're supposed to be able to share access to `internal` symbols across modules of the same project. Until that's available, two options: if there's internal state that *must* be shared, I rely on public methods under an \"internal\" package. Otherwise (ie, like here), I'd much rather duplicate the code.	0.0
+nit: this says both "production" and "release". We should ideally pick one, as changing vocabulary can be confusing. Probably release?	0.0
+Welp, I wanted to make a PR but I pushed to master instead. Oh well.  don't tell anyone	0.0
+Thanks!! I'll merge and follow up with the wording nit.	1.0
+As long as it's not in the LeakCanary exported deps, that's fine anyway.	1.0
+This sounds nicer because it tells us what's wrong	1.0
+The one already in place because `isEmpty()` will log the content of `missingInConfigBuilder` automatically. => you shouldn't log it in the error message.	0.0
+Should have another test for the opposite case, a field in the builder that's not in the config class. Less likely but maybe with deprecation.	0.0
+instead of subtract, how about asserting the two lists are equal? That way the framework tells us what's different. If there's a reason not to use equals, then the error message should include both lists	0.0
+@ckesc I'm hoping to release 2.3 sometimes next week. Ping me again if that's not the case!	0.0
+I'm writing the release notes :)	0.0
+Not sure, but maybe `suspected references`?	0.0
+nit: wondering if folder, buffer size and interval should be params with default values. Not necessary though	0.0
+ah, I hadn't thought of that, makes sense.	1.0
+One question: why did you first have `config.copy(enabled = InternalAppWatcher.isDebuggableBuild)` and then changed it to `config.copy(enabled = true)` ?	0.0
+Did you hide it by using the \"SinceKotlin(999)\" hack?> but then the LeakCanary.config.newBuilder() won't workWhat does \"won't work\" mean here?	0.0
+Force downgrading is not a safe operation and other libraries using Okio 2.x are liable to break. This library already depends on Kotlin so downgrading Okio provides no advantage. You're of course welcome to proceed with this since it doesn't affect much. I would push back on the user either way.	0.0
+Personally I’d build against either 1.x or 2.x, but not both. But this looks safe.	1.0
+Oh and in great irony the bug report is from a user on a version that precedes this one. That is, this bug can occur exclusively within 1.x releases. My recommendation is to decline this PR and tell your user to use the latest 1.x.	0.0
+What is this change about?	0.0
+Sorry, nope: if we're not adding something as public API, then we should not be adding it to Config. Sources of API classes are read by users of the library so we should aim to limit private code in it.	-1.0
+welp the idea is to only keep the activity reference while the activity is resumed (and therefore won't crash when toasting) so that likely won't work	0.0
+wow, UiModeManager has been here since API lvl 8, first time I see it.	1.0
+Nice! Ok I was confused as to why it was added in both places. That way is even better :)	1.0
+@pyricau Seems this has been approved, when will it get merged?Was looking since we need to check TV application for memory leaks	0.0
+Damn, I did a merge instead of a squash, so all those 21 commits are now on master. Oh well. Next time, can you squash as you go ;) ?	-1.0
+Nit: Currently, there are combinations of `when` and `if` in this method which make it a bit harder to follow, and also a lot of `if` conditions are inverted (`if (a != x) .. else ..`). I refactored it in a way so it mostly uses `when` + few more touch up; what do you think?	0.0
+Approving (a few changes still needed but overall looking good)	1.0
+I'm ok with waiting, would love to give you the opportunity to finish this.    Once this is ready we should probably use it  on a jetified project and make sure Gradle won't complain.	0.0
+I checked out the branch, deployed locally, added the support library only to a project then support library + jetifier and it's all been working, no issue.    I'm going to merge :)	1.0
+Once this land, will the plugin be automatically available as soon as we make the next release to maven central? Wondering if publishing a gradle plugin is as simple as publishing a jar, or if there's more work that needs to happen.	0.0
+I find it interesting to have a group, when listing tasks they are grouped. Maybe a more general group such as "memory monitoring" would provide more insights on what the tasks are doing.	0.0
+typeSize is an artifact of older code prior to creating PrimitiveType, so I would actually favor the latter (PrimitiveType). In both cases we're doing a map lookup so it's kind of equivalent.	0.0
+This test is testing that SharkLog.d passes the result of the callback to SharkLog.logger.d, right? 	0.0
+I was wondering if the mapping should happen when parsing instead? ie either passing proguardMapping to `Hprof.open` or `HprofReader.readHprofRecords`. This would provide the mapping capabilities even if you're not using the index. One issue though is that you can't tell if a string is a class name, a field name, or something else. So it probably wouldn't work?	0.0
+I'm curious about the distinct casing (dash for "analyze-process" vs underscore for "proguard_mapping"), is there a standard practice?	0.0
+Thanks!    How do I generate / override the baseline? Btw I hadn't realized we'd have so many things in the baseline, that's a lot a content committed :) 	1.0
+do we need empty files?	0.0
+with that we can get rid of the vararg and lose the `new Object[0]`	0.0
+I like the stats reports per module! Let's keep it.    Maybe we can make `./gradlew check` a commit hook?	1.0
+oh sorry yeah I actually should have said push hook :)	-1.0

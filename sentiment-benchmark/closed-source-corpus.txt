@@ -1,0 +1,1085 @@
+This seems like a weird check, why is needed?  Is so we don't put the zip code into `anchor_data[KEY.STATE]`	-1.0
+I don't understand why we are using vdatastore stuff in this model instead of making a vobject in the vobject lib and inheriting from that	0.0
+Seems like we can move the construction of `test_facebook_post` to the setup and just change the `postedDateTime` before the put.	0.0
+I'd remove the default here if we expect this to always have a value. Better than providing an empty string where we wouldn't want one.	0.0
++1 this will fail with a cryptic error: ``` >>> "{}{}".format("") Traceback (most recent call last):   File "", line 1, in  IndexError: tuple index out of range ```	0.0
+Were we wanting to change the SDK files?	0.0
+they will just get overwritten but it is all just doc string changes anyway	0.0
+Fair!	1.0
+I would revert this file. It'll be confusing to the next person who generates the SDK when they have 18 lines they didn't know were changes.	-1.0
+This is literally the 1 line that matters.	0.0
+Good job on a descriptive tag!	1.0
+You aren't passing any arguments to your deferred function.	-1.0
+It would save effort to do this check before the defer.	0.0
+yeah.. I messed up hehe. I was in a bit of a rush	-1.0
+I really like how you encapsulate this ?	1.0
+do we want to have a retry limit?	0.0
+or a min-backoff? or something?	0.0
+The docs state >Note that for very large time intervals (greater than 270 years on most platforms) this method will lose microsecond accuracy.  So, just be aware.	0.0
+could be  ```python bad_attributes = [attr for attr in data.iterkeys() if attr not in self.ATTRIBUTES] ```	0.0
+or `set(data.iterkeys()) - set(self.ATTRIBUTES)`  C-OK	0.0
+Is there any concern that a user will auth their account after exponential backoff has ramped up. Resulting in not updating the reach quickly after authenticating?	0.0
+This test will past regardless of the value of the status code we put here	0.0
+SDK should not be in this PR  Try not to generate the SDK until new endpoints are on master.	-1.0
+I'll disagree here. You need to functionally test your endpoint both as a rest call, and through the sdk. You shouldn't release your sdk to VPM until the endpoints are on prod (which is what I think Brad is really getting at), but there is no reason to avoid generating it, testing with it, and getting it PR'd beforehand.	-1.0
+@ckurz-va Generating it and merging it into develop will cause merge conflicts for anyone who is simultaneously adding new endpoints to be added to the SDK when they are based off master.  Not the end of the world but something I like to avoid.	-1.0
+It's a very simple process to manage that conflict, (Pull master into branch, regen sdk, confirm your expected changes are still there) and exposes maybe people need to chat to make sure version numbers are incrementing correctly.  I personally like merge conflicts when people are working in the same space so conversations happen. As long as the merge conflict isn't spawning a TON of new work. Plus with a PR out, people who are watching the repo, which should include people currently working in the repo, will notice another team adding an endpoint, and can start the conversation on collaborating the vpm release and such before things get to master.	0.0
+is this the only place we're getting permissions and storing them? Like even on newly created FB Users we're not saving permissions?	0.0
+Also isn't there a `FacebookUserService.fetchSocialPermissions` method?	0.0
+If we are just storing these in CS is there any reason to use `vobject` and `vdatastore`? Why not just use `ndb.Model`?	0.0
+If you are just returning the class name I don't think it is necessary to implement this method.	0.0
+Why not just make this is a JsonProperty if that is what we are storing? Also are we using this for anything or storing it "just to have"?	0.0
+why the key change?	0.0
+what's the `/` for in this string?  It's not a typo?	0.0
+So we have 3 different apis we have to use to interact with Infogroup? Ugh.	0.0
+Sometimes you have to be extra sure	0.0
+I don't think we need this, do we?	-1.0
+Normally no but this Url Spider is doing batching like the Listing Spiders so we needed to include it here as well.	0.0
+Ah okay, I wasn't sure if this was because of the batching or just an accident. Sounds good!	1.0
+You mean `Unescapable, assuming due to '\' in review.` right?	0.0
+why caplocks in the middle?	0.0
+Should this go with the global_sources_dict spreadsheet?	0.0
+Why are we filtering listings that belong to the account_group and to the partner? Shouldn't the account_group_id be sufficient?	0.0
+why are we shortening the import? Makes it more confusing in code later.	-1.0
+Do we want to protect from a large number of input docs? I can't remember the max number of entities that can be in a put_multi, but 1-1 with the input doc list could cause errors if a crazy amount of docs are pushed in.	0.0
+Where does this value of 290 come from? Some explanation should be here in the code.	0.0
+The origin of it is some formula like: Phone number = 50 marks Company Name = 50 marks address = 30 city = 10 state = 10 ...  Or something like that.	0.0
+I think you're going to need these scores to factor HyperLocalListings into the equation	0.0
+Sooooo nitpicky: can you pluralize "account group" in the docstring?	-1.0
+I'm pretty sure it enforces some magic (or at least it used to) while converting to and from "domain objects" (ie `Listing` vs `ListingModel`).	1.0
+What's this for?	0.0
+probably want to unit test these cases with entities where `socialPost.isError` is a factor	0.0
+Should we also be supporting `YAY`? ![yay](	0.0
+Nevermind	1.0
+regarding the above comment: these definitely originated from the Urbanspoon migration	0.0
+Why is `data.get('country')` passed in twice?	0.0
+kind of boggles my mind that this test class is a child of `GaeTestCase`. I understand the word `integration` is in the class name, and if this is testing anything valuable and appengine related, maybe we keep a few, but all the cases in this class seem like perfect candidates for pure unit testing?	0.0
+O_o they give us back underscores in one of the messages? seems like something they'll fix and we'll still be erroneously checking for in a month	-1.0
+i find it a little weird that deleting a review doesn't take care of deleting its child entities (comments) in a model hook.	-1.0
+?  needing this decorator at all seems smelly	-1.0
+The explanation here and whats in the query are a bit confusing -- we had Google+(10010) listings copied over to Google Maps(12120), and we don't want legacy ids on the Google Maps one? Shouldn't it be `src=12120` in the query?	0.0
+Did you want this to be the sandbox id or the prod id? Sandbox is 911, PROD is 915.	0.0
+Nvm. Just had to scroll down.	0.0
+Just a question: where do these magic numbers come from? And why UBERALL_PLAN_ID_AU1 is different from the one in settings.py:	0.0
+They are provided by uberall over their api.	0.0
+Can't trust anything...	-1.0
+Could/should we possibly do some cleanup here to prevent us from calling them again with this location id?	0.0
+Just curious about why one imports in a method like this.	0.0
+It may be a good idea to set up _retryCount	1.0
+I love this pattern so much more, good call!	1.0
+if you are using logging.exception, you don't need `exc_info=True`	0.0
+Minor, but I would move `published_time = None` to just before this `if` so it is more explicit what it will default to if an exception occurs.	0.0
+does the publish date always have `:` now?	0.0
+I you don't provide a default value to `getattr` I'm pretty sure it will throw an exception if the property does not exist. I believe this would cause this to retry indefinitely, no?	-1.0
+This is fine but you can also do: ```python potentiallyMissingInfoKey = getattr(listing, 'potentiallyMissingInfoKey', None) ``` If you don't specify default arg (`None` in this case) it will raise an exception if the property is not found.	-1.0
+This could probably have a `verbose_name` to clarify its purpose.	0.0
+This one in particular is likely to make our app be in a very bad state. Currently looks like we fail 31% of the gets on postId due to application limit being reached... So we might need to find a way to cleanup / optimize some calls.	-1.0
+I was more thinking of just adding a `logging.debug("Formatting location data for account group...")` to the top of this method so that it would be obvious which account group any subsequent log messages are related to. I'm just concerned that in the error reporting we might see errors and not know which account group they belong to however I expect that would probably be present in the url/args.	0.0
+typo in `ignore`	0.0
+It's probably not necessary to make an entire account group for this test, I'd rather see data passed directly to `__format_hours`. You could probably make a new test class.	-1.0
+Probably not a value error here as that will just trigger another retry. I'm thinking for any non 200 we want to raise a PermanentTaskFailure with as much info as possible about the response (ie code and content)	-1.0
+you could write these tests with VTestCase	0.0
+I'm also fairly sure you can't defer an instance method, so when you do defer a task it's going to need to be on a `classmethod` and you may need to pass the review comment along too (or maybe just the key so you can get the comment again, on the off chance that it somehow changed)	0.0
+The code below is already calling some kind of `update_review` method in the domain which might be a good place for that	1.0
+We should put some more details into this tag... specifically I'm thinking the spid and the review urlsafe key, like `review_to_google_my_business_review//`. The tag is appended on to the URL for the deferred task which can help greatly with debugging if something is breaking.	0.0
+This will break on non ascii characters.. ```python hashlib.md5('{}'.format(u"åß?")).hexdigest() UnicodeEncodeError: 'ascii' codec can't encode characters in position 0-2: ordinal not in range(128) ```	0.0
+Stackdriver might be a good idea.  Personally I've given up on using the cloud console's log viewer in CS long ago. Just wait 15 minutes and search BigQuery. :)	1.0
+``` avoid circular : ( ``` ?  pretty sure if you import something inline, its obvious what you're trying to avoid, even if your comment is garbled	1.0
+I still don't like setting the default in the function header to anything other than `True`/`False`, or `None`	-1.0
+there is an alternative... `page_size=None` in the signature, `page_size = page_size or cls.MAX_LOCATION_PAGE_SIZE` in the body	0.0
+Looks like the `ListingSearchCommand` superclass already raises `NotImplementedError`, too.	0.0
+Why `getattr(matchDetail, 'company')` here instead of just matchDetail.company? When you don't provide a third arg as the default value, this function will raise an error if the attr doesn't exist on the object and the same is true if you just reference the field directly like I am suggesting.	-1.0
+Same thing here; I don't think there is any need for using `getattr` here either.	-1.0
+I don't like these new tests. Instead of ensuring that the correct elasticsearch search was constructed, they assert that the correct query JSON is build by the elastic lib, which is knowledge CS shouldn't need to know. It should just assume that if you build a correct `Search` object, the elastic lib will get the right data from the ES API.  I don't like the old tests' implementation either (using actual requests/responses) but I think the old test cases (based on their names) are valid. For instance: - `test_sourceTakesOneInput` - `test_includePoorListingsFlagHasResults` - `test_noLimitOnASourceSpecificQuery` - `test_resultsAreSortedByScore`  All of those names sound like meaningful test cases but now they are all deleted so it is hard for us to know if we regressed on existing behaviour with these changes or even in the future.  I would suggest modifying these tests to not run `get_query()` and do the assertions on the Search object. And I would also move them to a `LookupListingsGetListingsSearchTests` class which can be a pure unittest. Then, you could keep some (not all) of the old tests, still using GAE and requests/responses but just mock out the call to `get_listings_search` or even `get_query`; if this GAE test doesn't use datastore stub, it will still be pretty fast. This approach gives you coverage to know your ES query is constructed properly but also that your API endpoint is operating as expected.	-1.0
+@achuo-va Just looking into a BlackOps issue that we've traced back to these changes. We're seeing a bunch of "transaction too big" errors when this code runs for listings with quite a few reviews (100ish or more). The reason is that this `lookupByReviewQuery` is happening inside of a loop over all of the reviews, meaning that we're doing potentially hundreds of synchronous queries here. Only posting this comment as an FYI - you basically never want to do synchronous RPCs inside of a loop.  Additionally, there's no reason to call delete_async() on all of the keys and then resolve the futures at the end - ndb gives us a `delete_multi` method that we can just pass a list of keys to and delete them all in a single call.	0.0
+According to @ckurz-va, this function should be as loose as possible with it's interpretation of whether the content MIGHT be a listing or not, so that the scraper will try on anything that might be a listing or might not be. That's why the sentence previously read "easily identifiable as a non-listing page" instead of saying "this is a listing page". It was a subtle hint... maybe the docstring should be more explicit about that... although that does seem like a lot of documentation duplication everywhere that we implement isListingPage.	0.0
+probably shouldn't be mixing strings and unicode strings here too. It is a url so it shouldn't be a problem, but it's still best to just use unicode in this situation. I would also take it a step further and make the line look like this ```python url = u'{}/info'.format(url.rstrip(u'/')) ``` or  ```python url = u'{}{}/info'.format(match.group(1), match.group(2).rstrip(u'/')) ```	0.0
+I feel like some of these shouldn't be removed. Specifically `test_tweetLongerThan140CharactersIsRejected` and `test_tweetOfExactly140CharactersIsAccepted`	0.0
+this should probably a raw unicode string ```ur', ({}|{})(,|$| )'.``` and above too	0.0
+I don't know if totally necessary but you could have a `_should_ignore_error` method that returns True/False if we want to ignore the error or not. Could potentially pass the error messages  you want ignored too or just have the method handle that.  If that method handled the tick and logging too it would make this code a bit cleaner.	0.0
+`account.account_group.account_group_id` is one of the best bits of code arround.	1.0
+haha is there no helper property on ``` account ``` ? this still makes me laugh though so w/e	1.0
+Why get the account_group_id off the request when it's a parameter?	0.0
+not sure how I feel about removing "ajax" from all these routes, I kind of liked that they were easy to identify	-1.0
+Everything will be ajax one day	1.0
+looks good	0.0
+@utandukar-va do you know if its possible to do this direct to github so we wouldn't have to care about caching? 0_0 or maybe we can fix this in a better way	0.0
+what does * html do	-1.0
+im stupid this is the generated file	0.0
+We should maybe have a more descriptive name for this... `is_recent_within_one_day` I guess it doesn't really matter since we only use it once and all the information is there but I don't feel like deleting everything I typed. ?	0.0
+Is using `all` overkill? I'm just wondering.	-1.0
+I'd rather keep the name `is_recent`.  The within one day should be obviously from the code.  Also if we change what recent is (eg. a twitter lead is recent if it's within 3 days) then we don't need to worry about changing the variable name.	0.0
+I like the idea we had with location page review and comments where we made a send method on the class and then let that do the validation.  I think this change can go up without it but I think at some point we should figure out how we want to structure these activities and do the same thing for each.	1.0
+The issue is that it was calculating 25MB wrong, correct? I don't think this comment quite gets that across. This is a minor change though so not a big deal.	0.0
+There's a way to call uri_for and specify scheme and netloc `uri_for('page-name', post_id=post_id, _netloc=hostname, _scheme=' That said, I can't remember the last time I've seen us change a URL such that having the named references is really any benefit. It's kinda nice regardless.	1.0
+Oh yeah, we aren't within webapp2 (this is running within a task), so I guess we cant (or atleast I'm not sure how we could)	-1.0
+0_0 Maybe add a comment? Or make a SuperAdminHandler with the explanation? This is kinda like a lie/super scary	-1.0
+What does `query_deleted` mean? why would we ever use phone if its stale data?	0.0
+There's no state to this object (yet?), so I think this could be a bit nicer to read and to use (since you currently need to `new` this object to use it) by using something like the revealing module pattern. This guy makes the case for it pretty well using an angular service as an example:   ``` // Module interface return {   showLeadsBadge: showLeadsBadge,   ... }  // Module implementation function showLeadsBadge() {   ... } ``` You can flip the two sections if you can't use function declarations for some reason	1.0
+Is using an animation vs transition easier since we don't need a base class to transition from?	0.0
+This is on every page handler now? Is it pretty expensive? It'd be nice to make the compose modal as lazy loading as possible	0.0
+should this thing really be a nav ko component?	0.0
+change the name of this js model/var from DashboardViewModel to AnalyticsViewModel or something like that	0.0
+about the feature flipper... is it still needed if you are keeping the analytics page? whats the plan for it getting turned on for everyone?	0.0
+could be put into the initialization of vcompose maybe? like this only happens when you click compose post, and vcompose doesnt try to render (loading spinner thingy) until we figure out this parameter for it	0.0
+Interesting number	1.0
+typo: accoutns	0.0
+Any benefit to this being in a template? doesnt seem like it	-1.0
+Whats this for?	0.0
+Does this _really_ need to be an exception? We've been talking about that at Monitoring COP lately. What's the actionable from this log item? If nothing, make this a warning or something imo.	0.0
+Was this not being used by anything?	0.0
+What's going on here? This is coming from core's API, we should be able to parse it using the regular strptime where we pass it the format. At the very least I would say that IF for some reason we need to use datetime_parser, that you should just be able to set the posted date to the result of it without recreating it...	0.0
+Fair enough.  We could probably update the core API (juuuust added) to return a better formatted datetime.	1.0
+move this down	0.0
+are there 2 versions of mock in SM still?	0.0
+Ya removing it's fine.	1.0
+wait, vtest no longer contains mock, but instead has it as a dependency?	0.0
+Are we still `POST`ing something with this handler?  I thought all the Postman tests for this were `GET`s.	0.0
+In retrospect we could have left the old `` tags in the page and removed this padding to get the look we wanted.  I don't feel strongly about changing it though.	-1.0
+I thought SM was converted to a unified colour pallet, and that these were supposed to be variables.  I'm surprised to see even hex values here.	-1.0
+Why are you getting only one page at a time and looping in js to get all the pages?	-1.0
+dunno if this needs to be an object really... could just be module functions/constants?	0.0
+doesnt look like this is used?	-1.0
+cool	1.0
+can this go on just the logout route? not sure if we want to kill the cache for all landing pages all the time	0.0
+would rather us not worry about the issue for now. i think we want vauth middleware to set these header policies on authed routes all the time if we truly care	0.0
+Where was this being called from?	0.0
+Disregard my previous comment about the token Map Reduce, might want to think about deleting the unique value here as well.	0.0
+keep reading this as ```global-warming```	0.0
+Not hotjar but may be GA.	0.0
+I think these are good, then they can show up in ga stats	1.0
+I like the error pages being seperate	1.0
+Our sdk generation keeps flipping this back and forth :person_frowning:	0.0
+is there a variable with a better name for this? assigning $WHITE_FONT_COLOR to styling on a td border is pretty weird. There is $WHITE_BACKGROUND_COLOR... Is there a WHITE_BORDER_COLOR or something like that which can be used?	0.0
+same kinda comment as I had about border color, assigning $SECONDARY_FONT_COLOR to a box shadow variable is odd. Is there an equivalent variable with a better suited name already, or what do you think would be more appropriate?	0.0
+You'll have to update the vcompose library to change these as the next time we bring the updated library into SM it will over write them	0.0
+@jrolheiser-va repo for vcompose located here:	0.0
+included jquery but aren't using it?	0.0
+typo ``` self. notificationBannerCookie ```	0.0
+o_O @ github's formatting here	0.0
+this also applies to phones?	0.0
+I think we should change it to use vapi AjaxHandler	0.0
+indent	0.0
+Only check postable services?	0.0
+what are your thoughts on putting this in FEC? I like the idea of hide, pull-left, pull-right utility classes	1.0
+I like the idea that it's in it's own row.  It separates that from the actual template better	1.0
+hehehe	1.0
+I think that was probably me :)	1.0
+woo, love that markup	1.0
+I don't think we need versioned routes for UI. Can we just have `/public/post/details/...`	-1.0
+@bbassingthwaite-va, what is this? And what happens if it's not here? Because I never wrote this before for the pipelines I made but I was able to find pipelines in the datastore.	0.0
+@bbassingthwaite-va so this method operates on two different entity groups. One is with the legacy with the parent key and the other is the migrated leads model, right?	0.0
+@bbassingthwaite-va what's the message for?	0.0
+When can this happen?	0.0
+Have `UpdateAccountGroupHandler` already been removed?	0.0
+Not a fan of this put directly in the process function (which is the view), isn't there a transactional (or in this case a function that would join the transaction) update sm account function?	0.0
+return: geopoint created from the lat/long of the account group would be more appropriate as this doesn't actually augment the account group	0.0
+hm can we use any of the various service category-ish things from the account group instead?	0.0
+where is this used? are you guys writing a mapreduce or can you explain the migration scheme?	0.0
+``` self.postType == 'post' && self.isScheduled() ``` if that's your thing	0.0
+The alternative to `post`, `mention` (or maybe it's `lead`), only applies to Twitter	0.0
+Nice! I think we could go further with this file as it's kind of confused now. Maybe not this branch but soon. In SM.js we're still: 1. Setting ajaxSettings traditional to true. This was designed to be done  globally, but now that we're using requirejs we still have to note SM.js as a dependancy anywhere where we actually need this 2. Setup the SlidingListViewModel which is only used in the settings section and could probably go there or into a separate file 3. Setup some string constants which are either no longer used or used once in the settings section	1.0
+Should these be using `uri_for` too?	0.0
+Can you put this into a BaseVFilter handler and inherit from that.  I think this is the 3rd set of this code	0.0
+It is bit confusing, here `self` means the republishing item.	-1.0
+I think this should be in `componet/coupons.html` so that all the html required for the components are in a single file.	0.0
+I thought this should be `postedDateTime` as `postCreatedDateTime` is the one that is recorded at core side.	0.0
+I think the behaviour of `AbstractTwitter`'s comment dict isn't being tested anymore since removing this, maybe just a new test case under `AbstractTwitter`?	0.0
+For Facebook and Google+ we get different `commentText` and `commenterName` key with the same name and only for Twitter we are getting it with `postText` and `username`. I changed this in the reply to mention branch as we are going to use v2 endpoint to reply to Facebook, Twitter, Google+ social post and social mention there.	0.0
+Seems like this should be `toBe(true)`. This would pass for `self.cta.isLoading([1])`? Would still work for the code I suppose but just seems unnecessarily broad.	-1.0
+Fair, if we start using `1` as our truth value we wont need to change anything :+1:	1.0
+Comment should point out that we are using `data_points` instead of `end_date`	0.0
+Is XRegExp something that could be useful to other products too? If yes its better to add it to VFF.	0.0
+In SpecRunner its still using 1.11.0	0.0
+I'm not sure this should be exporting vFilter, because then it hides access to the other globals such as vForm, doesn't it?	-1.0
+Why can't you just set `category = feed.taxonomy_id`? You are just setting `category` again after that if statement (unless I'm missing something).	-1.0
+Never ever `put` in a view. This needs to go in a domain method.	-1.0
+Why do you need to call `captalize`? My question is where `category` is used that it needs to be capitalized?	0.0
+cases like: - set values of the model and check if isValid will return what is expected - check if the correct path is being called when adding rss - adding another rss while addingRssFeed is still true and check if it really ignores the call - check for reset function - intentionally returning 400 to the ajax call and check the result  future cases could be: - editing an rss - deleting an rss	0.0
+Should this be getting account if either `account_id` or `customer_identifier` provided? It says `get_account_from_args` but gets account using `account_id` only.	0.0
+I agree that it is only used by the update endpoint, however - This could be enough reason for us to create a mixin specifically for the update endpoint (thoughts on this?) - Since this is doing only validation it should probably start with ```validate_arg_``` which is being used by vApi for initial validation before calling the ```pre_process_hook```	1.0
+Is this a valid string format? I haven't seen it before with just `{}`.	0.0
+I'm a bit confused, what is this url going to look like? Isn't `back_to_page` one of `AccountKeys`?	0.0
+Is it possible for `unique` to be in transaction so that when create fails it is not created?	0.0
+I didn't realize there was so much logic for setting `unique`. Now I also think this probably is a solution for that.	0.0
+Should this be `{0}/{1}/{2}`?	0.0
+`None`?	0.0
+Where does this `reduce` method come from? How come `acc` is an array here but below `sum` is an integer?	0.0
+Will the 'socialPostId' suffer the same rounding errors due to the js Number class?	0.0
+Personally I find this sort of structure a little confusing, is it `not (values and required_fields)` or `(not values) and required_fields`?  I'm sure it works properly, but maybe include the parens for clarity?	0.0
+  Interesting, the `and` will get calculated first which isn't how I thought worked. Whoops.	1.0
+Could maybe change this to  ``` self.showField = self.status in FIELDS_STATUSES_TO_SHOW ``` for brevity's sake	0.0
+Yeah, I guess `in` doesn't work like that. I'm cool with your alternative.	1.0
+this is significantly easier to read ?	0.0
+Does it need a type or popularity?	0.0
+So "technically" the `microsite` is not guaranteed to be present (hence the `hasattr` check at the top of the method) however it looks like the only handler that uses this handler (besides `AuthenticatedEditSiteView` which requires msid) is `GetOneMonthlyBillingReportForPartner` so you are pretty safe.  Having said that you might just want to add a `if not microsite: return False` at the beginning of this method...maybe?	0.0
+This is super minor but I would replace `market_id` here with `getattr(self.microsite, 'market_id', None)` and remove that stuff at the top of the method since we only need it here and, depending on the config, the code might not even get here.	0.0
+Why did we add width here?	0.0
+and here?	0.0
+we don't have to check for empty string either?	0.0
+Could move this logic to a function and add some jasmine tests perhaps.	0.0
+If it's in sass that's the case, but inline styles trump everything that isn't marked with ```!important```	0.0
+Lol man it sucks doing this in knockout.	1.0
+Is this getting formatted correctly? There is a jinja filter for display our datetime objects in a human readable format.	0.0
+Instead of this I think you should be using a filter:   Also if you do it the way you've shown above you should be using a constant to make sure we have consistent date(time) formatting.	0.0
+whoa, that's a mouthful	-1.0
+Of course you'd say that lol	1.0
+Not really important, but should we pare this down to just `[GET]`?	0.0
+Is it ever possible to get a failure?	0.0
+LSP should probably be title cased since it's a name	0.0
+May want to check if this account group was found for the account group id before `user_interested_in_listing_sync_pro` and if it doesn't you could probably return `{ 'success': False }`	0.0
+I think that should be the responsibility of the API endpoint in salestool.  Let's keep this AJAX endpoint lightweight.	0.0
+Just a reminder we have to setup the pubsub topics on MS/ST for each environment when they are deployed.	0.0
+In the future I would just return the `sales_person_details` dict from this method and then if the view (or whoever wants to make use of this method) chooses to serialize it to json they can do that on their own. As it is right now if, for example, they wanted to add an extra key/value they would have to deserialize, add key/value, and then serialize it again which is obviously not ideal.	0.0
+Only problem is this code will fail on the next line because `partner_id` and `market_id` don't exist for `None` object in which case we should probably return a 404 or something.  I don't think it's a big deal though because it's just an internal ajax endpoint that will still fail if the `account_group` doesn't exist anyway (in which case how are they even hitting this endpoint?).	0.0
+Given that it's an internal ajax endpoint if something goes wrong it'll just raise an exception which I think is probably okay unless we find a specific error scenario we want to handle.	0.0
+I don't think we should block this from getting merged but we should update ST (if it hasn't been done already) to support `MS`. Otherwise this is going to get super difficult to maintain because in ST it looks like `VBC` is hitting their api.	0.0
+In the future JS should be written with methods/variable using `camelCase` instead of `snake_case`.	0.0
+Lol empowertising.	1.0
+Won't this mean MS won't be updated but the change will remain on AA so the two will be out of sync?	0.0
+Where/how is this set?	0.0
+I assume you'll change this `45` to something real in PRD-73?	0.0
+Will it always be 45 on prod? I know Pirates are adding Canada sometime this sprint, which will have a different number of sources, so we can calculate the total when we do that.  Edit: Brad is right, PRD-73 looks like the story for that.	0.0
+Definitely should not be a constant (i.e. 45) we can just pull from the list of directories we have. Can address in PRD-73.	0.0
+The number of directories can and will change without our involvement so it needs to be dynamic.	0.0
+I can't really tell, but you might benefit from caching the result of `get_social_sync_profiles` I think it's used multiple times within this class. I can't really tell from the PR if it would be used more than once during a single instance of the class though.	0.0
+You're re-using the `message` variable here.  Maybe rename it to avoid confusion.	0.0
+I generally recommend opening a separate, direct-to-master, pull request for upgrading libraries.   This helps avoid conflicts with other people who want to upgrade the library to a still-newer version. It would also make **this** PR a lot easier to navigate.	0.0
+Is there not an 'ms' API user for Sales Tool? Probably shouldn't be pretending to be another project here.	0.0
+`dealing with triggering hotness when user shows interest`  Sounds like friday night.	1.0
+Minor, but I think this would be a bit more readable if you grabbed the account group off the sales person first.  Part of this is just preferred style but something like: ```python account_group = sales_person.get(self.microsite.agid) sales_person_details = {     'salesPerson': '',     'agid': self.microsite.agid } if account_group:     sales_person_details.update({         'salesPerson': account_group['firstName'],         'email': account_group['email']         # etc.     }) return json.dumps(sales_person_details) ```	0.0
+I agree, but using Brent's [Pretty Pull Requests]( extension you can collapse files/directories you don't want to look at which makes it more bearable.	0.0
+Some unnecessary indenting going on here.	-1.0
+Minor but in JS we should be using `camelCase`. It looks like you are for `salesPerson` and some of the other fields so please keep that going.	0.0
+Is it possible for the account group to be missing any of these? Maybe using get would be better incase a key is missing.	0.0
+Ok, just as long as they keys do get passed back from the api call.	0.0
+Would look a bit better if this validation can be moved to the beginning of the function.	0.0
+what does this do?	0.0
+thanks	1.0
+These sidebar redirect handlers are the same in rm, sm and ms, or at least should be the same. If you need to make a change here you should also make that change in the other products	0.0
+this is the `vauth` lib fyi	0.0
+it still works without "www" right?	0.0
+So this function will only affect old_mappings that have no redirects? Is that on purpose?	0.0
+Should this be refactored to use our new update method? It looks like add_hostslug_msid_mapping and remove_msid_for_hostname together kind of work like our new update method.	0.0
+so these other pages are still in use?	0.0
+~~can you do this with ``` ReviewDocument.get_reviews ```?~~ nevermind, you can't	0.0
+you probably want to test that the query you build in this method is scoped to the specified agid and filters out unpublished reviews	0.0
+Right. ``` scaled_stars ``` is the source-agnostic property and is normalized from 0 to 1000. You'd have to translate back to 1-5 once you got a number back though.	0.0
+could you break out the logic here into separate functions ```python if service_type == CS_KEY.FS_VENU:     context = self._setup_foursuqare_context(context) elif service_type == CS_KEY.FB_PAGE:     context = self._setup_facebook_context(context) ```	0.0
+As pointed out by Shawn, it could be better to use gritter instead of console log	0.0
+I might be too picky here, but ++index is usually used only when necessary. Use index++ if it does the same thing	0.0
+No need to bind the $data in the click function. use bind only when you need to pass extra params except the current $data. By default, there will be two params passed to the function, the 1st one is the $data and the 2nd one is the event details.	0.0
+A loop here?	0.0
+Instead of spreading out a bunch of logic to stop gmb stuff when it's disabled, can you pass this into the context and just hide it from the UI?  That's generally the route we go when we put stuff behind a feature flipper.  It's a lot easer to remove later as you aren't changing any of the underlying logic	0.0
+I don't think the account will ever have a location cursor, as that doesn't show up until our first call to get the locations	0.0
+the account won't have locations to start with anymore as that work would now have to be done in the JS	0.0
+We don't want to leave console.log's in the JS as they won't be helpful to anyone (the end user won't be able to see it). We can use a $.gritter call here which will tell the user that something went wrong	0.0
+All of the operations in this function deal with the account that is passed in.  Instead of passing the account in to this function, the click event should be handled by the account model.  The only thing that this function can do is set the other accounts to being not selected.  If you select one account then select the next one, we can leave the previous one as selected so it stays open.	0.0
+this doesn't need to be defined if there's nothing in the function	0.0
+We generally want to avoid using id's in styles as much as possible as it's hard to overwrite them.  This isn't worth changing, but just for future reference if you want to style something the default should be using a class	0.0
+Ah, I thought there was collapsing	0.0
+it'd be nice to indicate that somehow, I'm not really sure the best way though	1.0
+None of these kwargs are optional.  If you make them args instead of kwargs then you don't need the check/raise ValueError stuff.	0.0
+As this is now in the GoogleMyBusinessSync class it can probably be named something like `getConnectedLocation` as the GMB is already implied	0.0
+if you make this `self.request.get` instead of `params.get` then you can set self.request as a dictionary in the tests and it's a lot easier to test	0.0
+Not sure how everyone feels about a super get, but maybe this check could be added to BaseReviewWidgetHandler instead of doing it in each.	0.0
+To make GitHub shut up: ![image](	-1.0
+It is often a bad idea to do unicode conversions with accounting for encoding errors. You can either: * `except ValueError` * pass kwarg `errors=ignore` or `errors=replace` to work around errors	-1.0
+Isn't `_public` an oxy-moron in the Python world? :stuck_out_tongue:	-1.0
+we can't use ``` operation.db.put() ``` here?	0.0
+whats with ``` ua_mobile_profile == PR_MOBILE_IOS and source_id == GOOGLE_MAPS_SOURCE_ID ``` ? We don't want to link to gmaps if they are on mobile?	0.0
+Did you guys miss the comment right above? [MS-2252]( has the details on this, but to sum up, the second clause on the `if` can be removed completely if we have a working links to Google Maps reviews to share the review. (ie. just `if source_listing:`)	0.0
+this should be an ``` a ``` tag now	0.0
+Ah ok `COMPLETE-OK`	1.0
+Does this bug also affect these FAVICONs being served below? If not, why not? They are using ` exclusively.  `return ' + self.request.host + mapping.get_url()`	0.0
+you could also do this by saying  ``` return set_review_shared(self.agid, self.rid) or self.abort(400) ``` although i find that kinda weird. if you want to return a 400 if something goes wrong in core, it's clearer to catch the exception here and abort in the exception handler rather than catch it in the underlying layer, return None, and then have a special meaning for a None value in this layer	0.0
+ya what im suggesting is  ``` try:   return set_review_shared(self.agid, self.rid) except CoreApiException as e:   logging.warning(e)   return self.abort(400) ```  and then the core api wrapper method going back to being 2 lines	0.0
+I was just looking through the `msid_selector` code (which handles `redirect_hostslug`) and, yes, I think you are correct, this should be fine. Especially if you grabbed it from the code that generates the "View Location Page" link.	1.0
+@sgryschuk-va @tbathgate-va @bjohnson-va  so... sendwithus completely obscures what the links actually are (thye get turned into giant unreadable things). as long as the user doesn't see a microsite load up on microsite-prod.appspot.com (ie non whitelabelled domain) then from their perspective theres no difference between the WL domain and our domain unless they are exceptionally tech savvy for a random spam victim.  I think we could just give them a vanilla url that does the same thing and cut out all of this communication between CS and MS when CS goes to send the email.  ``` _get_review_deep_link ``` could just as easily exist on the vobject	0.0
+generally our urls should be lowercase with dashes between words like microsite/send-request-share-review-email  if you found 'MicroSite' somewhere in MS that's old school	0.0
+you can get the reviews and ``` get_enabled_listing_sources ``` asynchronously. if you havent seen  id check it out. a tasklet decorator can turn any python function into a (pseudo)asynchronous method. we can refactor it together if you want	0.0
+id look at initializing these mocks in your ``` setUp ```. If a mock is needed for every or almost every test, then might as well store it on the testCase instance in setUp. Allows you to get rid of all the nasty decorators and arguments into test functions.	0.0
+if you'd like to put this mock into the setUp, you could change this test case to inherit from VTestCase, which is a thin wrapper about unittest.TestCase with some convenient assertions and (more importantly) the easy ```mock_function_in_setup ``` call (or whatever its called now) which lets you put this on an instance attribute easily	0.0
+same comment here about patch decorators vs setUp and VTestCase	0.0
+Minor, but the page, msid, pid, etc. are already added via `MicrositeGeneralView.get` and `MicrositeView.render_response` methods.	0.0
+I don't understand what the issue is.  *Renee Elder* Product Owner *VendAsta Technologies Inc.* relder@vendasta.com| www.vendasta.com  On Tue, Nov 17, 2015 at 2:56 PM, Sunny Sharma  wrote:  > In src/templates/microsites/html/templates/ReviewDisplay.html >  > > @@ -57,12 +53,12 @@ > >                           > >                       > >                   > > -                 > > +                 > > like so > [image: baltimore_plumbers__hvac___heating___cooling_service] >  > — > Reply to this email directly or view it on GitHub > 	0.0
+That doesn't seem right.  It shouldn't put them into a place where they get "stuck".  If you want, we can do a hangout to go over how it should work.   *Renee Elder* Product Owner *VendAsta Technologies Inc.* relder@vendasta.com| www.vendasta.com  On Tue, Nov 17, 2015 at 3:41 PM, Dale Birtch  wrote:  > In src/templates/microsites/html/templates/ReviewDisplay.html >  > > @@ -57,12 +53,12 @@ > >                           > >                       > >                   > > -                 > > +                 > > The reviews behaviour is inconsistent, only clickable if an optional field > (review title) is provided. This loads the landing page in the widget space > - including redundant branding, phone button and view map (not present in > the widget when first loaded, and should be present on other spots of the > page already) further this gets the user "stuck" there is no back or > ability to return to the list of reviews that you came from. > > — > Reply to this email directly or view it on GitHub > 	-1.0
+i think ```split_names = reviewer_name.split(' ')``` has the same effect	0.0
+not huge fan of append None, you can do  ``` first_name = split_names[0].capitalize() if len(split_names) > 1:    last_initial = plit_names[1][0].capitalize() else:   last_initial = ''   ```	-1.0
+the correct way is to ```counts = defaultdict(int, {...})```	0.0
+should it be ```if num_comments > 0```	0.0
+How expensive is this vconfig lookup? Is it an NDB lookup by key? An API call? Using a memcache?  I am a little worried about adding this in the base `render_response` function because then it will be called for every single page, when we only really need it on a single page. Although, I will admit that it seems like the type of generic field we should put on every context.	0.0
+I don't think env name is enough here, since these buckets are globally unique. `batch-files-microsites-prod` maybe instead	0.0
+is the positive/negative review message normally a list in the dict returned by ``` get_review_generation_dict ``` ?	0.0
+personally i think it's weird to change the instance variable inside the test instead of using ``` % (self.pid, self.agid) ``` in string substitution just be brazen about shoving something out of the norm in there ``` % (self.pid, 'AG-FAILS') ```	-1.0
+`customer_identifier` can also be considered as non-essential as we have `pmsid` which is used as microsite's customer_identifier.	0.0
+Are there other uses for the schema types besides using the schema.org url? If not, then maybe we could construct the urls as part of the `get_schema_types_by_taxonomy_ids` call since we'll need to do it every time anyways.	0.0
+Open24 is detected by both the opens and closes being 00:00, as such this flag can be set on a day by day basis. Unless the entire week becoming open 24 hours was how the old MS HoO worked?	0.0
+`photo clicks` ? What is `yellow ad`?	0.0
+`November 2011` haha	1.0
+Here, I'm thinking what if the account group is not synced. We know pubsub could sometime get delayed and in that case we'll have bug in validation and other places of the endpoints that uses this Mixin. May be we could first get from the `AccountGroupModel` and then if not there in the datastore get it via VBC api call?	0.0
+self.validate(args) raises the ValidationError and other errors should come from ``` self.add(args_with_spid) ```, so these could be separate blocks.	0.0
+Might as well do this for `LogoutHandler`.	0.0
+I think `fn` is supposed to be equal to `org`?	0.0
+Doesn't this need to be contained within the `vcard` class to be recognized?	0.0
+Shouldn't this be `23:59:59` otherwise we'll lose 1st day of each month in the billing query	0.0
+Why do we use `qa` vs `_gaq` here? Might warrant some documentation	0.0
+_gaq is old school... ga is the new way On May 20, 2015 1:05 PM, "Jason Prokop"  wrote:  > In src/static/js/MS.AddReview.js >  > > @@ -39,5 +39,12 @@ var AddReviewViewModel = Class.extend({ > >                  $.gritter.success('Review copied to clipboard'); > >              }); > >          }; > > + > > +        self.trackShare = function(listing) { > > +            if (typeof(ga) === 'function') { > > +                ga('send', 'event', msid, 'ReviewShare', listing); > > Why do we use qa vs _gaq here? Might warrant some documentation > > — > Reply to this email directly or view it on GitHub > 	0.0
+ On May 20, 2015 1:09 PM, "Jeremy Rans"  wrote:  > _gaq is old school... ga is the new way > On May 20, 2015 1:05 PM, "Jason Prokop"  wrote: > >> In src/static/js/MS.AddReview.js >> > >> > @@ -39,5 +39,12 @@ var AddReviewViewModel = Class.extend({ >> >                  $.gritter.success('Review copied to clipboard'); >> >              }); >> >          }; >> > + >> > +        self.trackShare = function(listing) { >> > +            if (typeof(ga) === 'function') { >> > +                ga('send', 'event', msid, 'ReviewShare', listing); >> >> Why do we use qa vs _gaq here? Might warrant some documentation >> >> — >> Reply to this email directly or view it on GitHub >> > >	0.0
+@starulli-va I think so. Using analytics id from `settings.GOOGLE_ANALYTICS_TRACKING_CODE` all the analytics data will be in one analaytics id and it will be easy to find the data otherwise the data will be scattered all over the partner's google analytics id.	0.0
+If this is the only thing in the new conditional block, I'd probably throw them both into one condition: ```python if MICROSITE_KEYS.PHONE_WORK in kwargs and MICROSITE_KEYS.PHONE_CALL_TRACKING in kwargs: ```	0.0
+That being said, I don't understand why you care about the presence of ```MICROSITE_KEYS.PHONE_WORK``` at all...  Once again this method could be simplified to a single line: ```python kwargs[MICROSITE_KEYS.PHONE_CALL_TRACKING] = [phone_number_digits(v) for v in kwargs.get(MICROSITE_KEYS.PHONE_CALL_TRACKING, [])] ```	0.0
+It'll help a lot for conversions away from Jinja templating data onto the page if we keep it separate from the javascript code. This case is pretty simple and contained so it's pretty OK like this, though.	1.0
+This is good info ? , might be good for a blog post ?	1.0
+You could always just pass this in to the calls to `_fetch_histogram_stats_async`	0.0
+I am impressed this test passed before.	1.0
+when calling a function on a mock it always succeeds and returns itself. So this wouldn't have actually 'asserted' anything.	0.0
+any reason for this to not just be in global.html ?	0.0
+SM and MS have this at the bottom of all the pages, would that not work here?  <img width="987" alt="screen shot 2016-05-13 at 6 02 55 pm" src="	0.0
+This reads awkwardly. Maybe we could change the logic to   if debug_flag or is_local_or_test	-1.0
+Is there any way to use the query from `ReviewEmailEventsStatistics`, I'm not really sure	0.0
+the data for this and TopReviews are the same, is it possible to refactor this to use the same function as TopReviews. then we know for sure they will always be the exact same	0.0
+I removed `graphsInitializedWithData ` and replace it with `allDataAquired`, we'll have to watch that in the mregeds	0.0
+It's probably worth putting this explanation in the docstring	0.0
+This line made me think "there must be a better way to round a float to 1 decimal in python". But apparently there isn't ....	0.0
+We might not need this computed property cause summing up all the data seems not to make sense. BTW, I have calculate total in python domain layer.	0.0
+The same comment above.	0.0
+We might end up having an issue here. The Open Rate can be calcualted with `(sent to unique emails)/(opened by unique emails)` as the user as no way of calculating that themselves. But your PR has the total being calculated as `sent to unique emails` which would be different than the graph. And it's possible for the SMB to see the full graph and count the total themselves. I think it'd be better to sum all the data here as it'll be consistent with the graph	0.0
+does this effect other SR graphs? ~~looks like you're not using Srep.graph for the graphs here, not sure why these changes were needed~~ found the area graph	0.0
+You can probably see how inheritance would help a lot with these classes. That's what the Class.extend stuff is. inheritance.js is the lib we used for this. We're getting away from that now as ES2016 supports inheritance	0.0
+Cool, wasn't sure	1.0
+The date comes from the csv	0.0
+Not sure if we still need this import.  Probably break pylint	-1.0
+Is this Ajax handler just for getting reviews requested stats? If we want to use this ajax handler to get all email-related stats (reviews requested and open rate), I think we should format data as follows: ``` overall_stats = {             'quarterly': {‘reviews_requested’: {'intervals': [], 'labels': []},  	    		       ‘open_rate’: {'intervals': [], 'labels': []}},             'monthly': ...,             'daily': ... } ``` or ``` overall_stats = {             'quarterly': {                 'label': [],                 'interval': {                     'reviews_requested': [],                     'open_rate': []                  }             },             'monthly': ...,             'daily': ... } ```	0.0
+We'll make a note to change this	0.0
+maybe we should remove this comment now as it's out-of-date	0.0
+These functions should probably just accept an account group model. The handler already has access through `hander.account.account_group`	0.0
+Does this fix that stupid graph margin problem?	-1.0
+are these names backwards? seems to me the "internal" one should be the non-deprecated one	0.0
+wait... wait... I read that wrong...	-1.0
+why did you cut the spinner?	0.0
+Oh, I see, the data is available on page load. What's funny is that it still takes about the same amount of time for the highchart animation (locally) as the ajax call for the Total Reviews graph	0.0
+I think it's actually a combo of the time it takes to build the chart and animate it. It might always look kinda funny.	0.0
+Does this work? Shouldn't it be ```{{ super() }}```. Not saying it's wrong, but I've never seen it like this before.	0.0
+again, is there a reason to push these objects into the list rather than just construct the list the way you want it? I'm no JS pro, so maybe there is?	0.0
+That's cool. Just curious, I thought you'd have a reason.	1.0
+![image]( ;)	1.0
+inline styles?	0.0
+maybe rename `path` to `actionLink`	0.0
+Since vForm inherits vApi, have you tried using `validate_arg_message` instead of `pre_process_hook` for validation?	0.0
+This is fine with me too.	1.0
+that is my goal in life	1.0
+I guess you didn't make this change ... but isn't the pythonically prefered way to cast it as str?	0.0
+pretty slick	1.0
+loooove these naming conventions /sarcasm	1.0
+Seems that these things are unnecessary or could use the config values from above?	0.0
+:no_good:	-1.0
+Nice.	1.0
+Does `visible: !postedByOwner` mean they can't delete their own comments? Don't we want to allow that?	0.0
+It adds a lot of complexity with regards to the responded by owner stuff.  We aren't supporting it right now, I'm sure if people ask for it, that could be changed in the future.	-1.0
+Also we decided that, unless they really fuck up, they can just edit their comment. Seems like that would be the better solution anyway.	-1.0
+Out of curiosity what makes it more complicated? Is it concierge? Just wondering because it may not happen much, but I had one issue on black ops to delete a comment because the owner posted "I'm so sorry for your bad experience" on the wrong review, which was a 5 star good review haha	-1.0
+you're required review here, but I don't think it's ever used	-1.0
+nm, I found it	0.0
+this technically works cause it will kill the tests if there's an exception, but could you change it to be an assert ``` try     send_activity({}) except Exception:     self.fail() ``` just so it's written more like a test	0.0
+and can you change it to 4xx err instead of 400, because technically this was 404	0.0
+This should probably be done in app/domain/repcore/sources.py in `get_all_sources_as_dict` I believe you can strip it out in that function just like it strips out the listing distribution sources	0.0
+Please don't blindly make that change. That function is used to do stuff with reviews. And we still want Location Page Reviews.	-1.0
+ok, sounds good to me	1.0
+That's pretty slick.	1.0
+Why is all of this in the PR? Was this intentional?	0.0
+I thought this was being used, that's why I left it	0.0
+this is a weird change, what happened here?	-1.0
+NM figured it out	0.0
+Any reason why you're popping all over the place?	-1.0
+It might be nice to link to the source here: `{source_name}` Here and above for the "Accurate listing" message too. I assume you have access to that information in the API call to repcore.	0.0
+Nice refactors!	1.0
+It seems a little odd to use the `handle-pubsub` queue here considering this is coming from a  direct API call, not pubsub. But I also understand why you did it this way; the other notification activity probably already use this queue. :disappointed:	-1.0
+:thumbsup: Glad we'll have more consistency between the different activities.	1.0
+Since we can already click on the icon and we have a 'view' link that the user can click I'm not sure if we'd want a third spot for them to click.  I wonder if having three places to click or taking away one of the other places would be better UX.	0.0
+Good points. We can think about this for a future iteration.	1.0
+why is {'None': True} necessary? Seems a bit odd to me.	-1.0
+Fair enough	1.0
+dang, I thought this was fartbasic.css	0.0
+just curious, is there a reason not to use `if include_only_sources and source_id not in include_only_sources`	0.0
+Not sure I follow... `[]` would also be falsy.	0.0
+Aw man, I remember when I wrote the code this way, originally.  Good times.	1.0
+If I'm not mistaken, this is for the write a review which will still be displayed in an iframe.	0.0
+`text/javascript` is deprecated. You should use `application/javascript` for jsonp and `application/json` for normal JSON requests.	0.0
+Should try to get in the habit of ordering/grouping your imports according to our "standard"... it goes like this: python imports appengine imports library imports app imports  And then ordered alphabetically within each group (less important). So in this case, it should be: ``` from google.appengine.ext.deferred import deferred  from vpubsub import VMessageHandler, ReviewMessage  from app.domain.dev_central import send_activity from app.models.partner import PartnerModel import settings ```	0.0
+This should get reset if ``` submitListing() ``` fails.	0.0
+I've been thinking about this for a little while. I think it's probably possible to write a regex string that allows you to use re.sub to strip out `.` characters when they're not surrounded by numbers.  I think something like this would work: `re.sub(r'([^0-9])\.([^0-9])', r'\1\2')`  This basically reads 'any non	0.0
+If this change merges to prod, are there any cases where the old `getCanonical` method is still used? If there aren't, I think it makes more sense to simply put your changes in the existing method.	0.0
+might want a case for ``` sent === open ```	0.0
+in case you guys didn't know ``` results.aggregations.range('created').buckets[0].doc_count ``` or  ``` results.aggregations.range(ReviewDocument.created).buckets[0].doc_count ```	0.0
+I agree. Clearly this should be written as: ``` CS_VIS_SOURCE.GOOGLE_PLUS:     tuple(None for _ in xrange(4)) ```	0.0
+Clearly this is better: ``` tuple([None]*4) ```	1.0
+``` tuple(map(lambda x: None, [None for _ in xrange(4)])) ```	0.0
+Is it possible to build one massive query that ElasticSearch can parallelize as much as possible on it's end?	0.0
+would prefer you unpack the tuple properly instead of indexing into it, helps readability ``` total_sent, recent_sent = self._get_email_events('sent') email_stats['sent'] = {'all_time': total_sent, 'recent': recent_sent} ```	0.0
+name this better or make ``` get_stats ``` accept account group id and make it a module level function in its own module. this isn't a good use of a class imo	-1.0
+There's a `updateUnique` on the Account model that would probably do this for you.  Not 100% sure that it works correctly though	0.0
+I don't think this is necessary, isn't this method only called by the above `update` method which is already doing this check?	0.0
+I would prefer this file to be called `__init__test.py` just so that the file name matches where the prod code lives. Otherwise someone looking for the tests may not find these.	0.0
+Is that `24px` = `$MEDIUM_FONT_SIZE/2` or something? Might help to be a bit more self-documenting if it is That would be one pro of centering this icon and overlaying the text absolutely -- more agnostic to the dimensions of the container and components	0.0
+It might be better to make a  `get_follow_up_swu_email_data` and `get_request_review_swu` email data that take their specific params then both call `get_common_swu_email_data` and return the common stuff with their custom stuff appended.  It think having those three functions would be beneficial even if the `get_request_review_swu` function just calls `get_common_swu_email_data` and returns it's result as that leaves the pattern intact for the next people to add a new email type	0.0
+good catch here, we shouldn't have called it `requestReviewSubject`	1.0
+I would suggest the better way to do this would be to add the option to the `FileField` in `vForm` of `file_can_be_deleted` that defaults to `True` and then update the `forms.js` to not show the delete icon if that's false, then set it in the form handler for this form to `False`.  I think that's the better approach, but it's not a trivial amount of work so it's up to you if you think it fits within this story	0.0
+I think this transaction should have gone into the model ```python @classmethod @ndb.transactional def remove_logo_image(cls, account_group_id, template_type):     """     Does not actually delete the file from cloud storage, only removes the reference to it     """     email_template = EmailTemplateSettings.get_or_create(account_group_id, template_type)     email_template.logo_image = None     email_template.put()     return email_template ``` This is for 2 reasons 1. we shouldn't have put the transaction in the view 2. handle_filedelete can be moved into the abstract form	0.0
+These child classes don't need to inherit from `vfom.ImageUploadHadler` if `AbstractEmailTemplateSettingsVForm` does	0.0
+I think a lot (if not all) of this get_formdata is the exact same between the 3 child classes. If a super function of `create_common_formdata` takes in a email template, then this can become ```python def get_formdata(self):     email_template = EmailTemplateSettings.get_or_create(self.account.agid, FOLLOW_UP_EMAIL_TEMPLATE_TYPE)     form_data = self.create_common_formdata(email_template)     return form_data ``` I don't think `create_common_formdata` is the greatest of names, but the name should imply that `vform.FormData(form_definition=self._get_all_fields())` will be called within it and it will return a new set of formdata    Alternatively you could pass both the formdata and the email_template to the common function and name it w/e you think is appropriate	0.0
+Should we move these to the `config_address-book-(local|test|demo|prod).py` files? more cruft in the settings file but it cleans this up.	0.0
+idk what this `get_enabled_listing_sources` does exactly, but does it matter if it the next thing we are doing in this function filters out all the ids that don't have listings?	0.0
+There are two reasons to filter out sources. 1) The source has no listings 2) The source has been disabled at the partner level  If the ReviewGenerationConfigurationModel has been created for this account, we just grab the selected listings from that model.  A pubsub sent out when the partner's enabled sources were customized removes any partner-disabled sources from this config model right away.  If one hasn't been created (no customizations have yet been made by the user) a default ReviewGenerationConfigurationModel is created, but we also grab the enabled listing sources from the partner (through core) so that we don't select a source that has been disabled at the partner level.	0.0
+Nope.  We still need to get the intersection between the default sources and the given ``` review_sources ```  For example, Facebook is a default source but it can be turned off at the partner level.	0.0
+This should be get_button_url but we are changing that to be  ```python customized_button_url = StringProperty()  @property def button_url():     return self.customized_button_url or self.get_location_page_url ``` So I guess this should stay as it is	0.0
+jrol wrote the exact same thing here  is this from somewhere? could we just reference it?	0.0
+I'm sure ``` gross html ``` meant something to someone at some point but it means nothing to me and just adds uncertainty to this test.  I'd suggest ``` 'arbitrary string' ``` as it's self-describing.	0.0
+`email-template email-template--selected` `email-template email-template--unselected`	0.0
+Why use `cls_class_name()` instead of just `cls`?	0.0
+Sometimes...  ``` >> 'foo' and True True >> True and 'foo' 'foo' ```	0.0
+Capitalize the first word after the colon also ``` will be used ```  id just ask renee what the copy text she wants there is	0.0
+You could probably add a test for this to ``` SREP.ReviewManage.spec.js ```	0.0
+If the key exists though and the value is `None`, this will now return `None`.  You should probably change this to `entity.get(API_KEY.MENTION_MODIFIED_DATETIME) or entity[API_KEY.MENTION_CREATED_DATETIME])` if at all...	0.0
+Wouldn't this have raised a KeyError in the first place? It seems weird to me that this worked as is... Am I missing something?	-1.0
+That is what Brad is assuming it has been doing.  I'm saying I think the api always returns the key, but may have the value as `None`. I'm not certain though.	0.0
+why jinja? the ``` enable_generate_reviews ``` flag, fair enough thats already in the context, but there's ko used below to get the alternating row shading anyway.	0.0
+We probably want this in the EmailTemplate model and options instead of types as  the types are currently like 'review_request' and 'follow_up' also `return [{'display_name':name, 'template_id': template_id} for name, template_id in EMAIL_TEMPLATE.iteritems()]`	0.0
+This should be a `get` method in EmailTemplate that does this get or put for you	0.0
+This should use that `get` function I previously mentioned	0.0
+I think it would be beneficial to structure this into one dictionary ```python EMAIL_TEMPLATES = {     'review_request' : {         'display_name': "REview REQUesT",         'templates': [             {                 'id': 'template-01',                 'preview_image': '             }         ] } } ```	0.0
+maybe raise an error if they use an invalid template type. at least when you look through this code later, the use of that ``` TEMPLATE_CONFIGURATION ``` constant here will clue you in as to where the implicit rules of this model really are	0.0
+confused about why socialMarketingEnabled is observable (not that you did that). generally, if something can't change within the lifespan of a single page view, it doesnt need to be an observable. don't have enough context to know if enableSocial can change, but also seems unlikely.	-1.0
+Can this just be named `lookup_by_partner_id`?	0.0
+`update-sales-person`?	0.0
+Afaik it's always been `get` implies by key and `lookup` implies a query, usually returning a list of entities.	0.0
+Isn't this supposed to be ``` display_location_page_badges ```?  If not, change the test title.	0.0
+I'm kind of confused about what's going on here. I don't think anything in the datastore is currently keyed with 'Account:customerId:\', so isn't this only checking against accounts that are in the csv and have already been processed?	-1.0
+You are incorrect.  The Unique kind has lots of entries with the format "Account:customerId:".  These are used to ensure uniqueness of a customer ID value within the system.	-1.0
+I'm still not sure why we're doing this all unique entity handling manually rather than using the built in Account.updateUnique which does it all for us?	0.0
+@cgooding-va that's the unique entity's key, which we use to make sure we don't have dupe customerIds	0.0
+i know the other tests use the toEqual expectation, but I think they should probably be using toBeTruthy and toBeFalsy. Not too important though	0.0
+It would better to put this in a separate method so it can potentially be reused instead of explicitly doing it here. Also I would probably prefer to split on `-` if that's an option in case you get prefixes that are more than two characters in the future.	0.0
+Also doing something like `ssid.starswith('TW')` below might be a little cleaner/clearer imo.	0.0
+I don't know about other people, but it wasn't immediately clear to me whether this was the cursor to _get_ the current page or the _next_ page (returned with the result).   I feel like moving this below `process` (to indicate it happens after) and a small comment about how it results in the next url getting added to the response data would make this clearer (at least to me).	0.0
+this is always a tricky thing, when you have to 'pool' exceptions. I kind of like taking the approach where we shove the raw exceptions into the list, keep going, and then at the end if there are any exceptions in the list, we raise some kind of generic SR-specific ComposeException that takes the list of exceptions as a parameter and deals with the logic of expressing itself internally.  ``` for ssid in ssids:   try:     result = client.postToServiceV2(**service_kwargs)   except Exception, e:     exceptions.append(e) if exceptions:     raise ComposeFailedException(exceptions) ```  that way we are still playing by the idioms of try/catch, instead of manually checking return values in a wrapping method to determine if something went wrong.	0.0
+This is pretty minor, but I would prefer to create this model in a setup method and then just tweak the `reviewAdviceDismissed` param as you need for each test.	0.0
+I believe you can specify a list of `choices` which I think would be a good idea to make it clear which values are valid or this string property.	1.0
+Can you be consistent whether you are including the `()` or not? I prefer to just include it for all knockout observables so it is clear it _is_ an observable. There are a few lines above as well that could be adjusted.	0.0
+I think this is incorrect. The account needs to exist in order for you to execute the process method below. Why couldn't you use the default `BaseAjaxHandler.check_credentials` method?	-1.0
+Why not just use `self.help_tag`?	0.0
+Why is this called `help_tag` but named `ADVICE_TAG`?	0.0
+I don't think there is a reason to use `list()` just stick with `[]` please.	0.0
+Can we just do `onDismiss !== undefined`?	0.0
+I'm not sure you need to do `len(location) > 0`  I think `location[0] if location else None` will work the same since an empty list if a falsy value.	0.0
+I think here you could write  ``` if location:    self._parse_state_and_zip(location[0], anchor_data) ``` and then get rid of `state_and_zip = location[0] if len(location) > 0 else None`	0.0
+This could be an `elif`.	0.0
+I think this could be made more generic to the length of `address_city_list`, but feel free to discuss. I'm thinking something like: ``` if address_city_list:     anchor_data[KEY.CITY] = unicode(address_city_list[-1]).strip()     anchor_data[KEY.ADDRESS] = unicode(",".join(address_city_list[:-1])) ``` Thoughts?	0.0
+Do you want a space after the comma?	0.0
+We also have the same or similar code in both if statements.  We could potentially write  ``` if len(address_city_list) > 1:  # City and address outside of span     anchor_data[KEY.CITY] = unicode(address_city_list[1]).strip()     anchor_data[KEY.ADDRESS] = unicode(address_city_list[0]) if len(address_city_list) > 2:    anchor_data[KEY.ADDRESS] += "," + unicode(address_city_list[1]) ```  but I'm not sure if this reads as clearly as just doing and `elif` statement.	0.0
+I've also proposed a solution to this, and I think either would be fine. One thing to note is you need to be getting the city from `address_city_list[-1]`.	0.0
+No need to put required=False for these. That's the default.	0.0
+We'll need the instagram account id.	0.0
+This type of key construction makes it impossible to have multiple Instagram accounts for one Account group. I know there's no use case right now for storing multiple Instagram accounts but I don't think we should build in that limitation. Maybe I'm just being paranoid though.	0.0
+I'm not sure how useful this will be. We're always going to request all the permissions that our app is approved for.	0.0
+Permissions should be a repeated field.	0.0
+should that 7 be a kwarg with default 7? Will allow us to override the call.	0.0
+If you're mocking the put do you need VGaeTestCase?	0.0
+Instead of asserting the count is 1, perhaps you could assert that you get the proper post back. self.assertEqual(result, [test_facebook_post])   You wont be able to reuse that variable name though.	0.0
+Perhaps also self.assertIsInstance(result, list)	0.0
+Could this be a more descriptive name? I assume the `blocker` bit was due to the issue type and not the test case	0.0
+also +1 This test name won't mean anything in a month	0.0
+Presence builder is in the first line	0.0
+This is in vtest isn't it?	0.0
+But you just guaranteed that `account_group.facebook_url` is `None`. You need the listing, I think.	0.0
+This look really elegant, and it's super easy to read. However, my complaint is that there's a lot of duplicate (triplicate?) code. I would really prefer seeing a single modular method for this. Your `if` chain could instead add the social url to a list of kwargs to pass into `updateAccountGroupV3`	1.0
+This will replace the social_url on the account group even if the user has already set it to something else. Will this be a problem? I guess the social_url should probably be the same as the listing we're tracking for that source..	0.0
+That's fair. That's what I thought earlier.  I just can't think of a case in which they wouldn't want the two to be in sync.	1.0
+snake case preferred.	0.0
+Are we going to refactor this method once the map reduce to pull in permissions is run, rather than having a multi-purpose function.	0.0
+Can you add the suggested path to get this data instead? eg: The Permission data is available on the getService endpoint.	0.0
+this comma is weird	-1.0
+Stick an "and" in this message: `{0} for {1} gave {2} response, and returned no results.`...	0.0
+why not `self.get_facebook_profile_permissions`? There might be a reason to do this that I'm unaware of.	0.0
+capital "O"?	0.0
+This logic doesn't look to me like it gives you any information about a Facebook Page.	-1.0
+We should probably just rename it to GetSocialProfileUserPermissions then.	0.0
+No reason.  We can use `self`.	0.0
+This could probably be bumped up one line to be with the other properties	0.0
+I noticed pretty much every method here accepts `callback` and `callbackArgs` and passes them to the pipeline. Is there any reason you are not doing this?	0.0
+I don't know what "status" is. Maybe indicate that you are updating the `is_synced` property if that's what the method is doing.	0.0
+You can just: ```python uberall_location[API_KEYS.LISTINGS] = directory ``` Unless you are actually updating multiple key/value pairs it doesn't make sense to call `update`.	0.0
+Can you make it clear for each of these models what their purpose is? Why do we have two different models, what kind of information are they storing or keeping track of. This doesn't really provide me enough information.	-1.0
+Can you include a one line comment or something or each of these `if` conditions. It's not clear what you are doing or why in each of these blocks.	0.0
+I believe you are missing a test for the case when a `sync_details_key` is not specified.	0.0
+If you aren't doing anything in `setUp` you don't need to include it.	0.0
+I didn't think you could have both required and have a default value for ndb.  Does vdatastore fix that?	0.0
+Is  ``` is_synced: False sync_details_key_id = "some key id" ``` A valid state? Or does the presence of a `sync_details_key_id` indicate that it is synced?	0.0
+So then sync_details_key_id is always pointing at a `UberallSyncDetailsModel`? Any reason not to make it a structured property? Also, why would it change at this point?	0.0
+Why is this method here? Also it doesn't build a key, just the (string) key name.	0.0
+I'm 10000% unclear how this solves the auth problem you described.	-1.0
+Right! Makes much sense.  Maybe we could make it `content_dict = json.loads(response.content)`. But ya, :shipit:	1.0
+Extra indent!	0.0
+I assume this number is from...411 themselves somewhere?	0.0
+using the word 'reach' here is a little confusing	0.0
+I'd like to improve this doc string, or improve the comments in this function. I can see people taking a long time to figure this function out.	0.0
+you want to check if its expired or not if it is demo.	0.0
+Visibililty seems incorrect for directory name. I assume you meant visibility?	0.0
+So this is only globally disabled sources? If the account group or partner has disabled a source, we do not remove the score for that source from the listing point score. Is that the intended behaviour?	0.0
+why the is_demo check? Wouldn't we want to avoid doing this work for all expired account, demo or not?	0.0
+Especially scared, since Core never deletes account groups, it just expires them.	-1.0
+It is not the case =) I would like to see that change.	0.0
+expiry is only ever set for demo accounts.	0.0
+@tbathgate-va likely remembers better. I believe an account group has a method that helps this. getCalculatedIgnoredSource?	0.0
+You are thinking about expiry on the account group, this is the expiry on the account. So we should be checking for both.	0.0
+This aggregation gives me an error when trying to run in vconsole  ``` import elastic from elastic.documents.listing import ListingDocument  agg = elastic.AggregationBuilder.max(     ListingDocument.score ) ``` ``` ValueError: ('no idea how to unwrap the given propery_ %s', ```	0.0
+That could be. I seem to recall when getting a deleted message from VBC, we expired all accounts on the account group, not just the account group expiry.	0.0
+You probably want to do `account_group doWork(WORK.LISTING)`	0.0
+That would be a good choice. doWork for WORK.LISTING also allows a sourceId arg, which will handle enabled and disabled sources as well.	1.0
+at architecture they said there was a bug in this. @jrans-va or @bbassingthwaite-va would know details	0.0
+Basically if there is an error at any point in your mapper, the documents that had been assigned to that shard will be skipped over on the retry...	0.0
+In the next iteration this case would actually contribute to the "Citation" portion of the score, right?	0.0
+The code to find the company name is duplicated now. Probably worth it to break it out and reuse it in `_scrape` just for maintenance.	0.0
+I concur.	0.0
+is this  ... testing a thing? Please clarify. ;)	0.0
+can haz test pl0x?	0.0
+dunno what the superclass does but you probably want to specify `ALLOWED_METHODS = frozenset(['POST'])`	0.0
+Update the tags?	0.0
+aw, you should use the "new" property syntax instead of these arg lists...  ``` account_group_id = vapi.StringProperty(required=True) social_post_id = vapi.StringProperty(required=True) ```  Then you can access them like `self.account_group_id` in the process method.	0.0
+unit tests for this method	0.0
+typo	0.0
+last time I was here I remember getting shot at for missing styles.  Might be easy to make this whole function snake_case? Or simpler, just make `source_list` camelCase	0.0
+Just remove this line. There's a specific test case to un-comment, when Zomato starts supporting websites again.	0.0
+Super trivial, but if you add a comma to the end of this dict, github wont show it as a line removed and added the next time someone changes the dict (like shareCount did here)	0.0
+Do we need to fetch the the reactions for post twice. Question mark. Perhaps we could be a little smarter and only do the call once. unless there is something I am missing with requiring the number reactions to get the actual reactions?	0.0
+Extra space	0.0
+what does this variable actually do? Is this the maximum number of reactions we will fetch?	0.0
+Very minor but it is a little unclear	-1.0
+It may be a good idea to exc_info=True to logging.error	0.0
+When we add post.reactions will this need to be updated?	0.0
+Isn't `directory_data` the data we are getting from uberall? But we are converting the country code?	0.0
+typo `is_combined_po_box_indicator_with_number`	0.0
+do you need this `else: pass` ? preferable to just let the iteration do its thing and drop the else case if you can	0.0
+i like these comments and hope people keep them up to date. people will scoff at overcommenting, but i think these are super valuable ones because of the specificity of these low level operations. :+1:	1.0
+you want your class name to be leading capital camel case, java-style. also again with the `GaeTestCase` comment	0.0
+i can't answer that, i don't have a histogram of address structure class frequencies memorized yet. maybe someone who has seen more might be able to make a suggestion? @ckurz-va @jfingler-va  my feeling is that you've covered enough here to make this stronger than what it was, so even it's not perfect, it's still incrementally stronger and so that shouldn't stop it from going forward. documenting those unsupported cases here is valuable, if they become a problem, the next guy just needs to uncomment the problematic case and tdd without worrying about many externalities.	0.0
+if this is just ```raise``` it should raise the last exception that was thrown. With the way you're doing it any traceback is lost. It's probably not a big deal in this case, but give it a try.  	0.0
+I think those 2 result in the same behaviour.	0.0
+``` with self.assertRaises(InstagramAPIError):   InstagramMentionSearchManager.get_mentions_for_location('object-id') ``` Reads much clearer IMO	0.0
+rasieees	0.0
+should we note that this is the test cluster, but using ip so you can hit it locally?	0.0
+not sure if it really matters, but these calculations could be done in the else instead, then it's not being done if the account group was deleted	0.0
+`reshares` and `likes` could also default to `0`	0.0
+We're reusing the `post_stats` dict here, which might lead to confusion in the future.  Maybe something like... ``` dict_of_post_stats[post_id] = {    'likeCount': stored_post.likes,    'commentCount': stored_post.comment_count,    'shareCount': stored_post.reshares } ```	0.0
+this isn't really `unavailable`, it's more `forbidden`	0.0
+this if branch should be a  `['uberall', 'api_call', 'forbidden']` tick	0.0
+You need to add an entry to `routes.py`. Can't believe no one mentioned this yet lol.	1.0
+From  ``` After a task is removed from a queue you can't insert a task with the same name into the queue until 10 days have passed. ``` can we adjust that?	0.0
+Do you want to return `address_2` when `full_address` isn't present?	0.0
+I think it probably shouldn't be returned. But if you hear differently, `full_address` needs to be `strip`ed	0.0
+Is it possible for non-numbers to be pulled into the `phone_number_field`? In that case I think `json.loads` raises a `ValueError`.	0.0
+Is it possible to get the `uid` and `pid` from the row and use `Listing.getById` instead (which does a key.get())?	0.0
+Any reason you don't just call `listing.save()`?	0.0
+Is `content` the `title` here then?	0.0
+Do you know if using `in` over the page content is particularly expensive? Might be worth fetching the title content before calling `in` five times over it.	0.0
+I would probably make this an `error` since ideally we don't want this happening at all and high visibility if it does.	0.0
+If it's just a PyCharm warning, don't worry about it. If it actually won't let you call it, talk to Brad and see if there's a really good reason it's named that way.	0.0
+I would argue this addition doesn't belong in `_format_hours` because it's not formatting.  Can we do the validation earlier?	0.0
+``` re.compile("tel:(.*)\'").search(phone_tag).groups()[0] ```	0.0
+Are `profile.common` and `account_group.common_name` lists?	0.0
+You should be able to just `getattr(account_group, 'common_name', [])`.	0.0
+It don't think review.commentText will give you what you want. The commentText is on the ReviewComment which it doesn't look like we are getting here.	-1.0
+We should check to see if there is already a ReviewComment on the review instead of always creating a new one. This could get messy if the user hits the respond button multiple times.	0.0
+``` entity ``` also ``` db ``` is kind of a confusing acronym in appengine land, could mean several things. could write ``` test_matching_review_is_saved ```	0.0
+You are deferring a task to run this pipeline. The `pipeline.start()` will create another task to actually call this run method. You can just return from this run method and let the pipeline complete instead of raising an exception. Are you counting on this pipeline to complete before you do something else?	0.0
+This entire function still doesn't do anything when you compare it to `_get_location_review_request_for_location_name`	0.0
+you're not taking advantage of your self.locationModel cache here... what i'd prefer to see is the addition of `@cached_property` properties for `self.locationModel` and maybe `self.profile`... i.e. ``` @cached_property def locationModel(self):     return GoogleMyBusinessAccount.lookup_google_my_business_location_model(social_profile_id) ``` it's a webapp2 decorator but under the hood it's effectively this: ``` @property def locationModel(self):     if not self._locationModel:         self._locationModel = GoogleMyBusinessAccount.lookup_google_my_business_location_model(social_profile_id)     return self._locationModel ```	0.0
+Would the same instantiation of a `GooglePlus` serve more than one request? If not, it doesn't matter. But I'm not sure exactly how that works.	0.0
+UberallFailedToSearchForLocationException?	0.0
+I don't think raising `NotImplementedError("This should never be implemented by BrownbookListingSearchCommand or subclasses")` is that unreasonable? But we should at least instantiate it here. This line is raising the class, not an exception.	0.0
+You don't actually have to check pageType evaluates to True here since None will not be inside the list of strings	0.0
+I think something like `TransientListingScrapeException` or something to that effect might be clearer as to what the exception means	0.0
+`s/temporary/temporarily/` in the message there :)	1.0
+If you make this exception a subclass of `CSExceptionInvalid` you also won't need to change any of the lockdown code to make sure they don't result in a lockdown when they occur	0.0
+Yeah, I confirmed it in an interpreter... you don't want/need the square brackets... just `if any(indicator in content for indicator in temporary_invalid_listing_tag):`	0.0
+I don't think guaranteeing this is worth the time it will take to fetch all the comments and convert to domain objects. I suggest just calling `ndb.delete_multi(review_comment_keys)` after the `review.delete()` call	0.0
+Constructing a BeautifulSoup object is pretty expensive. Could you set the `soup` as an instance variable so you can use it in `_scrape`  (or fall back to constructing a new BeautifulSoup object)?  Like in `_scrape` have ``` soup = self._soup or BeautifulSoup(content) ```	0.0
+very very minor: could use `collections.defaultdict`.	0.0
+This shouldn't be encoded into utf-8 here because it's not leaving the system yet and not being used with a library that doesn't work with unicode, if there's errors because it's not encoded then the fix is probably going to need to be made in the test that is having errors, or around the specific library that is using the text. Also, since phone number isn't required, you might want to make sure index errors aren't going to kill the whole scraper by making sure the keys exist, or wrapping ```result[KEY.PHONE] = phone_result[0].contents[0]``` in a try/except IndexError that passes if there's an index error.	0.0
+I believe what you want is ```result[KEY.PHONE] = unicode(phone_result[0].contents[0])```. NavigableString content is storing its content as unicode so the encode isn't double encoding the data, but it still shouldn't be encoded at all at this point.	0.0
+I think you might be on to something. Wouldn't you just want to take the data from whichever of the two has the newer "version" field?  If this solution actually works, then the below line in the doc string for this function isn't really accurate and should probably be updated. "IMPORTANT! This should only be used during the AccountGroup/Profile creation process."	0.0
+The way we're updating this record doesn't jive with the parent transaction. The profile model is already retrieved within the update method and is being put when the record changes.   The signature of this method should accept the profile and return it to the update method of the vAccountGroupModel for an asynchronous put.	0.0
+You can also use `assertIn` and `assertNotIn`	0.0
+I think `:return: the street address part of formatted_address` or something like that would be clearer for this docstring	0.0
+can `other_data.get(address_type)` ever return `None`? If so it'll cause this regex to be incorrect (None is formatted as the string "None" by `str.format`). Even if not I think it'd be clearer to explicitly use `.get(address_type, '')`	0.0
+Both of these could be renamed to `address_components` and `other_address_components` or `additional_address_components`. I think it'd make things a little easier to read since `data` could be anything.	0.0
+I think this will be ok. If an address component is missing it shouldn't get into here, and if it does it exist at the very least it will be an empty string from `_get_other_name`	0.0
+comment above applies here too--the test name should describe the expected behaviour, and I can't tell what `stuff` is supposed to be without opening up the data file itself	0.0
+minor typo (`keyword`)	0.0
+What happens if the zipcode is also in the street address? e.g. `Suite 123 12345 Testing Blvd, City, State 12345 USA`	0.0
+Do memcache keys have a maximum length?  Because this key has the potential to become very large.  Maybe build the `plan_ids` string and hash it?	0.0
+Change `'id'` to `API_KEYS.UBERALL_ID`.	0.0
+Could add something like `vmonitor.tick('uberall', 'get_product_plans', 'missing'`	0.0
+I would be tempted to add a non-optional "plan_id" argument to `_format_business_data`  I'd argue that the purpose of this method is just to format, not to validate.  We should add validation before we even arrive this method.	0.0
+It might be helpful to include something like `Region not supported for {country}. Business will not be created.` and any other info you can think might be helpful if we have to debug this for some reason.	0.0
+K it took me a few minutes to look through the code/changes but I think instead of this method returning _all_ the product plans (which is not really what we want) it should accept a `plan_id` do a `memcache.get` on _just_ that id and then, if it doesn't exist, do a fetch of all the plans and do a `set_multi` for each one. Then just return the one we actually asked for in the first place.  Moving the logic of parsing through the plan data to get the specific one we need in the view is not where it belongs in my opinion.  	0.0
+I don't think we want the `exception_message` to show unless we're on prod. Is this really what it does in other products?	0.0
+Let's delete it. We'll see the exception in the logs, and the user does not need to see that.	0.0
+There might be some logic to not set the error message in the context if it's prod cause I don't remember ever seeing an exception message on prod	0.0
+double float left	0.0
+Probably just do `hostname = self.partner`	0.0
+`search_summary = self._get_search_summary()`	0.0
+I think you mean `hostname=self.partner.hostname` but I agree.	0.0
+Debugging?	0.0
+I believe that you've got `labels` on here just because it's in the parent class' method signature.  You don't actually exercise that method though (no super call), so you should be able to omit it completely here.	0.0
+I'd put a `u` prefix on this string to prevent potential unicode problems.  As a general rule of thumb I would recommend always using a unicode literal when using `.format()` or `%s` replacement.	0.0
+Could you pass in the datetime here? That way we never try to create a RSSFeedItem without a `posted_date`?	0.0
+I don't know the whole workflow for creating these. Does this hang around for a while before it's put?  A few minutes shouldn't really matter	0.0
+Is this supposed to be `'Social Post'` or `'Customer Post'`?	0.0
+Is there some sort of constant that can represent `'SM'`?	0.0
+Do we intend to leave this todo in the code?	0.0
+Making this a `build_payload(token)` method would make this read a little cleaner and we could test that we build the proper payload. Would that be overkill? Thought I'd ask since I'm not sure	0.0
+Should we do this now?	0.0
+would call this ``` self.badges ```	0.0
+Handler	0.0
+The logic in file is now officially mind blasting	1.0
+ya O_o	-1.0
+Is this check really valuable?	-1.0
+?	0.0
+Anyone know why there is a try/except nested inside a try/finally instead of having a try/except/finally?	0.0
+ok felix	0.0
+could we use restructured text format here to get the type hinting?  ```python """ :returns: whether or not the leads feature is enabled :rtype: boolean """ ```	0.0
+Make this a one-line docstring, to match the one above (or do the opposite)	0.0
+Should this be removed?	0.0
+Too much whitespace	0.0
+AccountModel entities are SM accounts, not account groups. You'll need to call .get() after build_key to retrieve the actual entity and be able to access its properties as you do below.	0.0
+e.message is actually deprecated and will be raged at by pylint. apparently you're supposed to use e.args[0]. I find that weird personally, but that's what we've been doing lately	-1.0
+also do you need to use ``` logging.ERROR ```? i think you want logging.error which is a method, I believe ``` ERROR ``` is some sort of enum in the logging module (same thing with info vs INFO)	0.0
+what is row[1] ? I find this all very specific... I'm not sure a CSV MR is even worth doing this for 81 accounts, especially not if we're writing code to match some weird csv format given to us by a customer. either fix the csv so that it only includes relevant information or extract the value pairs and defer tasks to do the actual operation in a vconsole script (with test runs on other environment for different agids).	0.0
+typo, ics should be cis	0.0
+Why are we commenting out gutter_config? Does it add overhead on performance when there is nothing using it?	0.0
+copy pasted docstring	0.0
+I think this is a POST	0.0
+should probably pass ``` require_ ``` so that it logs them out of the same CIS they were logged in to	0.0
+also I think maybe we should start thinking about how to generalize this, since there's a very similar route calculation done in the landing page handlers. we should try to generalize what we can	0.0
+can replace this loop with ``` ndb.delete_multi(old_rss_feed_keys) ``` provided old_rss_feed_keys is just a list of the keys (looks like it)	0.0
+We might have to keep an eye on this, that it doesn't slow down if it generates 'hits' in the datastore.  Or have a MR that cleans up the tokens and also cleans up the unique values	0.0
+Returns only the token	0.0
+This could be async'd before doing the nonce stuff	0.0
+We ended up not using the SDK -- I wonder if this auth client should be in the sdk?	0.0
+Also if theres no next_url -- might be confusing in logs	0.0
+`if nonce_token.is_expired:` ?	0.0
+The other ones should only be seen by people trying to break our shit, though they might get seen when we break our own shit... but this one could definitely happen to a real person mistakenly using the wrong credentials for the account they're trying to get to. Does making this not just a 403 screen fall under future stories?	-1.0
+I don't see any in this PR, but is there a plan to utilize this expiry kwarg? It seems weird to let people set their own	-1.0
+Hmm, that would be easy enough to do after the 5 minute expiry one was put. I think making it configurable adds overhead to understanding this stuff and a potential for misuse	0.0
+Should be 401 for unauthorized	0.0
+I agree with @dwalker-va we should either redirect user to VBC/partner dashboard where they could select correct account group. Or may be add a link in error page to go to the VBC/partner dashboard. But in both case we'll need to set vbc session in CIS	0.0
+I definitely don't think we need all three of these. Looks like our AccountUpdateHandler only takes AccountId and CustomerIdentifier, we should probably stick with just those 2. You could also probably use the `get_account_from_args` from that handler as well.  Or use this one and change the other one to use this one.	0.0
+you didnt change this but extra comma after _. minorly surprised that is valid python	-1.0
+I think it's like a trailing `,` in an list or dictionary	0.0
+it 'should not be postable' ?	0.0
+would prefer ```self.postable``` or ```self.isPostable``` rather than a negative boolean	0.0
+no tests? :( good test would be to check that something is added to self.warnings on a 200, nothing added on 4xx/5xx	0.0
+make sure to update these usages of `notPostable`	0.0
+i think if we keep using fetch we gotta figure out how to unit test it. doesnt have to be now, but soon hopefully.	0.0
+:+1:	1.0
+If the user comes from email to the landing page and they won't have anywhere to go back to as it will open in a new tab. Should we have link to `/overview/` here ?	0.0
+Looks like you can get the length	0.0
+@jprokop-va turned this off for test I think?	0.0
+Yeah, just demo and prod IMO	0.0
+:+1: I think this can actually be determined by the page they're on, but I think this is neat	1.0
+![image]( is this intentionally called foo? lol	1.0
+could do ``` feed = feed or legacy_feed if feed:     feed.key.delete() ```	0.0
+I would do: ```python feed = key.get() if feed:   return key.delete() legacy_feed = UserRssFeedModel.build_key(account_id, pid, url, legacy=True).get() if legacy_feed:   return return legacy_feed.key.delete() raise SMExceptionNotFound("RSS Feed entity not found for Key: %r", key) ```  This will prevent us doing an additional key.get if we find the first one.	0.0
+what's the reasoning behind the 30 day expiry?	0.0
+i think if they dismiss it, we never want it to expire. they can clear their cookies ofc, but it'd be weird to see it come back after a month.	-1.0
+`Setup Notifications` here but `Setup notifications` in the cta, not sure which but I think should be same	0.0
+This should already be imported from the fec-base	0.0
+You could delete this old codes	0.0
+I'd prefer a class over specifying it like this.	0.0
+Shouldn't need this anon function here	0.0
+`return_value=self.account`, no spacing around `=`	0.0
+shouldn't the product be 'GS' here ?	0.0
+To lock FronEndCentral to 0.1.0 version for SM, this should be updated to `"FrontEndCentral": "	0.0
+I don't think we need 2 ways to call `get_partner_whitelabel_config` as `market_id` is `None` by default.	0.0
+What is this text binding for?	0.0
+mauve mauve mauve mauve mauve mauve mauve mauve	0.0
+These should be in `devDependencies` as they are required to compile css.	0.0
+On the second thought, I think it's good to have it in `dependencies` as they compile css which are required to run the project.	0.0
+I think you missed test_ here: test_migrate_deletes_legacy_key	0.0
+doc string.	0.0
+If we're not using cached social profile, it is better to remove these functions that caching social profile.	0.0
+You can reduce nesting by combining these two `if`s since there is no other path. You also check `has_sm` in both branches so maybe this could be simplified further? ```py if entity.has_sm:   account = acount_key.get()   if account and entity.deleted_flag:     # delete   elif account:     # update   else:     # why isn't there a SM account? ```	0.0
+You don't need to do the get here, it doesn't provide any value the delete call will check that the account exists before it deletes it	0.0
+I think this should go in the post put hook of the account group.  Instead of tying the deleting of the SM account to the pubsub message, it would then be tied to the actuall pseudo delete of the account group	0.0
+with this we'd now be using the pubsub message to delete accounts when they are removed from the account group?  I don't think that will cause any issues, I just want to confirm that's the intended behaviour as we will probably still be recieving the api calls to do that.	0.0
+Looks like you are passing the key in here, and not the account id, I don't think that will work	0.0
+Since the `message` here is an account group vobject, we could maybe rename these to be a bit simpler to understand, but since we're doing stuff with `account.account_group` that might make it confusing. Just a comment for future `VMessageHandler`s.	0.0
+This is a weird comment, and doesn't really mean anything	-1.0
+Most of these comments for the following properties don't provide any information, can you please remove them	-1.0
+I think this should be the same one as on the account group? (ie computed)	0.0
+oh man, is this actually a thing for SM still? I don't have the context, maybe @utandukar-va would know	0.0
+So if they change the business name in VBC I don't think it'll reflect here because this isn't computed right now	0.0
+No, they are all paid, this could be removed	0.0
+I would really like that to be the case too, but there's some weirdness now surrounding cases where they can change in other products.  So, I've been instructed to do it this way for now.  Hopefully there will be some work done in the near future to sort out what we're doing with customer IDs across the board.	0.0
+they can change in different products??? Or the products themselves have customer ids that aren't related to the customer id of their parent account group? That would make sense to me	0.0
+ya if thats the case my recommendation would be to just not migrate this data at all. it certainly doesnt mean anything to vbc or anyone else (i presume)	0.0
+`margin: 0 10px 0 0;` or only `margin-right: 10px` if possible	0.0
+`margin: 0`	0.0
+I missed this in the last PR, but I think the usage of `reduce` is a little confusing here. `some` seems like the more appropriate thing semantically, and is a little less complex. ```js var hasPostableService = self.postableServices.some(function(service) {   return service.ssid == self.ssid; }); return hasPostableService; ```	-1.0
+Could be something like this. Not sure if there is a native javascript way... ```js var validService = ko.util.arrayFirst(self.postableServices, function(service) {   return service.ssid == self.ssid; } return Boolean(validService) ```	0.0
+seems like you just want to return a falsy value for post() if ``` !post().hasValidPostableService() ```? could check it before you assign the ``` self.post ``` observable in SocialPostLandingPage.js (or maybe the factory? not sure how that works). would remove the need for these &&s	0.0
+would be something like  ``` javascript var validService = self.postableServices().reduce(function(previousValue, currentValue{   return previousValue || currentValue.ssid == self.ssid }), false); ``` 	0.0
+```kwargs.get(KEYS.NAME) is None``` may be a little more clear as to what the intent of this is.	0.0
+`should be Your Post`	0.0
+Can you move this up so that its beside, the declaration for the vff_base_url? Probably should be var versionedBaseUrl as well.	0.0
+Do we need this shim here are all for jQuery? My undstanding that the jquery will always register itself a the global $ or jQuery.	0.0
+should be ```ndb.transaction()```	0.0
+can this function  be changed to call super get_comment_dict, then add the profileImageUrl to the dict	0.0
+There is nothing, really wrong with defining the form in this fashion (and our other filters are defined this way). However, this is the old / hopefully eventually deprecated way of creating a vForm. Can we convert this to the Form fields method? EG: 	0.0
+Could you just have the context as `self`here instead of `profileImageUrl`, then you could have a function on the viewmodel instead of this anonymous function in the html? Also, I'd prefer using the `visible` data-bind on these instead of the knockout control tags (not sure what to call those), if you need them or just prefer them more, I think we should at least still do indentation within them to make the scope easier to read.	0.0
+two `coupon_name =`?	0.0
+Should probably use `` instead so that there is no hover effect.	0.0
+same here, `` instead of ``	0.0
+Generator could be handy here. ``` try:     original_post_idx = (i for i,item in enumerate(raw_comments) if item['socialPostId']== post_id).next()     return raw_coments[:original_post_idx], True except StopIteration:     return [], False ```	0.0
+Do we really need `CoreSocialTestCase` here? I don't think it is needed	0.0
+I find the `with` syntax much more readable since it's how the code is actually called, something like ```py with self.assertRaises(ValueError):     publish_comment('agid', 'ssid', 'comment_text', None, 'post_type') ```	0.0
+@jprokop-va good catch, it should be something like `/_ajax/comment/post/` for the form of `object/action`	1.0
+`dismiss` should be `dismissed` I believe	0.0
+not a big deal but could these be in a format of an actual url. e.g. /postLandingPageUrl/	0.0
+Require.js can't figure out that `inheritance` is a dependency based on the fact that it's a dependency for `SM.Feeds`? That seems wrong...	0.0
+Please don't do this `**{}`, it just requires extra effort creating a dictionary and then unpacking it. Just specify the kwargs directly: ```python self.create_partner(pid='ABC', name='Partner ABC', api_key='abc-key', hostname='partner_abc.socmktg.com') ```	-1.0
+You don't need to wrap this in another anonymous function; just pass `attachDeleteHandler` here.	0.0
+Is the `draw.dt` event failing to trigger when the table is first drawn?	0.0
+This will cause the attachDeleteHandler to be called twice whenever the table is redrawn. You should only need one of these, is there a reason you have both?	0.0
+You guys should still be hosting your own version of vForm in the project... VFF's vForm could change any time and possibly break SM.	0.0
+if this is supposed to be the taxonomy_id I would go with ```tax_id```	0.0
+This is a kind of gross key string. all terms should probably be hashed. eg:  ``` key_id = hashlib.md5(key_id).hexdigest() ```	-1.0
+This is just my minor preference, but instead of indenting the entire method I would just return here if `spid` is not present. I think it makes the code more readable.	0.0
+Is this "no commit" path just for testing? If so wouldn't it be valuable to still construct the `lead_search` entity?	0.0
+Minor, but `get` returns `None` by default so including it as the default arg is unnecessary.	0.0
+What is `withGritterLocation`? I've never seen it before.	0.0
+Can you return the actual `feed` item? Usually we return the entity (or corresponding domain object) after create/update.	0.0
+I think I'd prefer to just take all this and put it in a separate `lookup_rss_feeds` method to avoid cluttering the `get`.	0.0
+I think you could just `name, _, category = feed.name.partition(', ')` and then i guess test `category` exists.	0.0
+Can we have the function name as `is_valid_url` and do all sort of validation check for url here, instead of just checking for float value. In future there might be different issue to check something else in the url and you could just throw it in the validation function.	0.0
+I think we should use a regular expression match here. It's concievable that someone could post an FTP link, and this would turn an FTP link into `	0.0
+You can try declaring the mock above the test class (it will pass the mock into every method). See  for an example.  Another option is declaring a magicmock with a return value above each test method, like  ```@mock.patch('app.views.messages.account_group.fetch_product_pid', mock.MagicMock(return_value=self.pid, tracker=None))```. Declaring a magicmock means you do not have to pass the mock into the method directly (it does its 'magic' in the background) but you also can't access it directly (to assert anything). You can combine these methods to really clean things up. I'm not sure setting the tracker property to None is required at all unless you are seeing an error with the default options.	0.0
+You aren't returning here. Are the `kwargs` still declared above? Is it intended that the code continue to execute to the update method below if the delete flag is present?	0.0
+In Presence Builder, we had some cases in past where account group got deleted after few seconds of its creation and in PB account was in the middle of creation. Therefore, it caused an account which have deleted account group. Does `delete_account_entity` handles this case? I'm not sure if SM has this kind of issue or it might already be handling it.	0.0
+`.lower()` this.	0.0
+What's the difference between this and `deletePastPost`?	0.0
+You should use the `get_nested_dict_value` function I created in `utils`.	0.0
+Why are you getting `POSTED_DATETIME` instead of `SOCIAL_SERVICE_CREATED_DATETIME` from comment?	0.0
+Should `username` have a key?	0.0
+You could just `data.itervalues()`.	0.0
+I believe `past_total` should be `pastTotal`.	0.0
+`negative` if 0?	0.0
+suggestion, instead of passing ```now``` to both methods, why not get the current utc datetime inside each method. I think that will be cleaner.	0.0
+I think this can be simplified to `if len(args.get(V2_API_KEYS.ACCOUNT_TAXONOMY_ID, [])):`  edit: more simplification.	0.0
+ma be `if not args.get(V2_API_KEYS.ACCOUNT_TAXONOMY_ID)` would work	0.0
+Not a fan of the name. Perhaps something like AbstractTwitterSocialPost or BaseTwitterSocialPost?	-1.0
+Personally even if you use "TwitterObject" I agree it should have "Base" or "Abstract" prefix to make it clear this object should not be instantiated, only its children.	0.0
+can also do this to remove extra ```if``` condition, i think: ```` if tag == 'archived':     tag = 'relevant'     kwargs['maxDateTime'] = get_leads_cutoff_time() elif tag == 'relevant':     kwargs['minDateTime'] = get_leads_cutoff_time() ````	0.0
+Why the empty string in `''+leads`?	0.0
+Minor but I think something like `get_nested_dict_value` might be more appropriate. Otherwise its just confusing why you would need a method at all to get a dict value.	-1.0
+These are _AccountModel_ keys correct? Labelling them as `agid_keys` seems misleading.	-1.0
+This could be a little more simple/pythonic ```python product_name = NEW_APP_NAME if vconfig.is_feature_enabled('presence_builder_rebranding', self.pid) else APP_NAME context.update({     "product_name": context.get('wl_product_name', product_name) }) ```	0.0
+It'd be nice to one-line this:  ```python context.update({   'product_name': context.get('wl_product_name', NEW_APP_NAME if vconfig.is_feature_enabled('presence_builder_rebranding', self.pid) else APP_NAME) }) ```	1.0
+Breaking maybe right before the `if`. Whatever makes sense when you've got it in PyCharm	0.0
+Well I commented the same thing as Jesse. Gotta reload these pages every once in a while.	0.0
+Maybe `enable_listing_builder_rebrand`?	0.0
+Maybe.	-1.0
+Minor complaint but you shouldn't really be checking against the builtin Bool objects. Something like `{% if not enable_listing_builder_rebrand %}`	0.0
+Why are your imports so afraid of each other? They can be closer together.	-1.0
+You have the same 2 patch decorators on 3 different tests. Typically in this case it's cleaner to set up your mocks in the `setup` method. I'll show you how to do this.	0.0
+Nice, I forget to do that pretty often	1.0
+Thank PyCharm's auto importing ?	1.0
+Does this test actually assert or check anything?	0.0
+I guess it didn't before, either. We can probably do something like this:  ```python field = GenericJsonField() field.data = '[]' try:   validate_json(field, []) except validators.ValidationError:   self.fail() ```  Whatcha think @jrolheiser-va ?	0.0
+I kind of like the `with self.assertRaises` pattern a bit better, just because you actually call the function so it makes finding usages of it easier (I think, that might not be true haha). Like this:  ```python with self.assertRaises(validators.ValidationError):   validate_json(field, 'url') ```	1.0
+I'm not sure if I understand what you're saying...	-1.0
+Okay, I see. I think the difference between our two approaches is that the self.fail() is explicit whereas yours is implicit. I think explicit is better in this case.	0.0
+Could probably condense these three if statements	0.0
+Awe so long popularity circles. Mind removing `popularity-circle` `.popularity-circle.popular` and `.popularity-circle.unpopular` from `_profile-sync.scss`	0.0
+Should set a warning flash or an error flash for this.	0.0
+Seems like a bunch of duplication.  Can't extract it at all?	0.0
+I'm guessing it's right too. The only way I know to get what it actually is, is to look at a source that has a listing on the source, and see where that url takes you. Might be hard to find one though.	0.0
+Should this be `opendi`?	0.0
+I believe, for Canada at least, it's called Opendi.  Not sure about the U.S. Stadtbranchenbuch appears to be the German version.	0.0
+Surely this, or something like this, is in _colors.scss?	0.0
+@bjohnson-va this is the css file.  The ```_profile_sync.scss``` is using the scss variable for the colour	0.0
+does it have to be ```eaeaea```? We have ```$SECONDARY_BACKGROUND_COLOR = #efefef``` which is pretty damn close	0.0
+I'd prefer standardization over mock-following. Your call.	0.0
+Dammit.  Why do we commit our CSS files :C	-1.0
+Good call.  Grab the one from the AccountGroup.	1.0
+@rwiebe-va I think this overlaps with your work in	0.0
+Ah yes it does... We can just do them here I suppose.	0.0
+No worries, couple things for this: - totalListingSyncProSources appends a space on to the end, so this will have two spaces after it. - Could you add "additional" after the span to make it read a little better while it loads. - Also could remove the "+" being appended.  i.e. 	0.0
+could be ```.free-listing-sync h1``` since we have nothing underneath	0.0
+We should refactor the code in `sync.py` to use this `SocialSync(self.microsite.msid).get_number_synced_profiles()` method.	0.0
+Can delete.	0.0
+Looks like this is based off an older version, may want to rebase. But this should just be empty now instead of "--".	0.0
+do we often leave in log statements?	0.0
+Why is this necessary?  Your jinja condition was already doing this logic.	0.0
+When that happens, you often just need to be more specific with your sass.  Eg: ``` .outer_div {   .inner_div {     .additional_wrapper {       .sync-pro-header-right {         width: 290px;       }     }   } } ```	0.0
+Crazy idea.  We could use the [jinja set keyword]( to avoid duplicating this in multiple spots  ``` { % set show_listing_sync_pro_sections = listing_sync_pro_enabled  or listing_sync_pro_active_for_account % } ```  ... and then use `show_listing_sync_pro_sections` instead of these boolean pairs.	-1.0
+See my comments:	0.0
+You mean "Free Listing Sync" right?	0.0
+yeah @rwiebe-va that's wrong...	-1.0
+Since you're here, I would just rip out the inline stuff as well	0.0
+wouldn't both of those be true, anyway?	0.0
+I don't think the `send_message()` is needed here. When `open_dialog()` is triggered on the click of the `Activate` button it checks if there is no sales person linked to the account. If that is the case it triggers the ajax call to set hotness in ST. If there is a sales person linked to the account nothing is triggered - as the trigger will occur when they click the `Send` button in the modal.   Maybe this was a poor way of doing it, but the issue was that we wanted the hotness to be triggered on the clicking of the activate button on the banner if there is no salesperson. But if there is then it was to be triggered on the actual sending of the message.	0.0
+Doesn't need to be declared outside the conditional and then reassigned.  It's only used the one time	0.0
+we should be leaving a line in between each rule, including nested ones	0.0
+Should be indented under the jinja statement	0.0
+Depends who you ask.  But, agreed.	0.0
+"sale**s**"	0.0
+I thought that was the expectation of our scss linter?	0.0
+"sale**s**" representative	0.0
+Super minor, but technically this bracket should not be indented.	-1.0
+Just fyi, when you are writing code that you know will be worked on in a separate issue it never hurts to include something like: `TODO: PRD-73: update sync numbers`.	0.0
+Instead of requiring two separate variables I would just use `self.wl_listing_sync_pro_enabled` and `listing_sync_pro_feature_enabled` to determine if `listing_sync_pro_enabled`. I'm thinking...  ```python 'listing_sync_pro_enabled': self.wl_listing_sync_pro_enabled and listing_sync_pro_feature_enabled ``` Just makes the logic in the template simpler and I don't think there is a need to send them separately.	0.0
+See my note above, would simplify these logic statements.	0.0
+Minor, please leave a space between your variable and `%}`.	0.0
+Well *this* file shouldn't be here :D	1.0
+Probably worthwhile to add a "spinner" icon while this message is being sent.	0.0
+Can use `$PRIMARY_BACKGROUND_COLOR` here.  Check out `static/sass/partials/_vff_colors.scss`	0.0
+`$PRIMARY_BORDER_COLOR`	0.0
+This method should probably take an account group id and use it here, (and below) right?	0.0
+This should be a domain method.	0.0
+I would recommend putting this in a constant at the top of the file so it is more visible and clearly defined. ```python LSP_PRICE = 24.99 ```	0.0
+Will the `sales_person` always have a key that is the `agid`? If this is just checking that condition it will throw a `KeyError` if it does not exist. You might want to use `sales_person.get(self.microsite.agid)` instead which only returns the value if that key exists and `None` by default.	0.0
+I believe you can just use `vapi.NoAuthAjaxHandler` instead of needing the `BaseAjaxHandler`.	0.0
+Minor, but I'm pretty sure by default the name is set to the variable name. I think the only reason you would want to specify `name` is if the arg name you were accepting via the api is different than the variable name you want to use in the code here.	0.0
+Generally we don't want to catch all the exceptions, only certain ones (if any) that you expect the code might throw and want to handle in a specific way.	0.0
+I wouldn't worry too much if you are in a rush but `_api` is essentially already used for these ajax apis so if possible (or in the future) I would use that instead:	0.0
+For colors you should always try to use the existing scss variables if possible. They will be in the same file as the `$PRIMARY_BACKGROUND_COLOR` variable. I don't know off hand if this specific color is described there but there definitely is one for `#fff` or `white` that you are using below.	0.0
+Any reason for removing that `vurl`?	0.0
+The indenting here is a bit off but please leave because I adjusted it in PRD-89 so if you change this it will just create merge conflicts.  In the future please indent anything inside a jinja `{% if ... %}` or knockout `` block similar to how you would in python.	0.0
+You need your JS to also be behind a `{% if is_listing_sync_pro_enabled %}` block otherwise, if it is not enabled, currently the JS will still try to execute but the html will be missing (not rendered) which will likely cause errors to occur.  You can check this locally by just changing that `is_listing_sync_pro_enabled` value and making sure your page still renders without any errors.	0.0
+That's right.  The majority of our API endpoints use cameCase for GET params, however.	1.0
+We need to also check if the account group is in the US.  As, currently, LSP is only available in the US.	0.0
+``` COMPLETE-FIX ```	0.0
+Is this not defined somewhere in the project so we don't just have a magic value?	0.0
+just an fyi, `APP_NAME` can't be used for the application name as it can be changed in the whitelabel  <img width="993" alt="screen shot 2016-04-04 at 8 38 00 pm" src="	0.0
+it's probably on the handler though if the handlers use the partner_whitelabel middleware	0.0
+Doesn't seem to be, right now on Test it just says "back" <img width="335" alt="screen shot 2016-04-04 at 1 42 30 pm" src="	0.0
+is the name set to an empty string?	0.0
+r'^([\w-]+(.[\w-]+)+)|(localhost)$' or r'^(\w([\w-]\*\w)\*(.\w([\w-]\*\w)\*)+)|(localhost)$' (to eliminate url like i-.am--.--.-a	0.0
+I'd prefer ```python error_message = '{service_id}. Your account was not added properly. Please try again.'.format(service_id=service_id) ```	0.0
+No semicolon needed	0.0
+you can set a property on this class that defines ``` agid ``` as an argument for this api. ex ``` account_group_id = vapi.StringProperty(required=True) ``` this does a lot of serialization and boilerplate validation for you. I recommend checking out other apis that subclass vapi.ApiHandler.	0.0
+I think you mean ``` GetReviewAggregate ``` ?	0.0
+``` for google ``` can mean bajillions of things in our system(s). I'd leave that part out of the docstring	0.0
+i think you want to do this with knockout rather than vanilla dom manipulation. nothing technically wrong, but keeping all of our dom manipulation inside of ko view models is easier to maintain	1.0
+you want to put this behind an _api route rather than a vform route. the _api routes are a little further down this file. anything on a vform route should probably subclass the VFormHandler class.  also your name kwarg could just be ``` name='get-review-aggregate-api' ```. I dont think the ```-name``` part is useful anyway	0.0
+id add ajax or api to this class name because python sucks and when you have 5000 dynamically typed classes its nice to have a hint about what this thing is compared to domain objects or models ie ``` GetReviewAggregateApi ``` or ``` GetReviewAggregateAjaxHandler ```	0.0
+setting a content type header might take care of this json translation for you.	0.0
+it may be better to do this json-ld-ifying in the template/javascript rather than here, particularly if this endpoint is ever re	0.0
+i think you probably want json. vapi will return a response formatted based on what the request is asking for so no need to set it here i think. you'd set that up in the jquery ajax configuration object.  check out  for an example of an ajax configuration interfacing with a vapi endpoint that makes this relatively pain free	0.0
+We should probably write some unit tests for this	0.0
+Quote marks for the name?	0.0
+There should be no change related to GMB stuffs	0.0
+There should be no change related to GMB stuff	0.0
+The $ here represents jQuery, because you are using jQuery to get the element, you don't need to do the checks in `isElementVerticallyInView` about whether jquery exists or if the element is a jquery element because it always will be.  I would suggest passing in element[0] here then `isElementVerticallyInView` can simplified to  ``` javascript var rc = element.getBoundingClientRect(); return (rc.top >= 0 && rc.bottom <= (window.innerHeight || document.documentElement.clientHeight)); ```	0.0
+Can you be more explicit with the name of this function. I'm not sure what eol is supposed to stand for	0.0
+It's going to be difficult to test anything that is using jquery.  I'd suggest logically separating all the stuff that uses it into it's own function so that everything else can be tested easily.   it might actually be better to pass the selector in to `isElementVerticallyInView` and do the jquery work in there  You can then test that it was called with the correct selector. and you can mock it out so it doesn't actually run the jquery part	0.0
+The usual convention is to make any variables that are a jquery selector or derivative start with a `$`. So `$element` in this case. Feel free not to do that, but it's helpful to reduce some mental load as you read the code.	0.0
+Use `/* */` comments for multi-line comments (should feel familiar to your C days :smile:). I.e.  ``` /*   Comment comment comment */ ```	0.0
+You'll want to use some kind of function throttling here, to avoid calling this function thousands of times when it isn't necessary - this function will fire off every time the window is scrolled even a single pixel, so for every pixel it moves it will be called that many times. Here's what we used in SalesTool, you could copy the scrollThrottler function verbatim and just replace the insides with your function:  ```js self.scrollThrottler = function () {     if (!self.scrollTimeout) {         self.scrollTimeout = setTimeout(function () {             self.scrollTimeout = null;             if ($(window).scrollTop() === $(document).height() - $(window).height()) {                 if (self.nextUrl && !self.currentRequest) { // Your specific stuff should go here                     self.fetchSearchResults(true); // Your specific stuff should go here                 } // Your specific stuff should go here             }         }, 60); // A somewhat arbitrary number, but it works pretty well and prevents a ton of load on the browser     } };  $(window).scroll(self.scrollThrottler); // This line can replace what's on line 220 of this file (the one I am commenting on) ```	0.0
+Here it is in code, for context: 	0.0
+It might make sense to throttle this guy too. We don't even use a resize event for this on the Manage Accounts page	0.0
+I'm surprised this `render_response` call doesn't deal with context not being provided :-1:	-1.0
+Actually, since you're taking `context` as keyword args, it should default to an empty dictionary if you provide nothing. Python should take care of that for you:  ```python def f(**kwargs):   print kwargs  def g(**kwargs):   f(**kwargs)  g()  # should print '{}' ```	0.0
+None of these kwargs are optional.  If you make them args instead of kwargs then you don't need the check/raise ValueError stuff.	0.0
+this get's the locations, not the connection	0.0
+As this is now in the GoogleMyBusinessSync class it can probably be named something like `getConnectedLocation` as the GMB is already implied	0.0
+if you make this `self.request.get` instead of `params.get` then you can set self.request as a dictionary in the tests and it's a lot easier to test	0.0
+same with the rest of these handlers	0.0
+when we disable stuff with pylint, we should be using the message instead of the code. ```python #pylint: disable=line-too-long ``` That being said, you shouldn't be disabling this one.  You'll want to format your code to not have lines too long instead of disabling this check.	0.0
+Since you're already adding a fairly long comment here, it might be a good idea to move the above 3 lines + comment into their own function like ``` build_hsmm_redirect_path(...) ```	0.0
+We should update the variable ``` stretch_background ``` to ``` full_screen ``` to keep the language consistent.	0.0
+size should be `len(review_ids)`	0.0
+looks like this these context variables are getting set for more pages than just the review page. could you do something like this instead ```python context = self._add_context_args_for_add_review() ... def _add_context_args_for_add_review()     if is add review page <----- idk how to figure this out         context.update({             'contact_name': self.request.GET.get('name', ''),             'contact_email': urllib.quote(self.request.GET.get('email', '')),             'contact_id': self.request.GET.get('id', '')         })     return context ``` which can then be tested a lot easier  BONUS: this fulfills the Tell Don't Ask principle 	0.0
+`formdata.set_value('reviewerName', self.context_args.get('name', ''))` would work instead, then you don't need the 2 if statements.  For sure the default value of empty string will work, but it might also work with a default of `None`, in which case you don't need to specify a default	0.0
+By default `get()` returns `None` so you can simplify these to `args.get('msid')` however I'm not sure I agree with these fields being optional (as mentioned above).	0.0
+Should be `self.review.agid`	0.0
+Ya when add the review you get it back and it sets `self.review = review` so, at this point, you know you'll have it.	0.0
+agreed, then just change the valid of self.review['originalStars'] in the test. just lots of lines to look at	0.0
+can you just use ``` uri_for ``` ?	0.0
+```document.location.toString()``` will do whole thing for you, so you can just   ```document.location.toString() + '?agid={{ agid }}'```	0.0
+Usually I see these field names being stored as constants of the form class as to avoid duplication and accidental mis-matching errors.  e.g. ``` class ReviewCommentForm(VFormHandler):     COMMENTER_NAME = 'commenterName' ```  You can then use that constant here and above in the `FIELDS = ` declaration.	0.0
+this setUp is massive and expensive. can you get away with creating less stuff? can you get away with mocking the calls that necessitate these entities instead of actually making them?	-1.0
+There was a couple reasons that this was done this way originally. 1. So that the review page could still be reached from RepInt Generate Reviews even if they make a custom name for the page. 2. It's possible for the review page to still be reachable even if the Microsite hasn't explicitly added a review page/tab, and a temporary tab will show up in the nav bar so that it doesn't look weird. (maybe not needed anymore since we mapreduced over all microsites and added review pages).	0.0
+The `msid` and `microsite` (which you can get the name from) are added to the context in the `render_response` method in the parent handler so not necessary here.	0.0
+Pretty sure you can just use 'title' from the common context in `app.views.microsites.MicrositeView#get_common_context`	0.0
+this could be written as ``` return _get_rgba_from_standard_hex(naked_hex_color_string) or _get_rgba_from_short_hex(naked_hex_color_string) ```	0.0
+``` rgb_color_string ```	0.0
+something like ``` data-bind="attr: { href: function(){ return ($data.disabled()) ? '#' : {{listing.url}} } ``` may work. either way its not too important at this point	0.0
+Maybe add a comment to make it explicit why we are using !important. something like ```css Done to ensure that the random embedded html pasted by a user has an appropriate width ```	0.0
+i know this was here originally but ``` self.open24 == 1 ``` ?? We have values like that in datastore?	0.0
+I believe if the holiday flag is set the dayOfWeek should be set to [u'PublicHolidays']	0.0
+Shouldn't need the first `self.open24 and` either	0.0
+I think what Dustin meant by default arg here was  `site_kwargs.pop(Microsite.geo._name, None)` especially since we don't care about the popped value anyway	0.0
+Looks like these should be `get`s	0.0
+Should do `{{ super() }}` here so that it takes `google_analytics.html` content from global global.html	0.0
+can clean this up even more,  ```return key.get()```  instead of these two lines.	0.0
+Can we rename that to `VBC_API_KEY`	0.0
+We should probably use `account_group_id` instead of `agid`.	0.0
+If you don't need the mock in the test, you have the option of defining what the mock should be. When you do define it like this using the `new` kwarg, it doesn't get passed to the test. Something like this: ```py mock.patch('app.models.microsite.get_account_group_vobject', new=mock.Mock(return_value=None)) def test_migrate_from_legacy_raises_if_account_group_not_found(self): ``` Personally I'm torn on which is more readable, but sometimes it's useful (like if you are mocking many things and you never actually use the mocks), or if the same unused mock is being passed to every test (though there is alternatives to that too).	0.0
+`from vtest import mock`	0.0
+```raise AccountGroupNotFoundException('The account group %s for the account %s does not exist.' % (self.account_group_id, self.account_id)) ```	0.0
+You need to change this to: ```javascript !self.showClipboardLink() ``` otherwise you're testing that the observable object doesn't exist.	0.0
+Might be nice to extract the `$("#comments").val()` out since it's also used in the if statement above	0.0
+Heads up, in python you can just do: ```python phone_numbers = kwargs[MICROSITE_KEYS.PHONE_WORK] cleaned_phone_numbers = [phone_number_digits(number) for number in phone_numbers] kwargs[MICROSITE_KEYS.PHONE_WORK] = cleaned_phone_numbers ``` Typically if you're ever using an index when you're iterating, there's probably a better way :smile:   Also, then you can probably remove that mapping comment on 155.	0.0
+Personal recommendation for readability. ```python self.phone_work = kwargs.get(MICROSITE_KEYS.PHONE_WORK, []) self.phone = self.phone_work[0] if self.phone_work else None ```	0.0
+Instead of the helper function, I'd probably just do it inline since it's simple. ```python phone = ndb.ComputerProperty(lamda self: self.phone_work[0] if self.phone_work else None ```	0.0
+Style: ```python for ms_number, work_number in zip(ms.phone_work, work_numbers):     self.assertEquals(ms_number, work_number)     self.assertEquals(phone_number_digits(ms_number), phone_number_digits(work_number)) ```	0.0
+If you want to get really crazy you could do this in a single line: ```python kwargs[MICROSITE_KEYS.PHONE_WORK] = [phone_number_digits(number) for number in kwargs.get(MICROSITE_KEYS.PHONE_WORK, [])] ```	-1.0
+I mostly agree with @cpenner-va. If you tweak it just slightly you won't need the conditional in the 2nd line at all though. ```python self.phone_work = kwargs.get(MICROSITE_KEYS.PHONE_WORK) or [] self.phone = self.phone_work[0] ``` Is basically equivalent.	0.0
+This should be ```kwargs = _sync_phone_kwargs(**kwargs)```.	0.0
+these aren't used	0.0
+Not sure I love this class name, it's more descriptive of what MS is doing.	0.0
+Can we add some details about what location failed? I always try to give errors/exceptions some specifics for the poor sucker who is stuck debugging this when it breaks.	-1.0
+That said, I find it super weird we're catching a 500 from core here. Why do we assume core is going to 500?	-1.0
+Can't we use `this` for storing stuff across `beforeEach`?	0.0
+Maybe `window.` to be explicit what this is for	0.0
+theres no yielding going on in this function so it's not going to actually run in parallel with anything else. we call tasklets an 'asynchronous' technique, but really they are just functions running in an event loop on a single thread ala javascript. The yield keyword is how the mechanism that controls the ndb event loop holding these tasklets knows to go to the next tasklet and let this one sit for a while . furthermore, yielding on an expensive data processing loop for example won't actually help, so it's really only applicable to RPCs. It's more like a nice way to abstract and organize the management of multiple ndb async operations than it is like a general approach to parallel processing.	0.0
+Add a newline to the end of file.	0.0
+Do we write tests for our JS?	0.0
+Order of imports. Move this up to be with datetime	0.0
+Just being picky here:-) If either firstName or lastName is missing, the space for connecting them is not necessary.	-1.0
+Hmm, you should probably roll this back I'm guessing. Unless it was already here.	0.0
+You sure it's not already defined as PRIMARY_COLOR or something somewhere	0.0
+you shouldn't need to pass this in if they are all the same.  It should just use that format	0.0
+I think we need the # of delivered events here. Not 1 for all events to that email. That'd be the same as counting the emails wouldn't it	0.0
+{u'key': u'delivered', u'doc_count': 28} would be 28 delivered not just 1	0.0
+I think these strings are already defined	0.0
+there's no reason to do an `execute_async().get_result()` here, might as well just call `execute` Also, this should be `overall_stats` as it's not a future	0.0
+Because this is a blocking query it can't run in parallel with the other 3 queries. You could either make it async (which would take work to break out the formatting and whatnot, or you can put it after the `daily_stats_future` and it will run in parallel with the other 3 queries	0.0
+this name could be a class constant.	0.0
+could you note that this defaults to querying all time if you leave past years and months at 0?	0.0
+if you set `max_data_points=None` here it makes your call with the quarterly aggregation look clearer.	0.0
+I'd recommend using a keyword style argument for `max_data_points`	0.0
+should be `No Historical Stats`	0.0
+This should be in getEmailStats	0.0
+Right, we'd show an empty graph	0.0
+Could you pull this stuff out and test it.  This complete function is pretty large now	0.0
+Instead of all these `if` statements could you just: ```python for app in ACCOUNT_LEVEL_APPS:     if self.partner.has_app_installed(app):         redirect_path = '/{}'.format(app.slug) ``` You could probably even ```python redirect_path = next('/{}'.format(app.slug) for app in ACCOUNT_LEVEL_APPS if self.partner_has_app_installed(app), None) ``` ?	0.0
+Uh...can you take this out?	0.0
+Magic number.	0.0
+![shia-labeouf-magic-gif](	0.0
+sorry, what's the different between total and reviewCount?	-1.0
+Maybe a clearer name?	0.0
+no need to have the options param here as we aren't passing in options	0.0
+shouldn't the key value be a string?	0.0
+this variable name is not the same as what you passing below. lets keep them same for avoiding confusion.	0.0
+Very minor thing, account_deletion_date is a kwarg, should pass it through as one as well.	0.0
+Minor: You don't need to specify None here, that's what get will default to.	0.0
+can you update the docstring as well?	0.0
+do you have to add else here as well?	0.0
+you can just do `opacity` and `tansition` our sass compiler should add the other rules	0.0
+Is there any point to converting this to a tasklet if we're blocking on these async gets? That's what yield does right, it suspends everything and waits for that value?	0.0
+nvm. I think I get it now.	1.0
+should `set_multi_async` too	0.0
+yield get_async	0.0
+The yielding is more about forcing the future to resolve than the fact that it returns something. But you're partially right, you don't need to **yield** this since the tasklet doesn't need to block on it, but you do need to force that future to resolve at some point... whether that's through a `yield`, call to `get_result` (outside of the tasklet), or an `@ndb.toplevel` decorator somewhere higher in the chain.	0.0
+You're switching on aggregation name here, but if the aggregation name was always the same and you passed in the max number of stats then that would simplify this	0.0
+We looked into this for PRD-94. Apparently if you set the min and max to now, it will give you the all time results, with the earliest data point going to the first review.	0.0
+Does it mean 'all time'?	0.0
+one_month_ago' should be 'ten_years_ago'	0.0
+Sta**t**istics?	0.0
+we should probably remove the `Arial sans-serif` bit	0.0
+*Statistics	0.0
+shouldn't this file be named `statistics_test`?	0.0
+Do we have some better marketing copy than "Set up Review Widget"? I don't think anyone will know what that means as a call to action.	0.0
+Is it a comment? Can we remove it?	0.0
+settings.ADPG_PID is in this list twice now?	0.0
+Why push each result? You can just build the list the way you want it.	0.0
+These colours are used in a couple places in SR. Is there a way to define some constants?	0.0
+The knockout controller should really have the company name passed in to it then these should be coming from the JS.  We want to keep the jinja templating and knockout templating as separate as possible	0.0
+this should be passed into the js controller as well	0.0
+This should be refactored out into a superclass instead of duplicating it 2 more times	0.0
+Yes, you might have to make an intermediary super class	0.0
+If it would be grosser to pass it in to the js then I'd just leave it like this.	-1.0
+This feels kind of overly verbose.	-1.0
+Is this just going to dump a weird message from CS?	0.0
+I agree, I think the fact that the ui reflects that the comment isn't there anymore should be indication enough that the delete succeeded	0.0
+Is there a reason to use this kind of property caching if we only use it once? (I think I only see it used once)	0.0
+`forme` hehe	1.0
+I'd combine these into 1 line; `review_id` caused me more confusion than clarity.	-1.0
+Is it worth changing the name of this helper method?	0.0
+Should we use @cached_property if we want to cache it?	0.0
+Or just rename this variable to something more specific?	0.0
+Just remember there is a constant key named REFERRER_URL defined in vauth. However, what we defined here has nothing to do with vauth, so it is probably fine to just use a string here.	0.0
+Would the actual API call return: ``` {'goodListings': [     {'ssid': 'SSID-1'},     {'ssid': 'SSID-2'} ]} ``` Rather than multiple goodListings?	0.0
+Ahh I got ya, so it'll return the good listings for each source.	1.0
+This sourceId is definitely declared somewhere else already. Import it from app.keys.GLOBAL_SOURCE	0.0
+I'm sure it is defined somewwhere, but I think you just gave the reference in CS, not SR.	0.0
+`LOCATION_PAGE_SOURCE` is defined in `lib/coresdk/profile_group.py`	0.0
+Haha. Yep.	1.0
+Was this also a problem if the account was expired? Does this check still return an account after it's expired?	0.0
+`is_popup = self.request.cookies.get('isPopup') == 'true'`	0.0
+You should never use `{}` (or any other mutable) as the default value for a keyword argument. You should read this:	-1.0
+It's probably not a huge deal for test code, but I'd rather not see it in the codebase at all	-1.0
+I would like to see this try-except block refactored into a function, which should return a `RequestStatus` object. Something like `def perform_update` should get the job done. After that, this block will look like:  ``` if not keyword:     status = RequestStatus(identifier=None, operation=statusOperation, successful=False, data={}, message=CREATE_ERROR_EMPTY_KEYWORD) else:     status = perform_update(..) . . if status.successful: ```	0.0
+The purpose of which is to reduce heavy nesting and improve readability.	0.0
+Just use `keywords` here, no need to get fancy :)	-1.0
+I'd really like to encourage you to use the `success` attribute of the RequestStatus object. It makes sense to have a flag for the operation, but in this case, the outcome of the operation essentially already is a flag.	0.0
+Docstring for this guy	0.0
+move this down to the `else` block	0.0
+`if not keywords`	0.0
+Swallowing exceptions makes me sad. I always prefer to at least add a `logging.warning` message. And it is often a good idea to include the stack trace with `exc_info=True`.	-1.0
+I think it is a bad idea to mock private functions of a class; it makes it much harder to refactor.  I think it would be better to change this to mock out the entire call to: `app.domain.repcore.sources.get_source_by_id()` and then the dependency of this class would be mush clearer in the tests.  Currently I could change your `_get_source_name()` function to return hardcoded `Yelp` and all your tests would still pass. I am not suggesting testing the private function, I would like to see the fact that the private function exists be hidden from the tests. This will enable much easier refactor of code in the future.	-1.0
+This will get run every time the file is imported, but only needs to run once per instance.	0.0
+We just need to make sure that this algorithm is registered.  If it is already registered than this will throw an exception.  Is it really valuable log a warning in this case?	0.0
+I think there should be a space between `partner_mock.return_value = secure_partner` and `link = activity.build_partner_link('ABC', '/visibility/')` and another space between `link = activity.build_partner_link('ABC', '/visibility/')` and `self.assertEqual(' link)`.  It makes looking at the three parts of the test much easier.  Same goes with the other tests.	0.0
+Catching `ValueError` seemed too generic to swallow and assume it is ALWAYS caused by it already being registered. What if the lib is missing, does it also raise a `ValueError`?  But if we only want it run once per instance, it belongs in a warmup handler, not a normal code file.	0.0
+Can we remove the extra newline above match = false?	0.0
+Can we change the field in this comprehension into is_match instead?  Also, can we change match to is_match? Just for clarity.	0.0
+Super minor.  But I'd prefer this condition be ``` == "LOCAL ``` so it's easier to immediately understand without having to double check the ``` != ```	0.0
+you could probably use the same pattern (previous_stat) here, right?	0.0
+is all of this unit tested? it would be nice to see all the cases in plain unit tests if they dont exist, and a new case for pdqs.mobi	0.0
+also, if prod has to use pdqs.mobi but we cant do that for the other envs, does it even matter what we do on other envs, can we just use microsite-env.appspot.com?   i say that because this url mutilation we do on other products on our own platform haunts me at night	-1.0
+you should be able to accomplish this with the _get_exclusive_properties method in vapi? or is that not returning the right error message?	0.0
+again, maybe get_exclusive_proprties can do this for you. Also the docstring for this process method may or may not be accurate. Kind of looks like not accurate at all lol	-1.0
+Yeah! Let's use that thing!  So, `_get_exclusive_properties` only works if you're using the vapi Properties. If you're defining lists of args like you are in this handler, you can do the following: ``` REQUIRED_ARGS = [   ...   (API_KEY.ACCOUNT_SRID, API_KEY.CUSTOMER_IDENTIFIER)   ... ] ```  This will require one of the two arguments	0.0
+instead of setting ```current_stat``` you can enumerate ```stats``` in your loop.  EX. ``` for index, stat in enumerate(stats):   if not (stat and stat.value == 0) or index == 0:     continue      stat.value = data[index - 1] if data[index - 1] else 0   data.append([stat.datetime_stamp.strftime(formatting), stat.value]) ```	0.0
+It might be a bit late for this but I find ``` getGenerateReviewWidget ``` to be really confusing to read.  Could it be changed to ``` getWidgetForGenerateReviews ```?	-1.0
+All of these methods take a comment as the param.  Why not make a ReviewCommentActivity domain object that gets instantiated with a comment  ```python class ReviewCommentActivity(object):     def __init__(comment)     def is_valid(self)     @property     def link(self)     @property     def title(self)     def to_dict(self) ```	0.0
+The same could probably be done for ReviewActivity as well	0.0
+If you were to create the ReviewCommentActivity object you could encapsulate this logic into it. So all this would need to do is  ```python review_comment_activity = ReviewCommentActivity(activity) review_comment_activity.send() ``` Then the send method can decide whether or not to send the activity.	0.0
+Pylint doesn't run for this file (for long lines anyway) and it's a lot more readable if these are all on one line.	0.0
+Are these colours supposed to be hardcoded?	0.0
+Shouldn't this be a FilterBuilder?	0.0
+Same as above. FilterBuilder.	0.0
+if you rollback the `elasticsearch` lib you should rollback the `elasticsearch_dsl as well`	0.0
+I wonder if we should put a javascript ``` try catch ``` in here.   Having the entire page fail to load because we couldn't bind our tooltips seems like a bigger problem than edge support.  We might even be able to toss the check for ``` data.is_microsoft_edge ``` if we did that. It's generally a bad smell to have browser-specific functionality.	0.0
+i think ``` expired_datetime ``` is a little clearer. first time reading this i thought this was supposed to be the datetime that the account expired at, so i was confused by the +1	-1.0
+Do you need a binding for `form-success-icon`? Can you just add it to the `class` attr?	0.0
+Minor, but I would argue `wrapper` would be a more natural naming convention than `area`.	0.0
+`if 'page_title' not in context:` if you are just checking if the key exists.  I don't think anyone would set a blank `page_title`, and if they did, it was probably for a reason that's getting overwritten here.	0.0
+This check should go into the `_can_send_review_share_email` as well  it doesn't really matter if we do an extra get on `ReviewGenerationConfigurationModel` when we aren't going to send the email anyway	0.0
+infinite recursion!!!  should be `cls.get_by_account_group_id_async`	-1.0
+The whole reason jasmine uses the ``` it ``` function is so you can write English sentences like: ``` it('should start as false', ... ``` .    Kind of sad to not take advantage that feature.	-1.0
+Why is `template_type` optional here?	0.0
+``` viewedComments ``` sounds to me like a function (or knockout object) that returns a set of viewed comments.  I'd recommend naming it something like ``` markCommentsAsViewed() ```.	0.0
+check if self.newComment() (is truthy) before sending the ajax call. dont need to send if theres no new comments anyway	0.0
+I would pull these 2 tests out into a different describe block. if you are describing "markCommentsAsViewed", then all of your tests inside that block should call markCommentsAsViewed. If you are calling commentsToggleString, even to test that it calls markCommentsAsViewed, that test should happen inside a describe("commentsToggleString", function(){tests})	0.0
+are there things that care about ``` posts ``` being returned from this method? seems like the handler just ignores it. if this method only has to report errors then no use returning a tuple.	0.0
+could you change the values here from `True/False` to `'published'/'unpublised'` that was the comparison later on isn't against the string `'true'/'false'`	0.0
+I'm pretty sure a request of `None` would work here, or an empty dict. I think one of the two would work.	0.0
+Could probably be ``` === ```, yeah?	0.0
+Hmm... You're right. The server needs to receive an unpublished Flag. Would you mind fixing this function in your PR? Something like ```              else if (field.name == 'publishingStatus') {                  // convert to boolean                  if (field.value() === 'published') {                      published_flag = true;                  } else if (field.value() === 'unpublished') {                      unpublished_flag = false;                  } else {                      published_flag = null;                      unpublished_flag = null                   }              } ```	0.0
+``` == ``` does type-coercion to check equality but, really, you know you want a string so why not do strict equality (``` === ```).  I don't really care, it's just Much More Betterâ„¢.	-1.0
+shouldn't we be setting `account.salesPerson.updated` here too? it doesn't look like it was getting set before either	0.0
+any chance you'd be able to use getBySrid instead here? RepInt accounts are keyed off srid so it's a cheaper/faster/consistent lookup as opposed to getByAgid which is doing a query instead of a key.get()	0.0
+This expected format comment shows a header line but your sentence above says "without headers".  Just to be clear, change this to: ```         expected format:         AG-1234,cust-1234         AG-5678,cust-5678""" ```	0.0
+Why are you accepting two different key formats?  Also, I don't think you can use a `csv.DictReader` without headers. How would this `.get('key')` know which column in the file has that key? This code looks like it is expecting CSV headers.	0.0
+What does `updateUnique` do?  Why not just: ``` account.customer_id = customer_id account.put() ``` ?	0.0
+This line is very awkward. We are building a customer ID and storing it in a `customer_id` variable but that function takes in an arg also called `customer_id`. Why is the original value of the variable not good enough? I thought customer IDs were just strings anyway, what could this `buildCustomerId` function possibly be doing?	-1.0
+Why did you change this from using updateUnique? I know @jwebb-va asked why we were using it but there is a reason to do so... it handles the updating of the unique entity for you and also ensures that it's in the correct format (pid/id). So you can replace about 15-20 lines here with the one call to updateUnique instead.	0.0
+I'd say `generate_content` is a bit too ambiguous here. Even within the context of this module it's not clear what this actually does or returns. Even something like `generate_review_share_content` would be much clearer imo.	-1.0
+Why not just `{}`?	0.0
+Minor, but is it necessary to wrap all these methods around `function () {...}` if you aren't passing any "custom" args? Can't you just `click: $root.showTrendOrWordCloudAdvice`?	0.0
